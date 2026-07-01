@@ -1,5 +1,5 @@
 import { FaCheck, FaUserTie } from 'react-icons/fa6';
-import { boardMembers } from '@/components/admin/mock-data';
+import type { AdminContent, BoardMember } from '@/components/admin/types';
 import {
   ActionRow,
   Panel,
@@ -7,7 +7,28 @@ import {
   TextField,
 } from '@/components/admin/ui';
 
-export default function BoardAdminSection() {
+export default function BoardAdminSection({
+  data,
+  onChange,
+  onSave,
+  isSaving,
+}: {
+  data: AdminContent['board'];
+  onChange: (value: AdminContent['board']) => void;
+  onSave: () => void;
+  isSaving: boolean;
+}) {
+  const { members: boardMembers } = data;
+  const selectedMember = boardMembers[0];
+
+  function updateMember(id: number, patch: Partial<BoardMember>) {
+    onChange({
+      members: boardMembers.map((member) =>
+        member.id === id ? { ...member, ...patch } : member,
+      ),
+    });
+  }
+
   return (
     <div className='grid gap-5 xl:grid-cols-[1fr_360px]'>
       <Panel title='Miembros del consejo' eyebrow='Board'>
@@ -40,16 +61,29 @@ export default function BoardAdminSection() {
 
       <Panel title='Editor miembro' eyebrow='Persona'>
         <div className='space-y-4'>
-          <TextField label='Nombre' value='Alex Prieto' />
-          <TextField label='Cargo EN' value='President' />
-          <TextField label='Cargo ES' value='Presidente' />
-          <TextField label='Foto' value='/board/alex-prieto.webp' />
+          <TextField
+            label='Nombre'
+            value={selectedMember.name}
+            onChange={(name) => updateMember(selectedMember.id, { name })}
+          />
+          <TextField
+            label='Cargo'
+            value={selectedMember.role}
+            onChange={(role) => updateMember(selectedMember.id, { role })}
+          />
+          <TextField
+            label='Foto'
+            value={selectedMember.image}
+            onChange={(image) => updateMember(selectedMember.id, { image })}
+          />
           <TextField
             label='Descripcion'
             value='Co-Founder with 26 years of experience in the toy industry.'
             multiline
           />
-          <PrimaryButton icon={FaCheck}>Guardar miembro</PrimaryButton>
+          <PrimaryButton icon={FaCheck} onClick={onSave} disabled={isSaving}>
+            {isSaving ? 'Guardando...' : 'Guardar JSON'}
+          </PrimaryButton>
         </div>
       </Panel>
     </div>

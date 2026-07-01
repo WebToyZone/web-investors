@@ -11,11 +11,12 @@ import {
   FaRegFileLines,
   FaTrashCan,
 } from 'react-icons/fa6';
-import {
-  documentCategories,
-  documents,
-} from '@/components/admin/mock-data';
-import type { Locale, PublishStatus } from '@/components/admin/types';
+import type {
+  AdminContent,
+  AdminDocument,
+  Locale,
+  PublishStatus,
+} from '@/components/admin/types';
 import {
   IconButton,
   MetricCard,
@@ -26,11 +27,22 @@ import {
   TextField,
 } from '@/components/admin/ui';
 
-export default function DocumentsAdminSection() {
+export default function DocumentsAdminSection({
+  data,
+  onChange,
+  onSave,
+  isSaving,
+}: {
+  data: AdminContent['documents'];
+  onChange: (value: AdminContent['documents']) => void;
+  onSave: () => void;
+  isSaving: boolean;
+}) {
   const [locale, setLocale] = useState<'all' | Locale>('all');
   const [status, setStatus] = useState<'all' | PublishStatus>('all');
   const [category, setCategory] = useState('all');
   const [selectedDocumentId, setSelectedDocumentId] = useState(1);
+  const { categories, items: documents } = data;
 
   const filteredDocuments = useMemo(() => {
     return documents.filter((document) => {
@@ -44,6 +56,15 @@ export default function DocumentsAdminSection() {
   const selectedDocument =
     documents.find((document) => document.id === selectedDocumentId) ??
     documents[0];
+
+  function updateDocument(id: number, patch: Partial<AdminDocument>) {
+    onChange({
+      ...data,
+      items: documents.map((document) =>
+        document.id === id ? { ...document, ...patch } : document,
+      ),
+    });
+  }
 
   return (
     <div className='grid gap-5 xl:grid-cols-[1fr_360px]'>
@@ -94,7 +115,7 @@ export default function DocumentsAdminSection() {
                 className='mt-1 w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
               >
                 <option value='all'>Todas</option>
-                {documentCategories.map((item) => (
+                {categories.map((item) => (
                   <option key={item} value={item}>
                     {item}
                   </option>
@@ -212,18 +233,38 @@ export default function DocumentsAdminSection() {
               </h3>
               <StatusBadge status={selectedDocument.status} />
             </div>
-            <TextField label='Titulo' value={selectedDocument.title} />
+            <TextField
+              label='Titulo'
+              value={selectedDocument.title}
+              onChange={(title) => updateDocument(selectedDocument.id, { title })}
+            />
             <div className='grid grid-cols-2 gap-3'>
-              <TextField label='Ano' value={selectedDocument.year} />
+              <TextField
+                label='Ano'
+                value={selectedDocument.year}
+                onChange={(year) => updateDocument(selectedDocument.id, { year })}
+              />
               <TextField
                 label='Idioma'
                 value={selectedDocument.locale.toUpperCase()}
               />
             </div>
-            <TextField label='Archivo' value={selectedDocument.fileName} />
+            <TextField
+              label='Archivo'
+              value={selectedDocument.fileName}
+              onChange={(fileName) =>
+                updateDocument(selectedDocument.id, { fileName })
+              }
+            />
             <div className='grid grid-cols-2 gap-3'>
               <SecondaryButton icon={FaRegFileLines}>Guardar</SecondaryButton>
-              <PrimaryButton icon={FaCheck}>Publicar</PrimaryButton>
+              <PrimaryButton
+                icon={FaCheck}
+                onClick={onSave}
+                disabled={isSaving}
+              >
+                {isSaving ? 'Guardando...' : 'Guardar JSON'}
+              </PrimaryButton>
             </div>
           </div>
         </Panel>

@@ -69,13 +69,19 @@ export function IconButton({
 export function PrimaryButton({
   children,
   icon: Icon,
+  onClick,
+  disabled = false,
 }: {
   children: ReactNode;
   icon: ComponentType<{ className?: string }>;
+  onClick?: () => void;
+  disabled?: boolean;
 }) {
   return (
     <button
       type='button'
+      onClick={onClick}
+      disabled={disabled}
       className='inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand'
     >
       <Icon className='h-4 w-4' />
@@ -87,13 +93,19 @@ export function PrimaryButton({
 export function SecondaryButton({
   children,
   icon: Icon,
+  onClick,
+  disabled = false,
 }: {
   children: ReactNode;
   icon: ComponentType<{ className?: string }>;
+  onClick?: () => void;
+  disabled?: boolean;
 }) {
   return (
     <button
       type='button'
+      onClick={onClick}
+      disabled={disabled}
       className='inline-flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-bold text-neutral-800 transition-colors hover:border-brand hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand'
     >
       <Icon className='h-4 w-4' />
@@ -142,12 +154,16 @@ export function Panel({
 export function TextField({
   label,
   value,
+  onChange,
   multiline = false,
 }: {
   label: string;
   value: string;
+  onChange?: (value: string) => void;
   multiline?: boolean;
 }) {
+  const readOnly = !onChange;
+
   return (
     <label className='block'>
       <span className='text-xs font-bold uppercase text-neutral-500'>
@@ -156,14 +172,16 @@ export function TextField({
       {multiline ? (
         <textarea
           value={value}
-          readOnly
+          readOnly={readOnly}
+          onChange={(event) => onChange?.(event.target.value)}
           rows={4}
           className='mt-1 w-full resize-none rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
         />
       ) : (
         <input
           value={value}
-          readOnly
+          readOnly={readOnly}
+          onChange={(event) => onChange?.(event.target.value)}
           className='mt-1 w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
         />
       )}

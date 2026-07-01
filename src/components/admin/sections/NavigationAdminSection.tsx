@@ -1,8 +1,29 @@
 import { FaCheck } from 'react-icons/fa6';
-import { footerLinks } from '@/components/admin/mock-data';
+import type { AdminContent, FooterLink } from '@/components/admin/types';
 import { ActionRow, Panel, PrimaryButton, TextField } from '@/components/admin/ui';
 
-export default function NavigationAdminSection() {
+export default function NavigationAdminSection({
+  data,
+  onChange,
+  onSave,
+  isSaving,
+}: {
+  data: AdminContent['navigation'];
+  onChange: (value: AdminContent['navigation']) => void;
+  onSave: () => void;
+  isSaving: boolean;
+}) {
+  const { links: footerLinks } = data;
+  const selectedLink = footerLinks[0];
+
+  function updateLink(id: number, patch: Partial<FooterLink>) {
+    onChange({
+      links: footerLinks.map((link) =>
+        link.id === id ? { ...link, ...patch } : link,
+      ),
+    });
+  }
+
   return (
     <div className='grid gap-5 xl:grid-cols-[1fr_360px]'>
       <Panel title='Links de footer y navegacion' eyebrow='Enlaces'>
@@ -38,11 +59,24 @@ export default function NavigationAdminSection() {
 
       <Panel title='Editor enlace' eyebrow='Footer / nav'>
         <div className='space-y-4'>
-          <TextField label='Grupo' value='Investor Centre' />
-          <TextField label='Label EN' value='Growth Journey' />
-          <TextField label='Label ES' value='Trayectoria' />
-          <TextField label='Anchor' value='#growth-journey' />
-          <PrimaryButton icon={FaCheck}>Guardar enlace</PrimaryButton>
+          <TextField
+            label='Grupo'
+            value={selectedLink.group}
+            onChange={(group) => updateLink(selectedLink.id, { group })}
+          />
+          <TextField
+            label='Label'
+            value={selectedLink.label}
+            onChange={(label) => updateLink(selectedLink.id, { label })}
+          />
+          <TextField
+            label='Anchor'
+            value={selectedLink.href}
+            onChange={(href) => updateLink(selectedLink.id, { href })}
+          />
+          <PrimaryButton icon={FaCheck} onClick={onSave} disabled={isSaving}>
+            {isSaving ? 'Guardando...' : 'Guardar JSON'}
+          </PrimaryButton>
         </div>
       </Panel>
     </div>

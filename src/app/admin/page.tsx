@@ -1,5 +1,8 @@
 import AdminDocumentsPage from '@/components/admin/AdminDocumentsPage';
+import { getAdminContent } from '@/services/admin-content/local-store';
 
-export default function AdminPage() {
-  return <AdminDocumentsPage />;
+export default async function AdminPage() {
+  const content = await getAdminContent();
+
+  return <AdminDocumentsPage initialContent={content} />;
 }

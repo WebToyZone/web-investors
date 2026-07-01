@@ -85,3 +85,29 @@ export type MediaAsset = {
   path: string;
   status: PublishStatus;
 };
+
+export type AdminContent = {
+  documents: {
+    categories: string[];
+    items: AdminDocument[];
+  };
+  glance: {
+    kpis: KpiStat[];
+  };
+  board: {
+    members: BoardMember[];
+  };
+  growth: {
+    revenue: GrowthRevenue[];
+    milestones: GrowthMilestone[];
+  };
+  contact: {
+    fields: ContactField[];
+  };
+  navigation: {
+    links: FooterLink[];
+  };
+  assets: {
+    items: MediaAsset[];
+  };
+};

@@ -1,0 +1,202 @@
+{
+  "documents": {
+    "categories": [
+      "Financial Information",
+      "Meetings & Notices",
+      "Investors Documents"
+    ],
+    "items": [
+      {
+        "id": 1,
+        "title": "BME Scaleup Market Admission Document",
+        "category": "Investors Documents",
+        "year": "2026",
+        "locale": "en",
+        "status": "draft",
+        "date": "2026-07-01",
+        "fileName": "bme-scaleup-market-admission-en.pdf",
+        "size": "8.4 MB",
+        "downloads": 0
+      },
+      {
+        "id": 2,
+        "title": "Documento de Admision al Mercado BME Scaleup",
+        "category": "Investors Documents",
+        "year": "2026",
+        "locale": "es",
+        "status": "draft",
+        "date": "2026-07-01",
+        "fileName": "bme-scaleup-market-admission-es.pdf",
+        "size": "8.4 MB",
+        "downloads": 0
+      },
+      {
+        "id": 3,
+        "title": "Annual Accounts Preview",
+        "category": "Financial Information",
+        "year": "2026",
+        "locale": "en",
+        "status": "scheduled",
+        "date": "2026-09-15",
+        "fileName": "annual-accounts-preview.pdf",
+        "size": "2.1 MB",
+        "downloads": 12
+      }
+    ]
+  },
+  "glance": {
+    "kpis": [
+      {
+        "id": 1,
+        "label": "2025 Revenue",
+        "value": "$19,75M",
+        "locale": "en",
+        "icon": "/icons/revenue.webp",
+        "status": "published"
+      },
+      {
+        "id": 2,
+        "label": "Countries",
+        "value": "59",
+        "locale": "en",
+        "icon": "/icons/countries.webp",
+        "status": "published"
+      },
+      {
+        "id": 3,
+        "label": "Ingresos 2025",
+        "value": "$19,75M",
+        "locale": "es",
+        "icon": "/icons/revenue.webp",
+        "status": "published"
+      },
+      {
+        "id": 4,
+        "label": "Paises",
+        "value": "59",
+        "locale": "es",
+        "icon": "/icons/countries.webp",
+        "status": "draft"
+      }
+    ]
+  },
+  "board": {
+    "members": [
+      {
+        "id": 1,
+        "name": "Alex Prieto",
+        "role": "President",
+        "status": "appointed",
+        "locale": "en",
+        "image": "/board/alex-prieto.webp"
+      },
+      {
+        "id": 2,
+        "name": "Jose M. Diaz",
+        "role": "Vice President",
+        "status": "appointed",
+        "locale": "en",
+        "image": "/board/jose-diaz.webp"
+      },
+      {
+        "id": 3,
+        "name": "TBC",
+        "role": "Financial Representative",
+        "status": "pending",
+        "locale": "en",
+        "image": "/board/tbc.webp"
+      }
+    ]
+  },
+  "growth": {
+    "revenue": [
+      { "year": "2020", "value": "6.67", "label": "$6.67" },
+      { "year": "2021", "value": "6.65", "label": "$6.65" },
+      { "year": "2022", "value": "15.50", "label": "$15.50" },
+      { "year": "2023", "value": "13.17", "label": "$13.17" },
+      { "year": "2024", "value": "18.15", "label": "$18.15" },
+      { "year": "2025", "value": "19.75", "label": "$19.75" }
+    ],
+    "milestones": [
+      {
+        "id": 1,
+        "title": "2020 - CuiCui Studios",
+        "locale": "en",
+        "status": "published"
+      },
+      {
+        "id": 2,
+        "title": "2022 - Scale Acceleration",
+        "locale": "en",
+        "status": "published"
+      },
+      {
+        "id": 3,
+        "title": "2024 - M&A estrategico",
+        "locale": "es",
+        "status": "draft"
+      }
+    ]
+  },
+  "contact": {
+    "fields": [
+      { "label": "Email publico", "value": "investors@eolo.com" },
+      { "label": "Telefono", "value": "+34 984 017 888" },
+      { "label": "Direccion linea 1", "value": "C/Menendez Valdes 40 2D" },
+      { "label": "CTA formulario", "value": "Send it! / Enviar" }
+    ]
+  },
+  "navigation": {
+    "links": [
+      {
+        "id": 1,
+        "group": "Investor Centre",
+        "label": "Growth Journey",
+        "href": "#growth-journey",
+        "locale": "en"
+      },
+      {
+        "id": 2,
+        "group": "Documents",
+        "label": "Investors Documents",
+        "href": "#documents",
+        "locale": "en"
+      },
+      {
+        "id": 3,
+        "group": "Centro de Inversores",
+        "label": "Trayectoria",
+        "href": "#growth-journey",
+        "locale": "es"
+      }
+    ]
+  },
+  "assets": {
+    "items": [
+      {
+        "id": 1,
+        "name": "Hero video",
+        "type": "video",
+        "usage": "Hero",
+        "path": "/video/hero.webm",
+        "status": "published"
+      },
+      {
+        "id": 2,
+        "name": "Smile video",
+        "type": "video",
+        "usage": "Power of a Smile",
+        "path": "/video/video.webm",
+        "status": "published"
+      },
+      {
+        "id": 3,
+        "name": "EOLO logo red",
+        "type": "image",
+        "usage": "Navbar",
+        "path": "/logo-eolo.webp",
+        "status": "published"
+      }
+    ]
+  }
+}

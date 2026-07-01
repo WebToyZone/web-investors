@@ -1,8 +1,28 @@
 import { FaCheck } from 'react-icons/fa6';
-import { contactFields } from '@/components/admin/mock-data';
+import type { AdminContent } from '@/components/admin/types';
 import { Panel, PrimaryButton, TextField } from '@/components/admin/ui';
 
-export default function ContactAdminSection() {
+export default function ContactAdminSection({
+  data,
+  onChange,
+  onSave,
+  isSaving,
+}: {
+  data: AdminContent['contact'];
+  onChange: (value: AdminContent['contact']) => void;
+  onSave: () => void;
+  isSaving: boolean;
+}) {
+  const { fields: contactFields } = data;
+
+  function updateField(label: string, value: string) {
+    onChange({
+      fields: contactFields.map((field) =>
+        field.label === label ? { ...field, value } : field,
+      ),
+    });
+  }
+
   return (
     <div className='grid gap-5 xl:grid-cols-[1fr_360px]'>
       <Panel title='Datos de contacto' eyebrow='Contacto publico'>
@@ -12,6 +32,7 @@ export default function ContactAdminSection() {
               key={field.label}
               label={field.label}
               value={field.value}
+              onChange={(value) => updateField(field.label, value)}
             />
           ))}
         </div>
@@ -27,7 +48,9 @@ export default function ContactAdminSection() {
             value='Your message has been sent successfully.'
             multiline
           />
-          <PrimaryButton icon={FaCheck}>Guardar contacto</PrimaryButton>
+          <PrimaryButton icon={FaCheck} onClick={onSave} disabled={isSaving}>
+            {isSaving ? 'Guardando...' : 'Guardar JSON'}
+          </PrimaryButton>
         </div>
       </Panel>
     </div>

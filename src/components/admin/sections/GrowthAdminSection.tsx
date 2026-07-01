@@ -1,5 +1,9 @@
 import { FaCheck } from 'react-icons/fa6';
-import { milestones, revenue } from '@/components/admin/mock-data';
+import type {
+  AdminContent,
+  GrowthMilestone,
+  GrowthRevenue,
+} from '@/components/admin/types';
 import {
   ActionRow,
   Panel,
@@ -8,7 +12,37 @@ import {
   TextField,
 } from '@/components/admin/ui';
 
-export default function GrowthAdminSection() {
+export default function GrowthAdminSection({
+  data,
+  onChange,
+  onSave,
+  isSaving,
+}: {
+  data: AdminContent['growth'];
+  onChange: (value: AdminContent['growth']) => void;
+  onSave: () => void;
+  isSaving: boolean;
+}) {
+  const { revenue, milestones } = data;
+
+  function updateRevenue(year: string, patch: Partial<GrowthRevenue>) {
+    onChange({
+      ...data,
+      revenue: revenue.map((item) =>
+        item.year === year ? { ...item, ...patch } : item,
+      ),
+    });
+  }
+
+  function updateMilestone(id: number, patch: Partial<GrowthMilestone>) {
+    onChange({
+      ...data,
+      milestones: milestones.map((milestone) =>
+        milestone.id === id ? { ...milestone, ...patch } : milestone,
+      ),
+    });
+  }
+
   return (
     <div className='grid gap-5 xl:grid-cols-[1fr_360px]'>
       <div className='space-y-5'>
@@ -25,7 +59,11 @@ export default function GrowthAdminSection() {
                 <p className='mt-2 text-2xl font-black text-brand'>
                   {item.label}
                 </p>
-                <TextField label='Valor numerico' value={item.value} />
+                <TextField
+                  label='Valor numerico'
+                  value={item.value}
+                  onChange={(value) => updateRevenue(item.year, { value })}
+                />
               </div>
             ))}
           </div>
@@ -39,9 +77,13 @@ export default function GrowthAdminSection() {
                 className='flex items-center justify-between gap-4 rounded-md border border-neutral-200 p-4'
               >
                 <div>
-                  <p className='font-bold text-neutral-950'>
-                    {milestone.title}
-                  </p>
+                  <TextField
+                    label='Titulo'
+                    value={milestone.title}
+                    onChange={(title) =>
+                      updateMilestone(milestone.id, { title })
+                    }
+                  />
                   <p className='text-xs text-neutral-500'>
                     {milestone.locale.toUpperCase()}
                   </p>
@@ -65,7 +107,9 @@ export default function GrowthAdminSection() {
             value='From an international family-owned company to a selective growth and M&A platform.'
             multiline
           />
-          <PrimaryButton icon={FaCheck}>Guardar seccion</PrimaryButton>
+          <PrimaryButton icon={FaCheck} onClick={onSave} disabled={isSaving}>
+            {isSaving ? 'Guardando...' : 'Guardar JSON'}
+          </PrimaryButton>
         </div>
       </Panel>
     </div>
