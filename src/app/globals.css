@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+/**
+ * Design tokens (Tailwind v4 theme).
+ * - font-heading → Bebas Neue (display headings)
+ * - font-sans    → Roboto (body)
+ * - brand        → EOLO red
+ *
+ * The font CSS variables are provided by `next/font` in `layout.tsx`.
+ */
+@theme {
+  --font-sans: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-bebas), ui-sans-serif, system-ui, sans-serif;
+  --font-condensed: var(--font-roboto-condensed), ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand: #c8002d;
+  --color-brand-dark: #9e0023;
+  --color-neutral: var(--color-neutral-900);
+  --color-bgNeutral: var(--color-neutral-100);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #ffffff;
+  /* color: var(--color-neutral-900); */
+  -webkit-font-smoothing: antialiased;
+}
+
+.container-site {
+  @apply mx-auto max-w-360 px-4 sm:px-6 lg:px-0;
+}
