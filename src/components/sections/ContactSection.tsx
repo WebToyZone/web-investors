@@ -153,8 +153,6 @@ export default function ContactSection({
     try {
       const result = await submitContact(values, locale);
 
-        console.log('result:', result);
-
       if (result.error) {
         setError(result.error);
         return;

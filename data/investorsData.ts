@@ -1,4 +1,4 @@
-// src/data/investors.ts
+// src/data/investorsData.ts
 
 import type { HeroVideo } from '@/components/sections/HeroSection';
 import type { NavbarLogo } from '@/components/layout/Navbar';
@@ -38,9 +38,8 @@ const enContent: InvestorsPageContent = {
   },
 
   hero: {
-    src: '/video/hero.mp4',
-    type: 'video/mp4',
-    poster: '/video/hero-poster.jpg',
+    src: '/video/hero.webm',
+    type: 'video/webm',
     alt: 'A child flying a red kite on a hilltop at sunset.',
   },
 
@@ -243,9 +242,8 @@ const enContent: InvestorsPageContent = {
   powerOfASmile: {
     heading: 'The Power of a Smile',
     video: {
-      src: '/video/video.mp4',
-      type: 'video/mp4',
-      poster: '/video/smile-poster.jpg',
+      src: '/video/video.webm',
+      type: 'video/webm',
       alt: 'A red gift box opening to reveal a glowing light.',
     },
   },
@@ -263,20 +261,7 @@ const enContent: InvestorsPageContent = {
       },
       {
         title: 'Investors Documents',
-        per_year: [
-          {
-            year: '2026',
-            documents: [
-              {
-                title: 'BME Scaleup Market Admission Document',
-                date: '01/07/2026',
-                format: 'PDF',
-                size: '8.4 MB',
-                href: '/docs/bme-scaleup-market-admission.pdf',
-              },
-            ],
-          },
-        ],
+        per_year: [{ year: '2026', documents: [] }],
       },
     ],
   },
@@ -560,20 +545,7 @@ const esContent: InvestorsPageContent = {
       },
       {
         title: 'Documentos para Inversores',
-        per_year: [
-          {
-            year: '2026',
-            documents: [
-              {
-                title: 'Documento de Admisión al Mercado BME Scaleup',
-                date: '01/07/2026',
-                format: 'PDF',
-                size: '8.4 MB',
-                href: '/docs/bme-scaleup-market-admission.pdf',
-              },
-            ],
-          },
-        ],
+        per_year: [{ year: '2026', documents: [] }],
       },
     ],
   },

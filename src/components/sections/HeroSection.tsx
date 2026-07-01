@@ -1,7 +1,7 @@
 /**
  * Data shape for the Hero section.
  *
- * Currently fed statically from `data/investors.ts`. The shape is intentionally
+ * Currently fed statically from `data/investorsData.ts`. The shape is intentionally
  * CMS-friendly (plain serialisable fields) so it can later be hydrated from a
  * Prisma-backed model without touching this component.
  */

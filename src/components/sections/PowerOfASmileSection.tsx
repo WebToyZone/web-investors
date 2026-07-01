@@ -1,7 +1,7 @@
 /**
  * Data shape for the "Power of a Smile" banner.
  *
- * Fed statically from `data/investors.ts` for now; plain serialisable fields
+ * Fed statically from `data/investorsData.ts` for now; plain serialisable fields
  * keep it ready to come from a Prisma-backed CMS later.
  */
 export interface PowerOfASmileContent {

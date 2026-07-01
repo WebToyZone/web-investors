@@ -15,8 +15,6 @@ export async function submitContact(
   locale: Locale,
 ): Promise<ContactActionResponse> {
   const validatedFields = ContactSchema.safeParse(values);
-  console.log('Submitting contact form with values:', values);
-    console.log('validatedFields:', validatedFields);
 
   if (!validatedFields.success) {
     return {
