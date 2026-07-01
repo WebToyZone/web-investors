@@ -41,6 +41,18 @@
         "fileName": "annual-accounts-preview.pdf",
         "size": "2.1 MB",
         "downloads": 12
+      },
+      {
+        "id": 4,
+        "title": "Nuevo documento",
+        "category": "Financial Information",
+        "year": "2026",
+        "locale": "en",
+        "status": "draft",
+        "date": "2026-07-01",
+        "fileName": "nuevo-documento.pdf",
+        "size": "0 MB",
+        "downloads": 0
       }
     ]
   },
@@ -110,12 +122,36 @@
   },
   "growth": {
     "revenue": [
-      { "year": "2020", "value": "6.67", "label": "$6.67" },
-      { "year": "2021", "value": "6.65", "label": "$6.65" },
-      { "year": "2022", "value": "15.50", "label": "$15.50" },
-      { "year": "2023", "value": "13.17", "label": "$13.17" },
-      { "year": "2024", "value": "18.15", "label": "$18.15" },
-      { "year": "2025", "value": "19.75", "label": "$19.75" }
+      {
+        "year": "2020",
+        "value": "6.67",
+        "label": "$6.67"
+      },
+      {
+        "year": "2021",
+        "value": "6.65",
+        "label": "$6.65"
+      },
+      {
+        "year": "2022",
+        "value": "15.50",
+        "label": "$15.50"
+      },
+      {
+        "year": "2023",
+        "value": "13.17",
+        "label": "$13.17"
+      },
+      {
+        "year": "2024",
+        "value": "18.15",
+        "label": "$18.15"
+      },
+      {
+        "year": "2025",
+        "value": "19.75",
+        "label": "$19.75"
+      }
     ],
     "milestones": [
       {
@@ -140,10 +176,22 @@
   },
   "contact": {
     "fields": [
-      { "label": "Email publico", "value": "investors@eolo.com" },
-      { "label": "Telefono", "value": "+34 984 017 888" },
-      { "label": "Direccion linea 1", "value": "C/Menendez Valdes 40 2D" },
-      { "label": "CTA formulario", "value": "Send it! / Enviar" }
+      {
+        "label": "Email publico",
+        "value": "investors@eolo.com"
+      },
+      {
+        "label": "Telefono",
+        "value": "+34 984 017 888"
+      },
+      {
+        "label": "Direccion linea 1",
+        "value": "C/Menendez Valdes 40 2D"
+      },
+      {
+        "label": "CTA formulario",
+        "value": "Send it! / Enviar"
+      }
     ]
   },
   "navigation": {

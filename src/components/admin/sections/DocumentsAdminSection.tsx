@@ -8,6 +8,7 @@ import {
   FaFilePdf,
   FaGlobe,
   FaPen,
+  FaPlus,
   FaRegFileLines,
   FaTrashCan,
 } from 'react-icons/fa6';
@@ -18,11 +19,13 @@ import type {
   PublishStatus,
 } from '@/components/admin/types';
 import {
+  FormNotice,
   IconButton,
   MetricCard,
   Panel,
   PrimaryButton,
   SecondaryButton,
+  SelectField,
   StatusBadge,
   TextField,
 } from '@/components/admin/ui';
@@ -41,7 +44,10 @@ export default function DocumentsAdminSection({
   const [locale, setLocale] = useState<'all' | Locale>('all');
   const [status, setStatus] = useState<'all' | PublishStatus>('all');
   const [category, setCategory] = useState('all');
-  const [selectedDocumentId, setSelectedDocumentId] = useState(1);
+  const [selectedDocumentId, setSelectedDocumentId] = useState(
+    data.items[0]?.id ?? 0,
+  );
+  const [validationError, setValidationError] = useState('');
   const { categories, items: documents } = data;
 
   const filteredDocuments = useMemo(() => {
@@ -58,12 +64,84 @@ export default function DocumentsAdminSection({
     documents[0];
 
   function updateDocument(id: number, patch: Partial<AdminDocument>) {
+    setValidationError('');
     onChange({
       ...data,
       items: documents.map((document) =>
         document.id === id ? { ...document, ...patch } : document,
       ),
     });
+  }
+
+  function addDocument(file?: File) {
+    const nextId = Math.max(0, ...documents.map((document) => document.id)) + 1;
+    const fileName = file?.name ?? 'nuevo-documento.pdf';
+    const nextDocument: AdminDocument = {
+      id: nextId,
+      title: file?.name.replace(/\.pdf$/i, '') ?? 'Nuevo documento',
+      category: categories[0] ?? 'Investors Documents',
+      year: String(new Date().getFullYear()),
+      locale: 'en',
+      status: 'draft',
+      date: new Date().toISOString().slice(0, 10),
+      fileName,
+      size: file ? `${(file.size / 1024 / 1024).toFixed(1)} MB` : '0 MB',
+      downloads: 0,
+    };
+
+    setSelectedDocumentId(nextId);
+    onChange({ ...data, items: [...documents, nextDocument] });
+    setValidationError('');
+  }
+
+  function deleteDocument(id: number) {
+    const nextDocuments = documents.filter((document) => document.id !== id);
+    setSelectedDocumentId(nextDocuments[0]?.id ?? 0);
+    onChange({ ...data, items: nextDocuments });
+    setValidationError('');
+  }
+
+  function handleFileChange(file: File | undefined) {
+    if (!file) {
+      return;
+    }
+
+    addDocument(file);
+  }
+
+  function handleSave() {
+    if (!documents.length) {
+      setValidationError('Debe existir al menos un documento.');
+      return;
+    }
+
+    const invalidDocument = documents.find(
+      (document) =>
+        !document.title.trim() ||
+        !document.category.trim() ||
+        !document.year.trim() ||
+        !document.date.trim() ||
+        !document.fileName.trim(),
+    );
+
+    if (invalidDocument) {
+      setSelectedDocumentId(invalidDocument.id);
+      setValidationError('Completa titulo, categoria, ano, fecha y archivo.');
+      return;
+    }
+
+    const invalidPdf = documents.find(
+      (document) => !document.fileName.toLowerCase().endsWith('.pdf'),
+    );
+
+    if (invalidPdf) {
+      setSelectedDocumentId(invalidPdf.id);
+      setValidationError('El archivo del documento debe terminar en .pdf.');
+      return;
+    }
+
+    setValidationError('');
+    onSave();
   }
 
   return (
@@ -211,7 +289,11 @@ export default function DocumentsAdminSection({
                         <IconButton label='Descargar'>
                           <FaDownload className='h-4 w-4' />
                         </IconButton>
-                        <IconButton label='Eliminar'>
+                        <IconButton
+                          label='Eliminar'
+                          onClick={() => deleteDocument(document.id)}
+                          disabled={documents.length === 1}
+                        >
                           <FaTrashCan className='h-4 w-4' />
                         </IconButton>
                       </div>
@@ -226,47 +308,115 @@ export default function DocumentsAdminSection({
 
       <aside className='space-y-5'>
         <Panel title='Edicion rapida' eyebrow='Documento seleccionado'>
-          <div className='space-y-4'>
-            <div className='flex items-start justify-between gap-3'>
-              <h3 className='text-xl font-black text-neutral-950'>
-                {selectedDocument.title}
-              </h3>
-              <StatusBadge status={selectedDocument.status} />
-            </div>
-            <TextField
-              label='Titulo'
-              value={selectedDocument.title}
-              onChange={(title) => updateDocument(selectedDocument.id, { title })}
-            />
-            <div className='grid grid-cols-2 gap-3'>
+          {selectedDocument ? (
+            <div className='space-y-4'>
+              {validationError ? (
+                <FormNotice tone='danger'>{validationError}</FormNotice>
+              ) : null}
+              <div className='flex items-start justify-between gap-3'>
+                <h3 className='text-xl font-black text-neutral-950'>
+                  {selectedDocument.title}
+                </h3>
+                <StatusBadge status={selectedDocument.status} />
+              </div>
               <TextField
-                label='Ano'
-                value={selectedDocument.year}
-                onChange={(year) => updateDocument(selectedDocument.id, { year })}
+                label='Titulo'
+                value={selectedDocument.title}
+                onChange={(title) =>
+                  updateDocument(selectedDocument.id, { title })
+                }
+              />
+              <SelectField
+                label='Categoria'
+                value={selectedDocument.category}
+                options={categories.map((item) => ({
+                  label: item,
+                  value: item,
+                }))}
+                onChange={(nextCategory) =>
+                  updateDocument(selectedDocument.id, {
+                    category: nextCategory,
+                  })
+                }
+              />
+              <div className='grid grid-cols-2 gap-3'>
+                <TextField
+                  label='Ano'
+                  value={selectedDocument.year}
+                  onChange={(year) =>
+                    updateDocument(selectedDocument.id, { year })
+                  }
+                />
+                <TextField
+                  label='Fecha'
+                  value={selectedDocument.date}
+                  onChange={(date) =>
+                    updateDocument(selectedDocument.id, { date })
+                  }
+                />
+              </div>
+              <div className='grid grid-cols-2 gap-3'>
+                <SelectField
+                  label='Idioma'
+                  value={selectedDocument.locale}
+                  options={[
+                    { label: 'English', value: 'en' },
+                    { label: 'Espanol', value: 'es' },
+                  ]}
+                  onChange={(nextLocale) =>
+                    updateDocument(selectedDocument.id, {
+                      locale: nextLocale as Locale,
+                    })
+                  }
+                />
+                <SelectField
+                  label='Estado'
+                  value={selectedDocument.status}
+                  options={[
+                    { label: 'Publicado', value: 'published' },
+                    { label: 'Borrador', value: 'draft' },
+                    { label: 'Programado', value: 'scheduled' },
+                  ]}
+                  onChange={(nextStatus) =>
+                    updateDocument(selectedDocument.id, {
+                      status: nextStatus as PublishStatus,
+                    })
+                  }
+                />
+              </div>
+              <TextField
+                label='Archivo'
+                value={selectedDocument.fileName}
+                onChange={(fileName) =>
+                  updateDocument(selectedDocument.id, { fileName })
+                }
               />
               <TextField
-                label='Idioma'
-                value={selectedDocument.locale.toUpperCase()}
+                label='Tamano'
+                value={selectedDocument.size}
+                onChange={(size) => updateDocument(selectedDocument.id, { size })}
               />
+              <div className='grid grid-cols-2 gap-3'>
+                <SecondaryButton icon={FaRegFileLines} onClick={() => addDocument()}>
+                  Nuevo
+                </SecondaryButton>
+                <PrimaryButton
+                  icon={FaCheck}
+                  onClick={handleSave}
+                  disabled={isSaving}
+                >
+                  {isSaving ? 'Guardando...' : 'Guardar JSON'}
+                </PrimaryButton>
+              </div>
             </div>
-            <TextField
-              label='Archivo'
-              value={selectedDocument.fileName}
-              onChange={(fileName) =>
-                updateDocument(selectedDocument.id, { fileName })
-              }
-            />
-            <div className='grid grid-cols-2 gap-3'>
-              <SecondaryButton icon={FaRegFileLines}>Guardar</SecondaryButton>
-              <PrimaryButton
-                icon={FaCheck}
-                onClick={onSave}
-                disabled={isSaving}
-              >
-                {isSaving ? 'Guardando...' : 'Guardar JSON'}
+          ) : (
+            <div className='space-y-4'>
+              <FormNotice tone='danger'>No hay documentos configurados.</FormNotice>
+              <PrimaryButton icon={FaPlus} onClick={() => addDocument()}>
+                Crear documento
               </PrimaryButton>
             </div>
-          </div>
+          )}
         </Panel>
 
         <section className='rounded-md border border-dashed border-neutral-300 bg-white p-5'>
@@ -281,6 +431,7 @@ export default function DocumentsAdminSection({
             <input
               type='file'
               accept='application/pdf'
+              onChange={(event) => handleFileChange(event.target.files?.[0])}
               className='mt-3 max-w-full text-xs text-neutral-600 file:mr-3 file:rounded-md file:border-0 file:bg-brand file:px-3 file:py-1.5 file:text-xs file:font-bold file:text-white'
             />
           </div>

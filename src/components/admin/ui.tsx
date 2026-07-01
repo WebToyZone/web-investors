@@ -50,15 +50,21 @@ export function StatusBadge({ status }: { status: PublishStatus }) {
 export function IconButton({
   label,
   children,
+  onClick,
+  disabled = false,
 }: {
   label: string;
   children: ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
 }) {
   return (
     <button
       type='button'
       aria-label={label}
       title={label}
+      onClick={onClick}
+      disabled={disabled}
       className='inline-flex h-9 w-9 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-700 transition-colors hover:border-brand hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand'
     >
       {children}
@@ -82,7 +88,7 @@ export function PrimaryButton({
       type='button'
       onClick={onClick}
       disabled={disabled}
-      className='inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand'
+      className='inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:bg-neutral-300'
     >
       <Icon className='h-4 w-4' />
       {children}
@@ -106,7 +112,7 @@ export function SecondaryButton({
       type='button'
       onClick={onClick}
       disabled={disabled}
-      className='inline-flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-bold text-neutral-800 transition-colors hover:border-brand hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand'
+      className='inline-flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-bold text-neutral-800 transition-colors hover:border-brand hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:border-neutral-200 disabled:text-neutral-400'
     >
       <Icon className='h-4 w-4' />
       {children}
@@ -156,11 +162,13 @@ export function TextField({
   value,
   onChange,
   multiline = false,
+  error,
 }: {
   label: string;
   value: string;
   onChange?: (value: string) => void;
   multiline?: boolean;
+  error?: string;
 }) {
   const readOnly = !onChange;
 
@@ -185,7 +193,58 @@ export function TextField({
           className='mt-1 w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
         />
       )}
+      {error ? <span className='mt-1 block text-xs font-bold text-red-600'>{error}</span> : null}
     </label>
+  );
+}
+
+export function SelectField({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  options: { label: string; value: string }[];
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className='block'>
+      <span className='text-xs font-bold uppercase text-neutral-500'>
+        {label}
+      </span>
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className='mt-1 w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+export function FormNotice({
+  tone = 'neutral',
+  children,
+}: {
+  tone?: 'neutral' | 'danger';
+  children: ReactNode;
+}) {
+  const className =
+    tone === 'danger'
+      ? 'border-red-200 bg-red-50 text-red-700'
+      : 'border-neutral-200 bg-neutral-50 text-neutral-700';
+
+  return (
+    <div className={`rounded-md border px-3 py-2 text-sm font-bold ${className}`}>
+      {children}
+    </div>
   );
 }
 
