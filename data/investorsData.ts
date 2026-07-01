@@ -196,11 +196,11 @@ const enContent: InvestorsPageContent = {
         image: { src: '/board/alex-prieto.webp', alt: 'Alex Prieto' },
       },
       {
-        name: 'Jose M. Diaz',
+        name: 'José M. Díaz',
         role: 'Vice President',
         description:
           'Co-Founder with 20 years of experience in international toy sales management.',
-        image: { src: '/board/jose-diaz.webp', alt: 'Jose M. Diaz' },
+        image: { src: '/board/jose-diaz.webp', alt: 'José M. Díaz' },
       },
       {
         name: 'Isabel Prieto',
@@ -217,11 +217,11 @@ const enContent: InvestorsPageContent = {
         image: { src: '/board/rafael-prieto.webp', alt: 'Rafael Prieto' },
       },
       {
-        name: 'Jose A. Tuñón',
+        name: 'José A. Tuñón',
         role: 'Executive Director',
         description:
           'CFO with more than 25 years of experience in corporate restructuring and refinancing.',
-        image: { src: '/board/jose-tunon.webp', alt: 'Jose A. Tuñón' },
+        image: { src: '/board/jose-tunon.webp', alt: 'José A. Tuñón' },
       },
     ],
     pending: [
@@ -272,11 +272,11 @@ const enContent: InvestorsPageContent = {
       heading: 'We are here to help',
       subtitle:
         'For investor inquiries, financial information and shareholder communications.',
-      name: 'Name and Lastname *',
+      name: 'Name and Last name *',
       phone: 'Phone *',
       email: 'Email *',
       message: 'Message *',
-      consent: 'I have read and agree all our Terms and Conditions.',
+      consent: 'I have read and agree to our Terms and Conditions.',
       submit: 'Send it!',
     },
     info: {
@@ -298,9 +298,9 @@ const enContent: InvestorsPageContent = {
         title: 'Investor Centre',
         links: [
           { label: 'Growth Journey', href: '#growth-journey' },
-          { label: 'Business Model', href: '#eolo-at-a-glance' },
+          { label: 'Business Model', href: '#business-model' },
           { label: 'Eolo at a Glance', href: '#eolo-at-a-glance' },
-          { label: 'Boards of Directors', href: '#board-of-directors' },
+          { label: 'Board of Directors', href: '#board-of-directors' },
         ],
       },
       {
@@ -489,11 +489,11 @@ const esContent: InvestorsPageContent = {
         image: { src: '/board/alex-prieto.webp', alt: 'Alex Prieto' },
       },
       {
-        name: 'Jose M. Diaz',
+        name: 'José M. Díaz',
         role: 'Vicepresidente',
         description:
           'Co-Fundador con 20 años de experiencia en la gestión de ventas internacionales de juguetes.',
-        image: { src: '/board/jose-diaz.webp', alt: 'Jose M. Diaz' },
+        image: { src: '/board/jose-diaz.webp', alt: 'José M. Díaz' },
       },
       {
         name: 'Isabel Prieto',
@@ -510,11 +510,11 @@ const esContent: InvestorsPageContent = {
         image: { src: '/board/rafael-prieto.webp', alt: 'Rafael Prieto' },
       },
       {
-        name: 'Jose A. Tuñón',
+        name: 'José A. Tuñón',
         role: 'Director Ejecutivo',
         description:
           'CFO con más de 25 años de experiencia en reestructuración y refinanciamiento corporativo.',
-        image: { src: '/board/jose-tunon.webp', alt: 'Jose A. Tuñón' },
+        image: { src: '/board/jose-tunon.webp', alt: 'José A. Tuñón' },
       },
     ],
     pending: [
@@ -558,7 +558,7 @@ const esContent: InvestorsPageContent = {
         'Para consultas de inversores, información financiera y comunicaciones con accionistas.',
       name: 'Nombre y Apellido *',
       phone: 'Teléfono *',
-      email: 'Correo Electrónico *',
+      email: 'Correo electrónico *',
       message: 'Mensaje *',
       consent: 'He leído y acepto todos nuestros Términos y Condiciones.',
       submit: '¡Enviar!',
