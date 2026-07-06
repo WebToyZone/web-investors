@@ -1,4 +1,4 @@
-// src/data/investorsData.ts
+// src/data/investors.ts
 
 import type { HeroVideo } from '@/components/sections/HeroSection';
 import type { NavbarLogo } from '@/components/layout/Navbar';
@@ -38,8 +38,9 @@ const enContent: InvestorsPageContent = {
   },
 
   hero: {
-    src: '/video/hero.webm',
-    type: 'video/webm',
+    src: '/video/hero.mp4',
+    type: 'video/mp4',
+    poster: '/video/hero-poster.jpg',
     alt: 'A child flying a red kite on a hilltop at sunset.',
   },
 
@@ -88,8 +89,12 @@ const enContent: InvestorsPageContent = {
   businessModel: {
     accent: 'Unique',
     title: 'Business Model',
-    subtitle:
-      'A scalable operating platform designed to maximize flexibility, speed-to-market and capital efficiency.',
+    accentPosition: 'start',
+    // subtitle:
+    //   'A scalable operating platform designed to maximize flexibility, speed-to-market and capital efficiency.',
+    // accentSubtitle: 'Breaking the mold of the toy industry.',  
+    accentSubtitle: 'EOLO is breaking the mold of the toy industry',
+    subtitle: 'with a lighter, faster, and more flexible operating model, turning adaptability into a competitive advantage.',
     features: [
       {
         title: 'Asset-Light',
@@ -196,11 +201,11 @@ const enContent: InvestorsPageContent = {
         image: { src: '/board/alex-prieto.webp', alt: 'Alex Prieto' },
       },
       {
-        name: 'José M. Díaz',
+        name: 'Jose M. Diaz',
         role: 'Vice President',
         description:
           'Co-Founder with 20 years of experience in international toy sales management.',
-        image: { src: '/board/jose-diaz.webp', alt: 'José M. Díaz' },
+        image: { src: '/board/jose-diaz.webp', alt: 'Jose M. Diaz' },
       },
       {
         name: 'Isabel Prieto',
@@ -217,11 +222,11 @@ const enContent: InvestorsPageContent = {
         image: { src: '/board/rafael-prieto.webp', alt: 'Rafael Prieto' },
       },
       {
-        name: 'José A. Tuñón',
+        name: 'Jose A. Tuñón',
         role: 'Executive Director',
         description:
           'CFO with more than 25 years of experience in corporate restructuring and refinancing.',
-        image: { src: '/board/jose-tunon.webp', alt: 'José A. Tuñón' },
+        image: { src: '/board/jose-tunon.webp', alt: 'Jose A. Tuñón' },
       },
     ],
     pending: [
@@ -242,8 +247,9 @@ const enContent: InvestorsPageContent = {
   powerOfASmile: {
     heading: 'The Power of a Smile',
     video: {
-      src: '/video/video.webm',
-      type: 'video/webm',
+      src: '/video/video.mp4',
+      type: 'video/mp4',
+      poster: '/video/smile-poster.jpg',
       alt: 'A red gift box opening to reveal a glowing light.',
     },
   },
@@ -261,7 +267,20 @@ const enContent: InvestorsPageContent = {
       },
       {
         title: 'Investors Documents',
-        per_year: [{ year: '2026', documents: [] }],
+        per_year: [
+          {
+            year: '2026',
+            documents: [
+              {
+                title: 'BME Scaleup Market Admission Document',
+                date: '01/07/2026',
+                format: 'PDF',
+                size: '8.4 MB',
+                href: '/docs/bme-scaleup-market-admission.pdf',
+              },
+            ],
+          },
+        ],
       },
     ],
   },
@@ -272,11 +291,11 @@ const enContent: InvestorsPageContent = {
       heading: 'We are here to help',
       subtitle:
         'For investor inquiries, financial information and shareholder communications.',
-      name: 'Name and Last name *',
+      name: 'Name and Lastname *',
       phone: 'Phone *',
       email: 'Email *',
       message: 'Message *',
-      consent: 'I have read and agree to our Terms and Conditions.',
+      consent: 'I have read and agree all our Terms and Conditions.',
       submit: 'Send it!',
     },
     info: {
@@ -298,9 +317,9 @@ const enContent: InvestorsPageContent = {
         title: 'Investor Centre',
         links: [
           { label: 'Growth Journey', href: '#growth-journey' },
-          { label: 'Business Model', href: '#business-model' },
+          { label: 'Business Model', href: '#eolo-at-a-glance' },
           { label: 'Eolo at a Glance', href: '#eolo-at-a-glance' },
-          { label: 'Board of Directors', href: '#board-of-directors' },
+          { label: 'Boards of Directors', href: '#board-of-directors' },
         ],
       },
       {
@@ -382,8 +401,13 @@ const esContent: InvestorsPageContent = {
     ...enContent.businessModel,
     accent: 'Único',
     title: 'Modelo de negocio',
+    accentPosition: 'end',
+    // subtitle:
+    //   'Una plataforma operativa escalable diseñada para maximizar la flexibilidad, la velocidad de salida al mercado y la eficiencia de capital.',
+    //   accentSubtitle: 'Rompiendo el molde de la industria del juguete.',
     subtitle:
-      'Una plataforma operativa escalable diseñada para maximizar la flexibilidad, la velocidad de salida al mercado y la eficiencia de capital.',
+      'con un modelo más ligero, ágil y flexible, transformando la adaptación al mercado en una ventaja competitiva.',
+    accentSubtitle: 'EOLO rompe el molde de la industria del juguete',
     features: [
       {
         title: 'Asset-Light',
@@ -489,11 +513,11 @@ const esContent: InvestorsPageContent = {
         image: { src: '/board/alex-prieto.webp', alt: 'Alex Prieto' },
       },
       {
-        name: 'José M. Díaz',
+        name: 'Jose M. Diaz',
         role: 'Vicepresidente',
         description:
           'Co-Fundador con 20 años de experiencia en la gestión de ventas internacionales de juguetes.',
-        image: { src: '/board/jose-diaz.webp', alt: 'José M. Díaz' },
+        image: { src: '/board/jose-diaz.webp', alt: 'Jose M. Diaz' },
       },
       {
         name: 'Isabel Prieto',
@@ -510,11 +534,11 @@ const esContent: InvestorsPageContent = {
         image: { src: '/board/rafael-prieto.webp', alt: 'Rafael Prieto' },
       },
       {
-        name: 'José A. Tuñón',
+        name: 'Jose A. Tuñón',
         role: 'Director Ejecutivo',
         description:
           'CFO con más de 25 años de experiencia en reestructuración y refinanciamiento corporativo.',
-        image: { src: '/board/jose-tunon.webp', alt: 'José A. Tuñón' },
+        image: { src: '/board/jose-tunon.webp', alt: 'Jose A. Tuñón' },
       },
     ],
     pending: [
@@ -545,7 +569,20 @@ const esContent: InvestorsPageContent = {
       },
       {
         title: 'Documentos para Inversores',
-        per_year: [{ year: '2026', documents: [] }],
+        per_year: [
+          {
+            year: '2026',
+            documents: [
+              {
+                title: 'Documento de Admisión al Mercado BME Scaleup',
+                date: '01/07/2026',
+                format: 'PDF',
+                size: '8.4 MB',
+                href: '/docs/bme-scaleup-market-admission.pdf',
+              },
+            ],
+          },
+        ],
       },
     ],
   },
@@ -558,7 +595,7 @@ const esContent: InvestorsPageContent = {
         'Para consultas de inversores, información financiera y comunicaciones con accionistas.',
       name: 'Nombre y Apellido *',
       phone: 'Teléfono *',
-      email: 'Correo electrónico *',
+      email: 'Correo Electrónico *',
       message: 'Mensaje *',
       consent: 'He leído y acepto todos nuestros Términos y Condiciones.',
       submit: '¡Enviar!',

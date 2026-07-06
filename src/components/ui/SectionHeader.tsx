@@ -18,6 +18,8 @@ export interface SectionHeaderProps {
   subtitle?: string;
   /** Id applied to the heading, for `aria-labelledby` on the parent section. */
   titleId?: string;
+  /** Optional accent for the subtitle. */
+  accentSubtitle?: string;
 }
 
 export default function SectionHeader({
@@ -25,6 +27,7 @@ export default function SectionHeader({
   title,
   accentPosition = 'start',
   subtitle,
+  accentSubtitle,
   titleId,
 }: SectionHeaderProps) {
   const accentSpan = <span className='text-brand'>{accent}</span>;
@@ -51,8 +54,8 @@ export default function SectionHeader({
       <DecorativeLine marginTop={4} />
 
       {subtitle && (
-        <p className='mt-6 max-w-2xl text-xl text-balance leading-relaxed text-neutral-600'>
-          {subtitle}
+        <p className='mt-6 max-w-3xl text-xl text-balance leading-relaxed text-neutral-600'>
+          {accentSubtitle ? <span className='font-bold'>{accentSubtitle}</span> : null} {subtitle}
         </p>
       )}
     </div>

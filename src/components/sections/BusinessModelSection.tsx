@@ -3,7 +3,7 @@ import SectionHeader from "@/components/ui/SectionHeader";
 /**
  * Data shapes for the Business Model section.
  *
- * Fed statically from `data/investorsData.ts` for now; plain serialisable fields
+ * Fed statically from `data/investors.ts` for now; plain serialisable fields
  * keep it ready to come from a Prisma-backed CMS later.
  */
 export interface BusinessModelFeature {
@@ -18,8 +18,12 @@ export interface BusinessModelContent {
   accent: string;
   /** Remaining heading words, e.g. "Business Model". */
   title: string;
+  /** Where the accent sits relative to the title. Defaults to "start". */
+  accentPosition?: 'start' | 'end';
   /** Subtitle below the heading. */
   subtitle: string;
+  /** Optional subtitle accent. */
+  accentSubtitle?: string;
   /** Pillars shown as columns (designed for 4, but renders any count). */
   features: BusinessModelFeature[];
 }
@@ -34,7 +38,7 @@ export interface BusinessModelSectionProps {
  * — safe as a Server Component.
  */
 export default function BusinessModelSection({ content }: BusinessModelSectionProps) {
-  const { accent, title, subtitle, features } = content;
+  const { accent, title, subtitle, features, accentPosition = 'start', accentSubtitle } = content;
 
   return (
     <section
@@ -48,6 +52,8 @@ export default function BusinessModelSection({ content }: BusinessModelSectionPr
           title={title}
           subtitle={subtitle}
           titleId="business-model-title"
+          accentPosition={accentPosition}
+          accentSubtitle={accentSubtitle}
         />
 
         <ul className="mt-10 lg:mt-16 grid grid-cols-1 gap-y-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-y-0">
