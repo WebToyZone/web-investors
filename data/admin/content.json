@@ -300,31 +300,6 @@
     },
     "recipientEmail": "investors@eolo.com"
   },
-  "navigation": {
-    "links": [
-      {
-        "id": 1,
-        "group": "Investor Centre",
-        "label": "Growth Journey",
-        "href": "#growth-journey",
-        "locale": "en"
-      },
-      {
-        "id": 2,
-        "group": "Documents",
-        "label": "Investors Documents",
-        "href": "#documents",
-        "locale": "en"
-      },
-      {
-        "id": 3,
-        "group": "Centro de Inversores",
-        "label": "Trayectoria",
-        "href": "#growth-journey",
-        "locale": "es"
-      }
-    ]
-  },
   "assets": {
     "items": [
       {

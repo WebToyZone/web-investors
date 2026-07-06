@@ -3,11 +3,10 @@ import {
   FaEnvelope,
   FaFilePdf,
   FaImage,
-  FaLink,
   FaPeopleGroup,
   FaRocket,
 } from 'react-icons/fa6';
-import type { AdminSection, FooterLink, MediaAsset } from './types';
+import type { AdminSection, MediaAsset } from './types';
 
 export const adminSections: AdminSection[] = [
   {
@@ -46,42 +45,11 @@ export const adminSections: AdminSection[] = [
     icon: FaEnvelope,
   },
   {
-    id: 'navigation',
-    label: 'Footer y navegacion',
-    eyebrow: 'Enlaces globales',
-    description: 'Menu superior, footer, legales y redes sociales.',
-    icon: FaLink,
-  },
-  {
     id: 'assets',
     label: 'Hero / assets',
     eyebrow: 'Media library',
     description: 'Videos, imagenes, logos, decoraciones y documentos.',
     icon: FaImage,
-  },
-];
-
-export const footerLinks: FooterLink[] = [
-  {
-    id: 1,
-    group: 'Investor Centre',
-    label: 'Growth Journey',
-    href: '#growth-journey',
-    locale: 'en',
-  },
-  {
-    id: 2,
-    group: 'Documents',
-    label: 'Investors Documents',
-    href: '#documents',
-    locale: 'en',
-  },
-  {
-    id: 3,
-    group: 'Centro de Inversores',
-    label: 'Trayectoria',
-    href: '#growth-journey',
-    locale: 'es',
   },
 ];
 

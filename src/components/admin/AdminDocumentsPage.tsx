@@ -10,7 +10,6 @@ import ContactAdminSection from './sections/ContactAdminSection';
 import DocumentsAdminSection from './sections/DocumentsAdminSection';
 import GlanceAdminSection from './sections/GlanceAdminSection';
 import GrowthAdminSection from './sections/GrowthAdminSection';
-import NavigationAdminSection from './sections/NavigationAdminSection';
 import type { AdminContent, AdminSectionId } from './types';
 
 function renderAdminSection(
@@ -22,6 +21,7 @@ function renderAdminSection(
   ) => void,
   saveSection: <K extends AdminSectionId>(section: K) => void,
   savingSection: AdminSectionId | null,
+  createRequestId: number,
 ) {
   switch (section) {
     case 'documents':
@@ -31,6 +31,7 @@ function renderAdminSection(
           onChange={(value) => updateSection('documents', value)}
           onSave={() => saveSection('documents')}
           isSaving={savingSection === 'documents'}
+          createRequestId={createRequestId}
         />
       );
     case 'glance':
@@ -40,6 +41,7 @@ function renderAdminSection(
           onChange={(value) => updateSection('glance', value)}
           onSave={() => saveSection('glance')}
           isSaving={savingSection === 'glance'}
+          createRequestId={createRequestId}
         />
       );
     case 'board':
@@ -49,6 +51,7 @@ function renderAdminSection(
           onChange={(value) => updateSection('board', value)}
           onSave={() => saveSection('board')}
           isSaving={savingSection === 'board'}
+          createRequestId={createRequestId}
         />
       );
     case 'growth':
@@ -58,6 +61,7 @@ function renderAdminSection(
           onChange={(value) => updateSection('growth', value)}
           onSave={() => saveSection('growth')}
           isSaving={savingSection === 'growth'}
+          createRequestId={createRequestId}
         />
       );
     case 'contact':
@@ -67,15 +71,7 @@ function renderAdminSection(
           onChange={(value) => updateSection('contact', value)}
           onSave={() => saveSection('contact')}
           isSaving={savingSection === 'contact'}
-        />
-      );
-    case 'navigation':
-      return (
-        <NavigationAdminSection
-          data={content.navigation}
-          onChange={(value) => updateSection('navigation', value)}
-          onSave={() => saveSection('navigation')}
-          isSaving={savingSection === 'navigation'}
+          createRequestId={createRequestId}
         />
       );
     case 'assets':
@@ -85,6 +81,7 @@ function renderAdminSection(
           onChange={(value) => updateSection('assets', value)}
           onSave={() => saveSection('assets')}
           isSaving={savingSection === 'assets'}
+          createRequestId={createRequestId}
         />
       );
     default:
@@ -103,6 +100,7 @@ export default function AdminDocumentsPage({
   const [savingSection, setSavingSection] = useState<AdminSectionId | null>(
     null,
   );
+  const [createRequestId, setCreateRequestId] = useState(0);
   const [feedback, setFeedback] = useState('');
 
   function updateSection<K extends AdminSectionId>(
@@ -134,6 +132,7 @@ export default function AdminDocumentsPage({
     <AdminShell
       activeSection={activeSection}
       sections={adminSections}
+      onCreateContent={() => setCreateRequestId((current) => current + 1)}
       onSectionChange={setActiveSection}
     >
       {feedback ? (
@@ -147,6 +146,7 @@ export default function AdminDocumentsPage({
         updateSection,
         handleSaveSection,
         savingSection,
+        createRequestId,
       )}
     </AdminShell>
   );

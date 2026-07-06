@@ -1,16 +1,18 @@
-import { FaEye, FaPlus } from 'react-icons/fa6';
+import { FaPlus } from 'react-icons/fa6';
 import type { AdminSection, AdminSectionId } from './types';
-import { PrimaryButton, SecondaryButton } from './ui';
+import { PrimaryButton } from './ui';
 
 export default function AdminShell({
   activeSection,
   sections,
   children,
+  onCreateContent,
   onSectionChange,
 }: {
   activeSection: AdminSectionId;
   sections: AdminSection[];
   children: React.ReactNode;
+  onCreateContent: () => void;
   onSectionChange: (section: AdminSectionId) => void;
 }) {
   const currentSection =
@@ -87,8 +89,9 @@ export default function AdminShell({
               </div>
 
               <div className='flex flex-wrap items-center gap-2'>
-                <SecondaryButton icon={FaEye}>Vista previa</SecondaryButton>
-                <PrimaryButton icon={FaPlus}>Nuevo contenido</PrimaryButton>
+                <PrimaryButton icon={FaPlus} onClick={onCreateContent}>
+                  Nuevo contenido
+                </PrimaryButton>
               </div>
             </div>
           </header>

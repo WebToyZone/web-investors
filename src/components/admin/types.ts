@@ -9,7 +9,6 @@ export type AdminSectionId =
   | 'board'
   | 'growth'
   | 'contact'
-  | 'navigation'
   | 'assets';
 
 export type AdminSection = {
@@ -107,14 +106,6 @@ export type ContactInfo = {
   addressLine2: string;
 };
 
-export type FooterLink = {
-  id: number;
-  group: string;
-  label: string;
-  href: string;
-  locale: Locale;
-};
-
 export type MediaAsset = {
   id: number;
   name: string;
@@ -144,9 +135,6 @@ export type AdminContent = {
   contact: {
     info: ContactInfo;
     recipientEmail: string;
-  };
-  navigation: {
-    links: FooterLink[];
   };
   assets: {
     items: MediaAsset[];
