@@ -3,8 +3,7 @@ import { Locale } from '@/types/locale';
 import { emailClient } from './client';
 
 const contactEmailCopy = {
-  en: {
-    subject: 'New contact from EOLO Investors',
+  subject: 'New contact from EOLO Investors',
     title: 'New Investor Contact',
     intro:
       'A new contact request has been submitted through the EOLO Investors website.',
@@ -12,25 +11,10 @@ const contactEmailCopy = {
     email: 'Email',
     phone: 'Phone',
     message: 'Message',
-    consent: 'Consent',
-    consentValue: 'Accepted',
-  },
-  es: {
-    subject: 'Nuevo contacto desde EOLO Investors',
-    title: 'Nuevo contacto de inversores',
-    intro:
-      'Se ha recibido una nueva solicitud de contacto desde la web de EOLO Investors.',
-    name: 'Nombre',
-    email: 'Email',
-    phone: 'Teléfono',
-    message: 'Mensaje',
-    consent: 'Consentimiento',
-    consentValue: 'Aceptado',
-  },
 } as const;
 
 export async function sendContactEmail(data: ContactFormInput, locale: Locale) {
-  const t = contactEmailCopy[locale];
+  const t = contactEmailCopy;
 
   const language = locale === 'es' ? 'Spanish' : 'English';
 
@@ -75,32 +59,23 @@ export async function sendContactEmail(data: ContactFormInput, locale: Locale) {
               <td style="padding:10px;border:1px solid #ddd; white-space:pre-wrap;">${data.message}</td>
             </tr>
 
-            <tr>
-              <td style="padding:10px;border:1px solid #ddd;"><strong>${t.consent}</strong></td>
-              <td style="padding:10px;border:1px solid #ddd;">${t.consentValue}</td>
-            </tr>
           </tbody>
         </table>
         <hr style="margin:32px 0;border:none;border-top:1px solid #e5e5e5;" />
 
         <h3 style="color:#666;font-size:14px;margin-bottom:12px;">
-          Technical Information
+          Información sobre el contacto:
         </h3>
 
         <table style="width:100%;border-collapse:collapse;">
           <tbody>
             <tr>
-              <td style="padding:8px 0;font-weight:bold;">Submitted from</td>
+              <td style="padding:8px 0;font-weight:bold;">Enviado desde</td>
               <td>EOLO Investors Website</td>
             </tr>
 
             <tr>
-              <td style="padding:8px 0;font-weight:bold;">Language</td>
-              <td>${language}</td>
-            </tr>
-
-            <tr>
-              <td style="padding:8px 0;font-weight:bold;">Received</td>
+              <td style="padding:8px 0;font-weight:bold;">Recibido</td>
               <td>${receivedAt} UTC</td>
             </tr>
           </tbody>

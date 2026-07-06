@@ -89,8 +89,12 @@ const enContent: InvestorsPageContent = {
   businessModel: {
     accent: 'Unique',
     title: 'Business Model',
-    subtitle:
-      'A scalable operating platform designed to maximize flexibility, speed-to-market and capital efficiency.',
+    accentPosition: 'start',
+    // subtitle:
+    //   'A scalable operating platform designed to maximize flexibility, speed-to-market and capital efficiency.',
+    // accentSubtitle: 'Breaking the mold of the toy industry.',  
+    accentSubtitle: 'EOLO is breaking the mold of the toy industry',
+    subtitle: 'with a lighter, faster, and more flexible operating model, turning adaptability into a competitive advantage.',
     features: [
       {
         title: 'Asset-Light',
@@ -397,8 +401,13 @@ const esContent: InvestorsPageContent = {
     ...enContent.businessModel,
     accent: 'Único',
     title: 'Modelo de negocio',
+    accentPosition: 'end',
+    // subtitle:
+    //   'Una plataforma operativa escalable diseñada para maximizar la flexibilidad, la velocidad de salida al mercado y la eficiencia de capital.',
+    //   accentSubtitle: 'Rompiendo el molde de la industria del juguete.',
     subtitle:
-      'Una plataforma operativa escalable diseñada para maximizar la flexibilidad, la velocidad de salida al mercado y la eficiencia de capital.',
+      'con un modelo más ligero, ágil y flexible, transformando la adaptación al mercado en una ventaja competitiva.',
+    accentSubtitle: 'EOLO rompe el molde de la industria del juguete',
     features: [
       {
         title: 'Asset-Light',
