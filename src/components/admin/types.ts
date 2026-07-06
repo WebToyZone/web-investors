@@ -49,6 +49,18 @@ export type KpiStat = {
   translations: Record<Locale, KpiTranslation>;
 };
 
+export type PlatformLocationTranslation = {
+  name: string;
+  description: string;
+};
+
+export type PlatformLocation = {
+  id: string;
+  order: number;
+  icon: string;
+  translations: Record<Locale, PlatformLocationTranslation>;
+};
+
 export type BoardMember = {
   id: number;
   name: string;
@@ -100,6 +112,7 @@ export type AdminContent = {
   };
   glance: {
     kpis: KpiStat[];
+    locations: PlatformLocation[];
   };
   board: {
     members: BoardMember[];

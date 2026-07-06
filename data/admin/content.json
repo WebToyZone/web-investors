@@ -128,6 +128,53 @@
           }
         }
       }
+    ],
+    "locations": [
+      {
+        "id": "1",
+        "order": 1,
+        "icon": "/icons/spain.webp",
+        "translations": {
+          "en": {
+            "name": "Spain",
+            "description": "Corporate, Product Development, Finance & Creativity."
+          },
+          "es": {
+            "name": "Espana",
+            "description": "Corporativo, Desarrollo de Producto, Finanzas y Creatividad."
+          }
+        }
+      },
+      {
+        "id": "2",
+        "order": 2,
+        "icon": "/icons/china.webp",
+        "translations": {
+          "en": {
+            "name": "Hong Kong / China",
+            "description": "Sourcing, Manufacturing, Supplier Management & Quality Assurance."
+          },
+          "es": {
+            "name": "Hong Kong / China",
+            "description": "Sourcing, Manufactura, Gestion de Proveedores y QA."
+          }
+        }
+      },
+      {
+        "id": "3",
+        "order": 3,
+        "icon": "/icons/usa.webp",
+        "translations": {
+          "en": {
+            "name": "United States",
+            "description": "Commercial Scale, Retail & Expansion."
+          },
+          "es": {
+            "name": "Estados Unidos",
+            "description": "Escala Comercial, Retail y Expansion."
+          }
+        }
+      }
     ]
   },
   "board": {

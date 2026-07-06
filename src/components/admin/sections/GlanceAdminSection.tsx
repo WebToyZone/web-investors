@@ -8,16 +8,22 @@ import {
   FaCheck,
   FaImage,
   FaPen,
+  FaPlus,
   FaTrashCan,
   FaXmark,
 } from 'react-icons/fa6';
-import type { AdminContent, KpiStat } from '@/components/admin/types';
+import type {
+  AdminContent,
+  KpiStat,
+  PlatformLocation,
+} from '@/components/admin/types';
 import {
   FormNotice,
   IconButton,
   MetricCard,
   Panel,
   PrimaryButton,
+  SecondaryButton,
   TextField,
 } from '@/components/admin/ui';
 
@@ -27,7 +33,7 @@ type KpiDraft = {
   translations: KpiStat['translations'];
 };
 
-function createDefaultDraft(): KpiDraft {
+function createDefaultKpiDraft(): KpiDraft {
   return {
     icon: '',
     value: '',
@@ -36,6 +42,68 @@ function createDefaultDraft(): KpiDraft {
       es: { label: '' },
     },
   };
+}
+
+type LocationDraft = {
+  icon: string;
+  translations: PlatformLocation['translations'];
+};
+
+function createDefaultLocationDraft(): LocationDraft {
+  return {
+    icon: '',
+    translations: {
+      en: { name: '', description: '' },
+      es: { name: '', description: '' },
+    },
+  };
+}
+
+function IconUploadField({
+  icon,
+  onUpload,
+  onClear,
+}: {
+  icon: string;
+  onUpload: (file: File | undefined) => void;
+  onClear: () => void;
+}) {
+  return (
+    <div className='space-y-3'>
+      <span className='block text-xs font-bold uppercase text-neutral-500'>
+        Icono
+      </span>
+      {icon ? (
+        <div className='flex items-center justify-between gap-3 rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2'>
+          <div className='flex min-w-0 items-center gap-3'>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={icon}
+              alt=''
+              className='h-10 w-10 shrink-0 rounded-md border border-neutral-200 bg-white object-contain'
+            />
+            <span className='truncate text-xs text-neutral-600'>{icon}</span>
+          </div>
+          <IconButton label='Quitar icono' onClick={onClear}>
+            <FaXmark className='h-4 w-4' />
+          </IconButton>
+        </div>
+      ) : (
+        <div className='flex h-28 flex-col items-center justify-center rounded-md border border-dashed border-neutral-300 bg-neutral-50 px-4 text-center'>
+          <FaArrowUpFromBracket className='h-6 w-6 text-brand' />
+          <p className='mt-2 text-xs font-bold text-neutral-950'>
+            Sube una imagen
+          </p>
+          <input
+            type='file'
+            accept='image/*'
+            onChange={(event) => onUpload(event.target.files?.[0])}
+            className='mt-3 max-w-full text-xs text-neutral-600 file:mr-3 file:rounded-md file:border-0 file:bg-brand file:px-3 file:py-1.5 file:text-xs file:font-bold file:text-white'
+          />
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function GlanceAdminSection({
@@ -51,22 +119,38 @@ export default function GlanceAdminSection({
   isSaving: boolean;
   createRequestId: number;
 }) {
-  const { kpis } = data;
+  const { kpis, locations } = data;
 
   const [formMode, setFormMode] = useState<'new' | 'edit'>('new');
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [draft, setDraft] = useState<KpiDraft>(() => createDefaultDraft());
+  const [draft, setDraft] = useState<KpiDraft>(() => createDefaultKpiDraft());
   const [validationError, setValidationError] = useState('');
   const pendingSaveRef = useRef(false);
+
+  const [locationFormMode, setLocationFormMode] = useState<'new' | 'edit'>(
+    'new',
+  );
+  const [editingLocationId, setEditingLocationId] = useState<string | null>(
+    null,
+  );
+  const [locationDraft, setLocationDraft] = useState<LocationDraft>(() =>
+    createDefaultLocationDraft(),
+  );
+  const [locationValidationError, setLocationValidationError] = useState('');
+  const pendingLocationSaveRef = useRef(false);
 
   const orderedKpis = useMemo(() => {
     return [...kpis].sort((first, second) => first.order - second.order);
   }, [kpis]);
 
+  const orderedLocations = useMemo(() => {
+    return [...locations].sort((first, second) => first.order - second.order);
+  }, [locations]);
+
   function startNewKpi() {
     setFormMode('new');
     setEditingId(null);
-    setDraft(createDefaultDraft());
+    setDraft(createDefaultKpiDraft());
     setValidationError('');
   }
 
@@ -115,6 +199,58 @@ export default function GlanceAdminSection({
     setDraft((current) => ({ ...current, icon: '' }));
   }
 
+  function startNewLocation() {
+    setLocationFormMode('new');
+    setEditingLocationId(null);
+    setLocationDraft(createDefaultLocationDraft());
+    setLocationValidationError('');
+  }
+
+  function startEditLocation(location: PlatformLocation) {
+    setLocationFormMode('edit');
+    setEditingLocationId(location.id);
+    setLocationDraft({
+      icon: location.icon,
+      translations: {
+        en: { ...location.translations.en },
+        es: { ...location.translations.es },
+      },
+    });
+    setLocationValidationError('');
+  }
+
+  function updateLocationTranslation(
+    locale: 'en' | 'es',
+    patch: Partial<PlatformLocation['translations']['en']>,
+  ) {
+    setLocationValidationError('');
+    setLocationDraft((current) => ({
+      ...current,
+      translations: {
+        ...current.translations,
+        [locale]: { ...current.translations[locale], ...patch },
+      },
+    }));
+  }
+
+  function handleLocationIconChange(file: File | undefined) {
+    if (!file) {
+      return;
+    }
+
+    // Local-only for now: stores the file name as the public path. The
+    // actual upload to AWS storage will replace this once wired up.
+    setLocationValidationError('');
+    setLocationDraft((current) => ({
+      ...current,
+      icon: `/icons/${file.name}`,
+    }));
+  }
+
+  function clearLocationIcon() {
+    setLocationDraft((current) => ({ ...current, icon: '' }));
+  }
+
   const lastCreateRequestId = useRef(createRequestId);
 
   useEffect(() => {
@@ -135,9 +271,18 @@ export default function GlanceAdminSection({
     onSave();
   }, [kpis, onSave]);
 
+  useEffect(() => {
+    if (!pendingLocationSaveRef.current) {
+      return;
+    }
+
+    pendingLocationSaveRef.current = false;
+    onSave();
+  }, [locations, onSave]);
+
   function deleteKpi(id: string) {
     const nextKpis = kpis.filter((kpi) => kpi.id !== id);
-    onChange({ kpis: nextKpis });
+    onChange({ ...data, kpis: nextKpis });
 
     if (editingId === id) {
       startNewKpi();
@@ -167,7 +312,7 @@ export default function GlanceAdminSection({
       order: index + 1,
     }));
 
-    onChange({ kpis: nextKpis });
+    onChange({ ...data, kpis: nextKpis });
     setValidationError('');
   }
 
@@ -201,8 +346,86 @@ export default function GlanceAdminSection({
           ];
 
     pendingSaveRef.current = true;
-    onChange({ kpis: nextKpis });
+    onChange({ ...data, kpis: nextKpis });
     startNewKpi();
+  }
+
+  function deleteLocation(id: string) {
+    const nextLocations = locations.filter((location) => location.id !== id);
+    onChange({ ...data, locations: nextLocations });
+
+    if (editingLocationId === id) {
+      startNewLocation();
+    }
+  }
+
+  function moveLocation(id: string, direction: -1 | 1) {
+    const currentIndex = orderedLocations.findIndex(
+      (location) => location.id === id,
+    );
+    const nextIndex = currentIndex + direction;
+
+    if (
+      currentIndex < 0 ||
+      nextIndex < 0 ||
+      nextIndex >= orderedLocations.length
+    ) {
+      return;
+    }
+
+    const reordered = [...orderedLocations];
+    [reordered[currentIndex], reordered[nextIndex]] = [
+      reordered[nextIndex],
+      reordered[currentIndex],
+    ];
+
+    const nextLocations = reordered.map((location, index) => ({
+      ...location,
+      order: index + 1,
+    }));
+
+    onChange({ ...data, locations: nextLocations });
+    setLocationValidationError('');
+  }
+
+  function handleSaveLocation() {
+    if (
+      !locationDraft.icon.trim() ||
+      !locationDraft.translations.en.name.trim() ||
+      !locationDraft.translations.en.description.trim() ||
+      !locationDraft.translations.es.name.trim() ||
+      !locationDraft.translations.es.description.trim()
+    ) {
+      setLocationValidationError(
+        'Sube un icono y completa nombre y descripcion en ambos idiomas antes de guardar.',
+      );
+      return;
+    }
+
+    const nextLocations =
+      locationFormMode === 'edit' && editingLocationId !== null
+        ? locations.map((location) =>
+            location.id === editingLocationId
+              ? { ...location, ...locationDraft }
+              : location,
+          )
+        : [
+            ...locations,
+            {
+              id: String(
+                Math.max(
+                  0,
+                  ...locations.map((location) => Number(location.id) || 0),
+                ) + 1,
+              ),
+              order: locations.length + 1,
+              ...locationDraft,
+            },
+          ];
+
+    pendingLocationSaveRef.current = true;
+    onChange({ ...data, locations: nextLocations });
+    startNewLocation();
   }
 
   return (
@@ -282,89 +505,203 @@ export default function GlanceAdminSection({
             ))}
           </div>
         </Panel>
+
+        <Panel title='Global Operating Platform' eyebrow='Ubicaciones operativas'>
+          <div className='flex items-center justify-between gap-3 border-b border-neutral-200 pb-4'>
+            <p className='text-sm text-neutral-600'>
+              Paises/ubicaciones mostrados debajo de las KPIs.
+            </p>
+            <SecondaryButton icon={FaPlus} onClick={startNewLocation}>
+              Nueva ubicacion
+            </SecondaryButton>
+          </div>
+
+          <div className='mt-4 grid gap-3 md:grid-cols-3'>
+            {orderedLocations.map((location, index) => (
+              <div
+                key={location.id}
+                className={`flex flex-col gap-3 rounded-md border p-4 ${
+                  locationFormMode === 'edit' &&
+                  editingLocationId === location.id
+                    ? 'border-brand bg-red-50/40'
+                    : 'border-neutral-200'
+                }`}
+              >
+                <div className='flex items-center gap-3'>
+                  {location.icon ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={location.icon}
+                      alt=''
+                      className='h-10 w-10 shrink-0 rounded-full border border-neutral-200 object-contain'
+                    />
+                  ) : (
+                    <span className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-dashed border-neutral-300 text-neutral-400'>
+                      <FaImage className='h-4 w-4' />
+                    </span>
+                  )}
+                  <div className='min-w-0'>
+                    <p className='truncate font-bold text-brand'>
+                      {location.translations.en.name}
+                    </p>
+                    <p className='truncate text-xs text-neutral-500'>
+                      ES: {location.translations.es.name}
+                    </p>
+                  </div>
+                </div>
+                <p className='text-xs text-neutral-600'>
+                  {location.translations.en.description}
+                </p>
+                <div className='mt-auto flex justify-end gap-2'>
+                  <IconButton
+                    label='Editar'
+                    onClick={() => startEditLocation(location)}
+                  >
+                    <FaPen className='h-4 w-4' />
+                  </IconButton>
+                  <IconButton
+                    label='Subir'
+                    onClick={() => moveLocation(location.id, -1)}
+                    disabled={index <= 0}
+                  >
+                    <FaArrowUp className='h-4 w-4' />
+                  </IconButton>
+                  <IconButton
+                    label='Bajar'
+                    onClick={() => moveLocation(location.id, 1)}
+                    disabled={index === orderedLocations.length - 1}
+                  >
+                    <FaArrowDown className='h-4 w-4' />
+                  </IconButton>
+                  <IconButton
+                    label='Eliminar'
+                    onClick={() => deleteLocation(location.id)}
+                    disabled={locations.length === 1}
+                  >
+                    <FaTrashCan className='h-4 w-4' />
+                  </IconButton>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Panel>
       </div>
 
-      <Panel title='Editor KPI' eyebrow='Campos DB'>
-        <div className='space-y-4'>
-          {validationError ? (
-            <FormNotice tone='danger'>{validationError}</FormNotice>
-          ) : null}
-          <h3 className='text-xl font-black text-neutral-950'>
-            {formMode === 'edit' ? 'Editar KPI' : 'Nuevo KPI'}
-          </h3>
+      <div className='space-y-5'>
+        <Panel title='Editor KPI' eyebrow='Campos DB'>
+          <div className='space-y-4'>
+            {validationError ? (
+              <FormNotice tone='danger'>{validationError}</FormNotice>
+            ) : null}
+            <h3 className='text-xl font-black text-neutral-950'>
+              {formMode === 'edit' ? 'Editar KPI' : 'Nuevo KPI'}
+            </h3>
 
-          <div className='space-y-3'>
-            <span className='block text-xs font-bold uppercase text-neutral-500'>
-              Icono
-            </span>
-            {draft.icon ? (
-              <div className='flex items-center justify-between gap-3 rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2'>
-                <div className='flex min-w-0 items-center gap-3'>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={draft.icon}
-                    alt=''
-                    className='h-10 w-10 shrink-0 rounded-md border border-neutral-200 bg-white object-contain'
-                  />
-                  <span className='truncate text-xs text-neutral-600'>
-                    {draft.icon}
-                  </span>
-                </div>
-                <IconButton label='Quitar icono' onClick={clearIcon}>
-                  <FaXmark className='h-4 w-4' />
-                </IconButton>
-              </div>
-            ) : (
-              <div className='flex h-28 flex-col items-center justify-center rounded-md border border-dashed border-neutral-300 bg-neutral-50 px-4 text-center'>
-                <FaArrowUpFromBracket className='h-6 w-6 text-brand' />
-                <p className='mt-2 text-xs font-bold text-neutral-950'>
-                  Sube una imagen
-                </p>
-                <input
-                  type='file'
-                  accept='image/*'
-                  onChange={(event) =>
-                    handleIconChange(event.target.files?.[0])
-                  }
-                  className='mt-3 max-w-full text-xs text-neutral-600 file:mr-3 file:rounded-md file:border-0 file:bg-brand file:px-3 file:py-1.5 file:text-xs file:font-bold file:text-white'
-                />
-              </div>
-            )}
-          </div>
-
-          <TextField
-            label='Cifra (comun a ambos idiomas)'
-            value={draft.value}
-            onChange={(value) => updateDraft({ value })}
-          />
-
-          <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
-            <span className='text-xs font-bold uppercase text-neutral-500'>
-              Ingles
-            </span>
-            <TextField
-              label='Etiqueta'
-              value={draft.translations.en.label}
-              onChange={(label) => updateLabel('en', label)}
+            <IconUploadField
+              icon={draft.icon}
+              onUpload={handleIconChange}
+              onClear={clearIcon}
             />
-          </div>
 
-          <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
-            <span className='text-xs font-bold uppercase text-neutral-500'>
-              Espanol
-            </span>
             <TextField
-              label='Etiqueta'
-              value={draft.translations.es.label}
-              onChange={(label) => updateLabel('es', label)}
+              label='Cifra (comun a ambos idiomas)'
+              value={draft.value}
+              onChange={(value) => updateDraft({ value })}
             />
-          </div>
 
-          <PrimaryButton icon={FaCheck} onClick={handleSave} disabled={isSaving}>
-            {isSaving ? 'Guardando...' : 'Guardar JSON'}
-          </PrimaryButton>
-        </div>
-      </Panel>
+            <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
+              <span className='text-xs font-bold uppercase text-neutral-500'>
+                Ingles
+              </span>
+              <TextField
+                label='Etiqueta'
+                value={draft.translations.en.label}
+                onChange={(label) => updateLabel('en', label)}
+              />
+            </div>
+
+            <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
+              <span className='text-xs font-bold uppercase text-neutral-500'>
+                Espanol
+              </span>
+              <TextField
+                label='Etiqueta'
+                value={draft.translations.es.label}
+                onChange={(label) => updateLabel('es', label)}
+              />
+            </div>
+
+            <PrimaryButton icon={FaCheck} onClick={handleSave} disabled={isSaving}>
+              {isSaving ? 'Guardando...' : 'Guardar JSON'}
+            </PrimaryButton>
+          </div>
+        </Panel>
+
+        <Panel title='Editor ubicacion' eyebrow='Global Operating Platform'>
+          <div className='space-y-4'>
+            {locationValidationError ? (
+              <FormNotice tone='danger'>{locationValidationError}</FormNotice>
+            ) : null}
+            <h3 className='text-xl font-black text-neutral-950'>
+              {locationFormMode === 'edit'
+                ? 'Editar ubicacion'
+                : 'Nueva ubicacion'}
+            </h3>
+
+            <IconUploadField
+              icon={locationDraft.icon}
+              onUpload={handleLocationIconChange}
+              onClear={clearLocationIcon}
+            />
+
+            <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
+              <span className='text-xs font-bold uppercase text-neutral-500'>
+                Ingles
+              </span>
+              <TextField
+                label='Nombre'
+                value={locationDraft.translations.en.name}
+                onChange={(name) => updateLocationTranslation('en', { name })}
+              />
+              <TextField
+                label='Descripcion'
+                multiline
+                value={locationDraft.translations.en.description}
+                onChange={(description) =>
+                  updateLocationTranslation('en', { description })
+                }
+              />
+            </div>
+
+            <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
+              <span className='text-xs font-bold uppercase text-neutral-500'>
+                Espanol
+              </span>
+              <TextField
+                label='Nombre'
+                value={locationDraft.translations.es.name}
+                onChange={(name) => updateLocationTranslation('es', { name })}
+              />
+              <TextField
+                label='Descripcion'
+                multiline
+                value={locationDraft.translations.es.description}
+                onChange={(description) =>
+                  updateLocationTranslation('es', { description })
+                }
+              />
+            </div>
+
+            <PrimaryButton
+              icon={FaCheck}
+              onClick={handleSaveLocation}
+              disabled={isSaving}
+            >
+              {isSaving ? 'Guardando...' : 'Guardar JSON'}
+            </PrimaryButton>
+          </div>
+        </Panel>
+      </div>
     </div>
   );
 }
