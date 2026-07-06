@@ -1,7 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { FaArrowUp, FaCheck, FaPlus, FaTrashCan } from 'react-icons/fa6';
+import { useEffect, useRef, useState } from 'react';
+import {
+  FaArrowDown,
+  FaArrowUp,
+  FaCheck,
+  FaPen,
+  FaTrashCan,
+} from 'react-icons/fa6';
 import type {
   AdminContent,
   GrowthMilestone,
@@ -12,75 +18,123 @@ import {
   IconButton,
   Panel,
   PrimaryButton,
-  SecondaryButton,
-  SelectField,
-  StatusBadge,
   TextField,
 } from '@/components/admin/ui';
+
+type MilestoneDraft = {
+  translations: GrowthMilestone['translations'];
+};
+
+function createDefaultDraft(): MilestoneDraft {
+  return {
+    translations: {
+      en: { title: '', description: '' },
+      es: { title: '', description: '' },
+    },
+  };
+}
 
 export default function GrowthAdminSection({
   data,
   onChange,
   onSave,
   isSaving,
+  createRequestId,
 }: {
   data: AdminContent['growth'];
   onChange: (value: AdminContent['growth']) => void;
   onSave: () => void;
   isSaving: boolean;
+  createRequestId: number;
 }) {
   const { revenue, milestones } = data;
-  const [selectedMilestoneId, setSelectedMilestoneId] = useState(
-    milestones[0]?.id ?? 0,
+
+  const [formMode, setFormMode] = useState<'new' | 'edit'>('new');
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [draft, setDraft] = useState<MilestoneDraft>(() =>
+    createDefaultDraft(),
   );
   const [validationError, setValidationError] = useState('');
-  const selectedMilestone =
-    milestones.find((milestone) => milestone.id === selectedMilestoneId) ??
-    milestones[0];
+  const pendingSaveRef = useRef(false);
 
-  function updateRevenue(year: string, patch: Partial<GrowthRevenue>) {
+  function updateRevenue(index: number, patch: Partial<GrowthRevenue>) {
     setValidationError('');
     onChange({
       ...data,
-      revenue: revenue.map((item) =>
-        item.year === year ? { ...item, ...patch } : item,
+      revenue: revenue.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, ...patch } : item,
       ),
     });
   }
 
-  function updateMilestone(id: number, patch: Partial<GrowthMilestone>) {
+  function startNewMilestone() {
+    setFormMode('new');
+    setEditingId(null);
+    setDraft(createDefaultDraft());
     setValidationError('');
-    onChange({
-      ...data,
-      milestones: milestones.map((milestone) =>
-        milestone.id === id ? { ...milestone, ...patch } : milestone,
-      ),
+  }
+
+  function startEditMilestone(milestone: GrowthMilestone) {
+    setFormMode('edit');
+    setEditingId(milestone.id);
+    setDraft({
+      translations: {
+        en: { ...milestone.translations.en },
+        es: { ...milestone.translations.es },
+      },
     });
-  }
-
-  function addMilestone() {
-    const nextId = Math.max(0, ...milestones.map((milestone) => milestone.id)) + 1;
-    const nextMilestone: GrowthMilestone = {
-      id: nextId,
-      title: 'Nuevo milestone',
-      locale: 'en',
-      status: 'draft',
-    };
-
-    setSelectedMilestoneId(nextId);
-    onChange({ ...data, milestones: [...milestones, nextMilestone] });
     setValidationError('');
   }
+
+  function updateTranslation(
+    locale: 'en' | 'es',
+    patch: Partial<GrowthMilestone['translations']['en']>,
+  ) {
+    setValidationError('');
+    setDraft((current) => ({
+      ...current,
+      translations: {
+        ...current.translations,
+        [locale]: { ...current.translations[locale], ...patch },
+      },
+    }));
+  }
+
+  const lastCreateRequestId = useRef(createRequestId);
+
+  useEffect(() => {
+    if (createRequestId === lastCreateRequestId.current) {
+      return;
+    }
+
+    lastCreateRequestId.current = createRequestId;
+    startNewMilestone();
+  }, [createRequestId]);
+
+  useEffect(() => {
+    if (!pendingSaveRef.current) {
+      return;
+    }
+
+    pendingSaveRef.current = false;
+    onSave();
+  }, [milestones, onSave]);
 
   function deleteMilestone(id: number) {
-    const nextMilestones = milestones.filter((milestone) => milestone.id !== id);
-    setSelectedMilestoneId(nextMilestones[0]?.id ?? 0);
+    const nextMilestones = milestones.filter(
+      (milestone) => milestone.id !== id,
+    );
     onChange({ ...data, milestones: nextMilestones });
-    setValidationError('');
+
+    if (editingId === id) {
+      startNewMilestone();
+    }
   }
 
   function moveMilestone(id: number, direction: -1 | 1) {
-    const currentIndex = milestones.findIndex((milestone) => milestone.id === id);
+    const currentIndex = milestones.findIndex(
+      (milestone) => milestone.id === id,
+    );
     const nextIndex = currentIndex + direction;
 
     if (currentIndex < 0 || nextIndex < 0 || nextIndex >= milestones.length) {
@@ -91,31 +145,19 @@ export default function GrowthAdminSection({
     const currentMilestone = nextMilestones[currentIndex];
     nextMilestones[currentIndex] = nextMilestones[nextIndex];
     nextMilestones[nextIndex] = currentMilestone;
+
     onChange({ ...data, milestones: nextMilestones });
+    setValidationError('');
   }
 
-  function handleSave() {
+  function handleSaveRevenue() {
     const invalidRevenue = revenue.find(
-      (item) => !item.year.trim() || !item.value.trim() || !item.label.trim(),
+      (item) =>
+        !item.year.trim() || !item.currency.trim() || !item.value.trim(),
     );
 
     if (invalidRevenue) {
-      setValidationError('Completa ano, valor y label en ingresos.');
-      return;
-    }
-
-    if (!milestones.length) {
-      setValidationError('Debe existir al menos un milestone.');
-      return;
-    }
-
-    const invalidMilestone = milestones.find(
-      (milestone) => !milestone.title.trim(),
-    );
-
-    if (invalidMilestone) {
-      setSelectedMilestoneId(invalidMilestone.id);
-      setValidationError('Completa el titulo del milestone antes de guardar.');
+      setValidationError('Completa ano, moneda y valor en ingresos.');
       return;
     }
 
@@ -123,67 +165,127 @@ export default function GrowthAdminSection({
     onSave();
   }
 
+  function handleSaveMilestone() {
+    if (
+      !draft.translations.en.title.trim() ||
+      !draft.translations.en.description.trim() ||
+      !draft.translations.es.title.trim() ||
+      !draft.translations.es.description.trim()
+    ) {
+      setValidationError(
+        'Completa titulo y descripcion en ambos idiomas antes de guardar.',
+      );
+      return;
+    }
+
+    const nextMilestones =
+      formMode === 'edit' && editingId !== null
+        ? milestones.map((milestone) =>
+            milestone.id === editingId
+              ? { ...milestone, ...draft }
+              : milestone,
+          )
+        : [
+            ...milestones,
+            {
+              id:
+                Math.max(0, ...milestones.map((milestone) => milestone.id)) +
+                1,
+              ...draft,
+            },
+          ];
+
+    pendingSaveRef.current = true;
+    onChange({ ...data, milestones: nextMilestones });
+    startNewMilestone();
+  }
+
   return (
     <div className='grid gap-5 xl:grid-cols-[1fr_360px]'>
       <div className='space-y-5'>
         <Panel title='Ingresos consolidados' eyebrow='Grafico'>
           <div className='grid gap-3 md:grid-cols-3'>
-            {revenue.map((item) => (
+            {revenue.map((item, index) => (
               <div
-                key={item.year}
+                key={index}
                 className='rounded-md border border-neutral-200 p-4'
               >
-                <p className='text-sm font-bold text-neutral-500'>
-                  {item.year}
-                </p>
                 <p className='mt-2 text-2xl font-black text-brand'>
-                  {item.label}
+                  {item.currency}
+                  {item.value}
                 </p>
                 <TextField
-                  label='Valor numerico'
-                  value={item.value}
-                  onChange={(value) => updateRevenue(item.year, { value })}
+                  label='Ano'
+                  value={item.year}
+                  onChange={(year) => updateRevenue(index, { year })}
                 />
-                <TextField
-                  label='Label visible'
-                  value={item.label}
-                  onChange={(label) => updateRevenue(item.year, { label })}
-                />
+                <div className='grid grid-cols-[80px_1fr] gap-2'>
+                  <TextField
+                    label='Moneda'
+                    value={item.currency}
+                    onChange={(currency) => updateRevenue(index, { currency })}
+                  />
+                  <TextField
+                    label='Valor numerico'
+                    value={item.value}
+                    onChange={(value) => updateRevenue(index, { value })}
+                  />
+                </div>
               </div>
             ))}
           </div>
+          <PrimaryButton
+            icon={FaCheck}
+            onClick={handleSaveRevenue}
+            disabled={isSaving}
+          >
+            {isSaving ? 'Guardando...' : 'Guardar JSON'}
+          </PrimaryButton>
         </Panel>
 
         <Panel title='Milestones' eyebrow='Timeline'>
           <div className='space-y-3'>
-            {milestones.map((milestone) => (
+            {milestones.map((milestone, index) => (
               <div
                 key={milestone.id}
                 className={`flex items-center justify-between gap-4 rounded-md border p-4 ${
-                  selectedMilestone?.id === milestone.id
+                  formMode === 'edit' && editingId === milestone.id
                     ? 'border-brand bg-red-50/40'
                     : 'border-neutral-200'
                 }`}
               >
                 <button
                   type='button'
-                  onClick={() => setSelectedMilestoneId(milestone.id)}
+                  onClick={() => startEditMilestone(milestone)}
                   className='min-w-0 text-left'
                 >
                   <p className='font-black text-neutral-950'>
-                    {milestone.title}
+                    {milestone.translations.en.title}
                   </p>
                   <p className='text-xs text-neutral-500'>
-                    {milestone.locale.toUpperCase()}
+                    ES: {milestone.translations.es.title}
                   </p>
                 </button>
-                <div className='flex items-center gap-3'>
-                  <StatusBadge status={milestone.status} />
+                <div className='flex items-center gap-2'>
+                  <IconButton
+                    label='Editar'
+                    onClick={() => startEditMilestone(milestone)}
+                  >
+                    <FaPen className='h-4 w-4' />
+                  </IconButton>
                   <IconButton
                     label='Subir'
                     onClick={() => moveMilestone(milestone.id, -1)}
+                    disabled={index <= 0}
                   >
                     <FaArrowUp className='h-4 w-4' />
+                  </IconButton>
+                  <IconButton
+                    label='Bajar'
+                    onClick={() => moveMilestone(milestone.id, 1)}
+                    disabled={index === milestones.length - 1}
+                  >
+                    <FaArrowDown className='h-4 w-4' />
                   </IconButton>
                   <IconButton
                     label='Eliminar'
@@ -195,74 +297,65 @@ export default function GrowthAdminSection({
                 </div>
               </div>
             ))}
-            <SecondaryButton icon={FaPlus} onClick={addMilestone}>
-              Anadir milestone
-            </SecondaryButton>
           </div>
         </Panel>
       </div>
 
       <Panel title='Editor milestone' eyebrow='Growth Journey'>
-        {selectedMilestone ? (
-          <div className='space-y-4'>
-            {validationError ? (
-              <FormNotice tone='danger'>{validationError}</FormNotice>
-            ) : null}
+        <div className='space-y-4'>
+          {validationError ? (
+            <FormNotice tone='danger'>{validationError}</FormNotice>
+          ) : null}
+          <h3 className='text-xl font-black text-neutral-950'>
+            {formMode === 'edit' ? 'Editar milestone' : 'Nuevo milestone'}
+          </h3>
+
+          <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
+            <span className='text-xs font-bold uppercase text-neutral-500'>
+              Ingles
+            </span>
             <TextField
               label='Titulo'
-              value={selectedMilestone.title}
-              onChange={(title) =>
-                updateMilestone(selectedMilestone.id, { title })
+              value={draft.translations.en.title}
+              onChange={(title) => updateTranslation('en', { title })}
+            />
+            <TextField
+              label='Descripcion'
+              multiline
+              value={draft.translations.en.description}
+              onChange={(description) =>
+                updateTranslation('en', { description })
               }
             />
-            <SelectField
-              label='Idioma'
-              value={selectedMilestone.locale}
-              options={[
-                { label: 'English', value: 'en' },
-                { label: 'Espanol', value: 'es' },
-              ]}
-              onChange={(locale) =>
-                updateMilestone(selectedMilestone.id, {
-                  locale: locale as GrowthMilestone['locale'],
-                })
-              }
-            />
-            <SelectField
-              label='Estado'
-              value={selectedMilestone.status}
-              options={[
-                { label: 'Publicado', value: 'published' },
-                { label: 'Borrador', value: 'draft' },
-                { label: 'Programado', value: 'scheduled' },
-              ]}
-              onChange={(status) =>
-                updateMilestone(selectedMilestone.id, {
-                  status: status as GrowthMilestone['status'],
-                })
-              }
-            />
-            <div className='grid grid-cols-2 gap-3'>
-              <SecondaryButton icon={FaPlus} onClick={addMilestone}>
-                Nuevo
-              </SecondaryButton>
-              <PrimaryButton
-                icon={FaCheck}
-                onClick={handleSave}
-                disabled={isSaving}
-              >
-                {isSaving ? 'Guardando...' : 'Guardar JSON'}
-              </PrimaryButton>
-            </div>
           </div>
-        ) : (
-          <div className='space-y-4'>
-            <FormNotice tone='danger'>No hay milestones configurados.</FormNotice>
-            <PrimaryButton icon={FaPlus} onClick={addMilestone}>
-              Crear milestone
-            </PrimaryButton>
+
+          <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
+            <span className='text-xs font-bold uppercase text-neutral-500'>
+              Espanol
+            </span>
+            <TextField
+              label='Titulo'
+              value={draft.translations.es.title}
+              onChange={(title) => updateTranslation('es', { title })}
+            />
+            <TextField
+              label='Descripcion'
+              multiline
+              value={draft.translations.es.description}
+              onChange={(description) =>
+                updateTranslation('es', { description })
+              }
+            />
           </div>
-        )}
+
+          <PrimaryButton
+            icon={FaCheck}
+            onClick={handleSaveMilestone}
+            disabled={isSaving}
+          >
+            {isSaving ? 'Guardando...' : 'Guardar JSON'}
+          </PrimaryButton>
+        </div>
       </Panel>
     </div>
   );

@@ -242,55 +242,52 @@
   },
   "growth": {
     "revenue": [
-      {
-        "year": "2020",
-        "value": "6.67",
-        "label": "$6.67"
-      },
-      {
-        "year": "2021",
-        "value": "6.65",
-        "label": "$6.65"
-      },
-      {
-        "year": "2022",
-        "value": "15.50",
-        "label": "$15.50"
-      },
-      {
-        "year": "2023",
-        "value": "13.17",
-        "label": "$13.17"
-      },
-      {
-        "year": "2024",
-        "value": "18.15",
-        "label": "$18.15"
-      },
-      {
-        "year": "2025",
-        "value": "19.75",
-        "label": "$19.75"
-      }
+      { "year": "2020", "currency": "$", "value": "6.67" },
+      { "year": "2021", "currency": "$", "value": "6.65" },
+      { "year": "2022", "currency": "$", "value": "15.50" },
+      { "year": "2023", "currency": "$", "value": "13.17" },
+      { "year": "2024", "currency": "$", "value": "18.15" },
+      { "year": "2025", "currency": "$", "value": "19.75" }
     ],
     "milestones": [
       {
         "id": 1,
-        "title": "2020 - CuiCui Studios",
-        "locale": "en",
-        "status": "published"
+        "translations": {
+          "en": {
+            "title": "2020 - CuiCui Studios",
+            "description": "Expansion into technology, apps, and digital experiences."
+          },
+          "es": {
+            "title": "2020 - CuiCui Studios",
+            "description": "Expansion hacia tecnologia, apps y experiencias digitales."
+          }
+        }
       },
       {
         "id": 2,
-        "title": "2022 - Scale Acceleration",
-        "locale": "en",
-        "status": "published"
+        "translations": {
+          "en": {
+            "title": "2022 - Scale Acceleration",
+            "description": "EOLO surpasses $15M in revenue and demonstrates its ability to scale."
+          },
+          "es": {
+            "title": "2022 - Aceleracion de escala",
+            "description": "EOLO supera los $15M de ingresos y demuestra su capacidad de crecimiento."
+          }
+        }
       },
       {
         "id": 3,
-        "title": "2024 - M&A estrategico",
-        "locale": "es",
-        "status": "draft"
+        "translations": {
+          "en": {
+            "title": "2024 - Strategic M&A",
+            "description": "YWow and Wicked expand the platform across games, pets, and outdoor categories."
+          },
+          "es": {
+            "title": "2024 - M&A estrategico",
+            "description": "YWow y Wicked amplian la plataforma en juegos, mascotas y categorias outdoor."
+          }
+        }
       }
     ]
   },

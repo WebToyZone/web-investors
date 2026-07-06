@@ -11,8 +11,6 @@ import type {
   AdminSection,
   ContactField,
   FooterLink,
-  GrowthMilestone,
-  GrowthRevenue,
   MediaAsset,
 } from './types';
 
@@ -65,36 +63,6 @@ export const adminSections: AdminSection[] = [
     eyebrow: 'Media library',
     description: 'Videos, imagenes, logos, decoraciones y documentos.',
     icon: FaImage,
-  },
-];
-
-export const revenue: GrowthRevenue[] = [
-  { year: '2020', value: '6.67', label: '$6.67' },
-  { year: '2021', value: '6.65', label: '$6.65' },
-  { year: '2022', value: '15.50', label: '$15.50' },
-  { year: '2023', value: '13.17', label: '$13.17' },
-  { year: '2024', value: '18.15', label: '$18.15' },
-  { year: '2025', value: '19.75', label: '$19.75' },
-];
-
-export const milestones: GrowthMilestone[] = [
-  {
-    id: 1,
-    title: '2020 - CuiCui Studios',
-    locale: 'en',
-    status: 'published',
-  },
-  {
-    id: 2,
-    title: '2022 - Scale Acceleration',
-    locale: 'en',
-    status: 'published',
-  },
-  {
-    id: 3,
-    title: '2024 - M&A estrategico',
-    locale: 'es',
-    status: 'draft',
   },
 ];
 

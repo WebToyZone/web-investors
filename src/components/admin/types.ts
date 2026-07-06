@@ -86,15 +86,18 @@ export type PendingBoardSeat = {
 
 export type GrowthRevenue = {
   year: string;
+  currency: string;
   value: string;
-  label: string;
+};
+
+export type GrowthMilestoneTranslation = {
+  title: string;
+  description: string;
 };
 
 export type GrowthMilestone = {
   id: number;
-  title: string;
-  locale: Locale;
-  status: PublishStatus;
+  translations: Record<Locale, GrowthMilestoneTranslation>;
 };
 
 export type ContactField = {
