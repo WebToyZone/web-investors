@@ -38,8 +38,8 @@ const enContent: InvestorsPageContent = {
   },
 
   hero: {
-    src: '/video/hero.mp4',
-    type: 'video/mp4',
+    src: '/video/hero.webm',
+    type: 'video/webm',
     poster: '/video/hero-poster.jpg',
     alt: 'A child flying a red kite on a hilltop at sunset.',
   },
@@ -247,8 +247,8 @@ const enContent: InvestorsPageContent = {
   powerOfASmile: {
     heading: 'The Power of a Smile',
     video: {
-      src: '/video/video.mp4',
-      type: 'video/mp4',
+      src: '/video/video.webm',
+      type: 'video/webm',
       poster: '/video/smile-poster.jpg',
       alt: 'A red gift box opening to reveal a glowing light.',
     },
