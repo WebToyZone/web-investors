@@ -162,12 +162,14 @@ export function TextField({
   value,
   onChange,
   multiline = false,
+  type = 'text',
   error,
 }: {
   label: string;
   value: string;
   onChange?: (value: string) => void;
   multiline?: boolean;
+  type?: 'text' | 'date';
   error?: string;
 }) {
   const readOnly = !onChange;
@@ -187,6 +189,7 @@ export function TextField({
         />
       ) : (
         <input
+          type={type}
           value={value}
           readOnly={readOnly}
           onChange={(event) => onChange?.(event.target.value)}

@@ -20,17 +20,21 @@ export type AdminSection = {
   icon: ComponentType<{ className?: string }>;
 };
 
-export type AdminDocument = {
-  id: number;
+export type DocumentLocaleFile = {
   title: string;
-  category: string;
-  year: string;
-  locale: Locale;
-  status: PublishStatus;
-  date: string;
   fileName: string;
   size: string;
+};
+
+export type AdminDocument = {
+  id: number;
+  order?: number;
+  category: string;
+  year: string;
+  status: PublishStatus;
+  date: string;
   downloads: number;
+  files: Record<Locale, DocumentLocaleFile | null>;
 };
 
 export type KpiStat = {

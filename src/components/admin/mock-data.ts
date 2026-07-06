@@ -8,7 +8,6 @@ import {
   FaRocket,
 } from 'react-icons/fa6';
 import type {
-  AdminDocument,
   AdminSection,
   BoardMember,
   ContactField,
@@ -68,51 +67,6 @@ export const adminSections: AdminSection[] = [
     eyebrow: 'Media library',
     description: 'Videos, imagenes, logos, decoraciones y documentos.',
     icon: FaImage,
-  },
-];
-
-export const documentCategories = [
-  'Financial Information',
-  'Meetings & Notices',
-  'Investors Documents',
-];
-
-export const documents: AdminDocument[] = [
-  {
-    id: 1,
-    title: 'BME Scaleup Market Admission Document',
-    category: 'Investors Documents',
-    year: '2026',
-    locale: 'en',
-    status: 'draft',
-    date: '2026-07-01',
-    fileName: 'bme-scaleup-market-admission-en.pdf',
-    size: '8.4 MB',
-    downloads: 0,
-  },
-  {
-    id: 2,
-    title: 'Documento de Admision al Mercado BME Scaleup',
-    category: 'Investors Documents',
-    year: '2026',
-    locale: 'es',
-    status: 'draft',
-    date: '2026-07-01',
-    fileName: 'bme-scaleup-market-admission-es.pdf',
-    size: '8.4 MB',
-    downloads: 0,
-  },
-  {
-    id: 3,
-    title: 'Annual Accounts Preview',
-    category: 'Financial Information',
-    year: '2026',
-    locale: 'en',
-    status: 'scheduled',
-    date: '2026-09-15',
-    fileName: 'annual-accounts-preview.pdf',
-    size: '2.1 MB',
-    downloads: 12,
   },
 ];
 

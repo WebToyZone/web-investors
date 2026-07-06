@@ -8,51 +8,79 @@
     "items": [
       {
         "id": 1,
-        "title": "BME Scaleup Market Admission Document",
+        "order": 1,
         "category": "Investors Documents",
         "year": "2026",
-        "locale": "en",
         "status": "draft",
         "date": "2026-07-01",
-        "fileName": "bme-scaleup-market-admission-en.pdf",
-        "size": "8.4 MB",
-        "downloads": 0
-      },
-      {
-        "id": 2,
-        "title": "Documento de Admision al Mercado BME Scaleup",
-        "category": "Investors Documents",
-        "year": "2026",
-        "locale": "es",
-        "status": "draft",
-        "date": "2026-07-01",
-        "fileName": "bme-scaleup-market-admission-es.pdf",
-        "size": "8.4 MB",
-        "downloads": 0
+        "downloads": 0,
+        "files": {
+          "en": {
+            "title": "BME Scaleup Market Admission Document",
+            "fileName": "bme-scaleup-market-admission-en.pdf",
+            "size": "8.4 MB"
+          },
+          "es": {
+            "title": "Documento de Admision al Mercado BME Scaleup",
+            "fileName": "bme-scaleup-market-admission-es.pdf",
+            "size": "8.4 MB"
+          }
+        }
       },
       {
         "id": 3,
-        "title": "Annual Accounts Preview",
+        "order": 2,
         "category": "Financial Information",
         "year": "2026",
-        "locale": "en",
         "status": "scheduled",
         "date": "2026-09-15",
-        "fileName": "annual-accounts-preview.pdf",
-        "size": "2.1 MB",
-        "downloads": 12
+        "downloads": 12,
+        "files": {
+          "en": {
+            "title": "Annual Accounts Preview",
+            "fileName": "annual-accounts-preview.pdf",
+            "size": "2.1 MB"
+          },
+          "es": null
+        }
       },
       {
         "id": 4,
-        "title": "Nuevo documento",
+        "order": 3,
+        "downloads": 0,
         "category": "Financial Information",
-        "year": "2026",
-        "locale": "en",
+        "year": "2025",
         "status": "draft",
-        "date": "2026-07-01",
-        "fileName": "nuevo-documento.pdf",
-        "size": "0 MB",
-        "downloads": 0
+        "date": "2025-07-06",
+        "files": {
+          "en": {
+            "title": "test",
+            "fileName": "Booking-3150.pdf",
+            "size": "0.1 MB"
+          },
+          "es": {
+            "title": "prueba",
+            "fileName": "Booking-3150.pdf",
+            "size": "0.1 MB"
+          }
+        }
+      },
+      {
+        "id": 5,
+        "order": 4,
+        "downloads": 0,
+        "category": "Investors Documents",
+        "year": "2026",
+        "status": "draft",
+        "date": "2026-07-06",
+        "files": {
+          "en": {
+            "title": "test",
+            "fileName": "Booking-3150.pdf",
+            "size": "0.1 MB"
+          },
+          "es": null
+        }
       }
     ]
   },
