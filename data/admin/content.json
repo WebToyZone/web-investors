@@ -300,32 +300,14 @@
     },
     "recipientEmail": "investors@eolo.com"
   },
-  "assets": {
-    "items": [
-      {
-        "id": 1,
-        "name": "Hero video",
-        "type": "video",
-        "usage": "Hero",
-        "path": "/video/hero.webm",
-        "status": "published"
-      },
-      {
-        "id": 2,
-        "name": "Smile video",
-        "type": "video",
-        "usage": "Power of a Smile",
-        "path": "/video/video.webm",
-        "status": "published"
-      },
-      {
-        "id": 3,
-        "name": "EOLO logo red",
-        "type": "image",
-        "usage": "Navbar",
-        "path": "/logo-eolo.webp",
-        "status": "published"
-      }
-    ]
+  "videos": {
+    "hero": {
+      "fileName": "hero.webm",
+      "size": "19.3 MB"
+    },
+    "powerOfASmile": {
+      "fileName": "video.webm",
+      "size": "34.0 MB"
+    }
   }
 }

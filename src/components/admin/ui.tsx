@@ -2,9 +2,7 @@ import type { ComponentType, ReactNode } from 'react';
 import {
   FaCheck,
   FaClock,
-  FaPen,
   FaRegFileLines,
-  FaTrashCan,
 } from 'react-icons/fa6';
 import type { PublishStatus } from './types';
 
@@ -247,19 +245,6 @@ export function FormNotice({
   return (
     <div className={`rounded-md border px-3 py-2 text-sm font-bold ${className}`}>
       {children}
-    </div>
-  );
-}
-
-export function ActionRow() {
-  return (
-    <div className='flex justify-end gap-2'>
-      <IconButton label='Editar'>
-        <FaPen className='h-4 w-4' />
-      </IconButton>
-      <IconButton label='Eliminar'>
-        <FaTrashCan className='h-4 w-4' />
-      </IconButton>
     </div>
   );
 }

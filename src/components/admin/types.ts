@@ -9,7 +9,7 @@ export type AdminSectionId =
   | 'board'
   | 'growth'
   | 'contact'
-  | 'assets';
+  | 'videos';
 
 export type AdminSection = {
   id: AdminSectionId;
@@ -106,13 +106,9 @@ export type ContactInfo = {
   addressLine2: string;
 };
 
-export type MediaAsset = {
-  id: number;
-  name: string;
-  type: 'image' | 'video' | 'document';
-  usage: string;
-  path: string;
-  status: PublishStatus;
+export type AdminVideo = {
+  fileName: string;
+  size: string;
 };
 
 export type AdminContent = {
@@ -136,7 +132,8 @@ export type AdminContent = {
     info: ContactInfo;
     recipientEmail: string;
   };
-  assets: {
-    items: MediaAsset[];
+  videos: {
+    hero: AdminVideo;
+    powerOfASmile: AdminVideo;
   };
 };

@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { saveAdminSection } from '@/actions/admin-content/save-admin-section';
 import AdminShell from './AdminShell';
 import { adminSections } from './mock-data';
-import AssetsAdminSection from './sections/AssetsAdminSection';
 import BoardAdminSection from './sections/BoardAdminSection';
 import ContactAdminSection from './sections/ContactAdminSection';
 import DocumentsAdminSection from './sections/DocumentsAdminSection';
 import GlanceAdminSection from './sections/GlanceAdminSection';
 import GrowthAdminSection from './sections/GrowthAdminSection';
+import VideosAdminSection from './sections/VideosAdminSection';
 import type { AdminContent, AdminSectionId } from './types';
 
 function renderAdminSection(
@@ -74,14 +74,13 @@ function renderAdminSection(
           createRequestId={createRequestId}
         />
       );
-    case 'assets':
+    case 'videos':
       return (
-        <AssetsAdminSection
-          data={content.assets}
-          onChange={(value) => updateSection('assets', value)}
-          onSave={() => saveSection('assets')}
-          isSaving={savingSection === 'assets'}
-          createRequestId={createRequestId}
+        <VideosAdminSection
+          data={content.videos}
+          onChange={(value) => updateSection('videos', value)}
+          onSave={() => saveSection('videos')}
+          isSaving={savingSection === 'videos'}
         />
       );
     default:

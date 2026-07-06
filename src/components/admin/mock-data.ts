@@ -2,11 +2,11 @@ import {
   FaChartLine,
   FaEnvelope,
   FaFilePdf,
-  FaImage,
   FaPeopleGroup,
   FaRocket,
+  FaVideo,
 } from 'react-icons/fa6';
-import type { AdminSection, MediaAsset } from './types';
+import type { AdminSection } from './types';
 
 export const adminSections: AdminSection[] = [
   {
@@ -45,37 +45,10 @@ export const adminSections: AdminSection[] = [
     icon: FaEnvelope,
   },
   {
-    id: 'assets',
-    label: 'Hero / assets',
-    eyebrow: 'Media library',
-    description: 'Videos, imagenes, logos, decoraciones y documentos.',
-    icon: FaImage,
-  },
-];
-
-export const mediaAssets: MediaAsset[] = [
-  {
-    id: 1,
-    name: 'Hero video',
-    type: 'video',
-    usage: 'Hero',
-    path: '/video/hero.webm',
-    status: 'published',
-  },
-  {
-    id: 2,
-    name: 'Smile video',
-    type: 'video',
-    usage: 'Power of a Smile',
-    path: '/video/video.webm',
-    status: 'published',
-  },
-  {
-    id: 3,
-    name: 'EOLO logo red',
-    type: 'image',
-    usage: 'Navbar',
-    path: '/logo-eolo.webp',
-    status: 'published',
+    id: 'videos',
+    label: 'Videos',
+    eyebrow: 'Media de fondo',
+    description: 'Video del Hero y de Power of a Smile.',
+    icon: FaVideo,
   },
 ];
