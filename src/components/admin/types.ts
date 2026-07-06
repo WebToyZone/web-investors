@@ -45,7 +45,6 @@ export type KpiStat = {
   id: string;
   order: number;
   icon: string;
-  currency: string;
   value: string;
   translations: Record<Locale, KpiTranslation>;
 };

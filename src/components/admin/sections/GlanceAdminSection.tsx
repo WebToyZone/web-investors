@@ -23,7 +23,6 @@ import {
 
 type KpiDraft = {
   icon: string;
-  currency: string;
   value: string;
   translations: KpiStat['translations'];
 };
@@ -31,7 +30,6 @@ type KpiDraft = {
 function createDefaultDraft(): KpiDraft {
   return {
     icon: '',
-    currency: '',
     value: '',
     translations: {
       en: { label: '' },
@@ -77,7 +75,6 @@ export default function GlanceAdminSection({
     setEditingId(kpi.id);
     setDraft({
       icon: kpi.icon,
-      currency: kpi.currency,
       value: kpi.value,
       translations: {
         en: { ...kpi.translations.en },
@@ -87,7 +84,7 @@ export default function GlanceAdminSection({
     setValidationError('');
   }
 
-  function updateDraft(patch: Partial<Pick<KpiDraft, 'icon' | 'currency' | 'value'>>) {
+  function updateDraft(patch: Partial<Pick<KpiDraft, 'icon' | 'value'>>) {
     setValidationError('');
     setDraft((current) => ({ ...current, ...patch }));
   }
@@ -242,7 +239,6 @@ export default function GlanceAdminSection({
                   )}
                   <span className='min-w-0'>
                     <p className='text-2xl font-black text-brand'>
-                      {kpi.currency}
                       {kpi.value}
                     </p>
                     <p className='truncate text-sm font-bold text-neutral-950'>
@@ -336,18 +332,11 @@ export default function GlanceAdminSection({
             )}
           </div>
 
-          <div className='grid grid-cols-[100px_1fr] gap-3'>
-            <TextField
-              label='Moneda'
-              value={draft.currency}
-              onChange={(currency) => updateDraft({ currency })}
-            />
-            <TextField
-              label='Valor (comun a ambos idiomas)'
-              value={draft.value}
-              onChange={(value) => updateDraft({ value })}
-            />
-          </div>
+          <TextField
+            label='Cifra (comun a ambos idiomas)'
+            value={draft.value}
+            onChange={(value) => updateDraft({ value })}
+          />
 
           <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
             <span className='text-xs font-bold uppercase text-neutral-500'>
