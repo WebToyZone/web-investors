@@ -37,13 +37,17 @@ export type AdminDocument = {
   files: Record<Locale, DocumentLocaleFile | null>;
 };
 
-export type KpiStat = {
-  id: number;
+export type KpiTranslation = {
   label: string;
-  value: string;
-  locale: Locale;
+};
+
+export type KpiStat = {
+  id: string;
+  order: number;
   icon: string;
-  status: PublishStatus;
+  currency: string;
+  value: string;
+  translations: Record<Locale, KpiTranslation>;
 };
 
 export type BoardMember = {

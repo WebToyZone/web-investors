@@ -14,7 +14,6 @@ import type {
   FooterLink,
   GrowthMilestone,
   GrowthRevenue,
-  KpiStat,
   MediaAsset,
 } from './types';
 
@@ -67,41 +66,6 @@ export const adminSections: AdminSection[] = [
     eyebrow: 'Media library',
     description: 'Videos, imagenes, logos, decoraciones y documentos.',
     icon: FaImage,
-  },
-];
-
-export const kpis: KpiStat[] = [
-  {
-    id: 1,
-    label: '2025 Revenue',
-    value: '$19,75M',
-    locale: 'en',
-    icon: '/icons/revenue.webp',
-    status: 'published',
-  },
-  {
-    id: 2,
-    label: 'Countries',
-    value: '59',
-    locale: 'en',
-    icon: '/icons/countries.webp',
-    status: 'published',
-  },
-  {
-    id: 3,
-    label: 'Ingresos 2025',
-    value: '$19,75M',
-    locale: 'es',
-    icon: '/icons/revenue.webp',
-    status: 'published',
-  },
-  {
-    id: 4,
-    label: 'Paises',
-    value: '59',
-    locale: 'es',
-    icon: '/icons/countries.webp',
-    status: 'draft',
   },
 ];
 

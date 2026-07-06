@@ -87,36 +87,49 @@
   "glance": {
     "kpis": [
       {
-        "id": 1,
-        "label": "2025 Revenue",
-        "value": "$19,75M",
-        "locale": "en",
+        "id": "1",
+        "order": 1,
         "icon": "/icons/revenue.webp",
-        "status": "published"
+        "currency": "$",
+        "value": "19,75M",
+        "translations": {
+          "en": {
+            "label": "2025 Revenue"
+          },
+          "es": {
+            "label": "Ingresos 2025"
+          }
+        }
       },
       {
-        "id": 2,
-        "label": "Countries",
-        "value": "59",
-        "locale": "en",
+        "id": "3",
+        "order": 2,
+        "icon": "/icons/revenue-employee.webp",
+        "currency": "",
+        "value": "23",
+        "translations": {
+          "en": {
+            "label": "test"
+          },
+          "es": {
+            "label": "prueba"
+          }
+        }
+      },
+      {
+        "id": "2",
+        "order": 3,
         "icon": "/icons/countries.webp",
-        "status": "published"
-      },
-      {
-        "id": 3,
-        "label": "Ingresos 2025",
-        "value": "$19,75M",
-        "locale": "es",
-        "icon": "/icons/revenue.webp",
-        "status": "published"
-      },
-      {
-        "id": 4,
-        "label": "Paises",
+        "currency": "",
         "value": "59",
-        "locale": "es",
-        "icon": "/icons/countries.webp",
-        "status": "draft"
+        "translations": {
+          "en": {
+            "label": "Countries"
+          },
+          "es": {
+            "label": "Paises"
+          }
+        }
       }
     ]
   },
