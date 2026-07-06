@@ -61,13 +61,27 @@ export type PlatformLocation = {
   translations: Record<Locale, PlatformLocationTranslation>;
 };
 
+export type BoardMemberTranslation = {
+  role: string;
+  description: string;
+};
+
 export type BoardMember = {
   id: number;
   name: string;
-  role: string;
-  status: 'appointed' | 'pending';
-  locale: Locale;
   image: string;
+  translations: Record<Locale, BoardMemberTranslation>;
+};
+
+export type PendingSeatTranslation = {
+  role: string;
+};
+
+export type PendingBoardSeat = {
+  id: number;
+  name: string;
+  image: string;
+  translations: Record<Locale, PendingSeatTranslation>;
 };
 
 export type GrowthRevenue = {
@@ -116,6 +130,7 @@ export type AdminContent = {
   };
   board: {
     members: BoardMember[];
+    pendingSeats: PendingBoardSeat[];
   };
   growth: {
     revenue: GrowthRevenue[];

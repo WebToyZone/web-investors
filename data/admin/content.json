@@ -182,26 +182,61 @@
       {
         "id": 1,
         "name": "Alex Prieto",
-        "role": "President",
-        "status": "appointed",
-        "locale": "en",
-        "image": "/board/alex-prieto.webp"
+        "image": "/board/alex-prieto.webp",
+        "translations": {
+          "en": {
+            "role": "President",
+            "description": "Co-Founder with 26 years of experience in the toy industry. Three-time Mojo Nation 100 honoree."
+          },
+          "es": {
+            "role": "Presidente",
+            "description": "Co-Fundador con 26 anos de experiencia en la industria del juguete. Tres veces honrado en el Mojo Nation 100."
+          }
+        }
       },
       {
         "id": 2,
         "name": "Jose M. Diaz",
-        "role": "Vice President",
-        "status": "appointed",
-        "locale": "en",
-        "image": "/board/jose-diaz.webp"
+        "image": "/board/jose-diaz.webp",
+        "translations": {
+          "en": {
+            "role": "Vice President",
+            "description": "Co-Founder with 20 years of experience in international toy sales management."
+          },
+          "es": {
+            "role": "Vicepresidente",
+            "description": "Co-Fundador con 20 anos de experiencia en la gestion de ventas internacionales de juguetes."
+          }
+        }
+      }
+    ],
+    "pendingSeats": [
+      {
+        "id": 1,
+        "name": "TBC",
+        "image": "/board/tbc.webp",
+        "translations": {
+          "en": { "role": "Secretary" },
+          "es": { "role": "Secretario" }
+        }
+      },
+      {
+        "id": 2,
+        "name": "TBC",
+        "image": "/board/tbc.webp",
+        "translations": {
+          "en": { "role": "Financial Representative" },
+          "es": { "role": "Representante Financiero" }
+        }
       },
       {
         "id": 3,
         "name": "TBC",
-        "role": "Financial Representative",
-        "status": "pending",
-        "locale": "en",
-        "image": "/board/tbc.webp"
+        "image": "/board/tbc.webp",
+        "translations": {
+          "en": { "role": "Industry Representative" },
+          "es": { "role": "Representante de la Industria" }
+        }
       }
     ]
   },

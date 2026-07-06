@@ -9,7 +9,6 @@ import {
 } from 'react-icons/fa6';
 import type {
   AdminSection,
-  BoardMember,
   ContactField,
   FooterLink,
   GrowthMilestone,
@@ -66,33 +65,6 @@ export const adminSections: AdminSection[] = [
     eyebrow: 'Media library',
     description: 'Videos, imagenes, logos, decoraciones y documentos.',
     icon: FaImage,
-  },
-];
-
-export const boardMembers: BoardMember[] = [
-  {
-    id: 1,
-    name: 'Alex Prieto',
-    role: 'President',
-    status: 'appointed',
-    locale: 'en',
-    image: '/board/alex-prieto.webp',
-  },
-  {
-    id: 2,
-    name: 'Jose M. Diaz',
-    role: 'Vice President',
-    status: 'appointed',
-    locale: 'en',
-    image: '/board/jose-diaz.webp',
-  },
-  {
-    id: 3,
-    name: 'TBC',
-    role: 'Financial Representative',
-    status: 'pending',
-    locale: 'en',
-    image: '/board/tbc.webp',
   },
 ];
 
