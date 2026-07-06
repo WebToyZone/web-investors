@@ -292,24 +292,13 @@
     ]
   },
   "contact": {
-    "fields": [
-      {
-        "label": "Email publico",
-        "value": "investors@eolo.com"
-      },
-      {
-        "label": "Telefono",
-        "value": "+34 984 017 888"
-      },
-      {
-        "label": "Direccion linea 1",
-        "value": "C/Menendez Valdes 40 2D"
-      },
-      {
-        "label": "CTA formulario",
-        "value": "Send it! / Enviar"
-      }
-    ]
+    "info": {
+      "email": "investors@eolo.com",
+      "phone": "+34 984 017 888",
+      "addressLine1": "C/Menendez Valdes 40 2D",
+      "addressLine2": "33202, Gijon, Asturias, SPAIN."
+    },
+    "recipientEmail": "investors@eolo.com"
   },
   "navigation": {
     "links": [

@@ -7,12 +7,7 @@ import {
   FaPeopleGroup,
   FaRocket,
 } from 'react-icons/fa6';
-import type {
-  AdminSection,
-  ContactField,
-  FooterLink,
-  MediaAsset,
-} from './types';
+import type { AdminSection, FooterLink, MediaAsset } from './types';
 
 export const adminSections: AdminSection[] = [
   {
@@ -64,13 +59,6 @@ export const adminSections: AdminSection[] = [
     description: 'Videos, imagenes, logos, decoraciones y documentos.',
     icon: FaImage,
   },
-];
-
-export const contactFields: ContactField[] = [
-  { label: 'Email publico', value: 'investors@eolo.com' },
-  { label: 'Telefono', value: '+34 984 017 888' },
-  { label: 'Direccion linea 1', value: 'C/Menendez Valdes 40 2D' },
-  { label: 'CTA formulario', value: 'Send it! / Enviar' },
 ];
 
 export const footerLinks: FooterLink[] = [

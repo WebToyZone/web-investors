@@ -100,9 +100,11 @@ export type GrowthMilestone = {
   translations: Record<Locale, GrowthMilestoneTranslation>;
 };
 
-export type ContactField = {
-  label: string;
-  value: string;
+export type ContactInfo = {
+  email: string;
+  phone: string;
+  addressLine1: string;
+  addressLine2: string;
 };
 
 export type FooterLink = {
@@ -140,7 +142,8 @@ export type AdminContent = {
     milestones: GrowthMilestone[];
   };
   contact: {
-    fields: ContactField[];
+    info: ContactInfo;
+    recipientEmail: string;
   };
   navigation: {
     links: FooterLink[];

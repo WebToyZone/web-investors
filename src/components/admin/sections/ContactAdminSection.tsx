@@ -1,22 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  FaArrowDown,
-  FaArrowUp,
-  FaCheck,
-  FaPlus,
-  FaTrashCan,
-} from 'react-icons/fa6';
-import type { AdminContent, ContactField } from '@/components/admin/types';
-import {
-  FormNotice,
-  IconButton,
-  Panel,
-  PrimaryButton,
-  SecondaryButton,
-  TextField,
-} from '@/components/admin/ui';
+import { FaCheck } from 'react-icons/fa6';
+import type { AdminContent, ContactInfo } from '@/components/admin/types';
+import { FormNotice, IconButton, Panel, TextField } from '@/components/admin/ui';
+
+const infoFields: { key: keyof ContactInfo; label: string }[] = [
+  { key: 'email', label: 'Email' },
+  { key: 'phone', label: 'Telefono' },
+  { key: 'addressLine1', label: 'Direccion - Calle y numero' },
+  { key: 'addressLine2', label: 'Direccion - Ciudad y pais' },
+];
 
 export default function ContactAdminSection({
   data,
@@ -28,65 +22,36 @@ export default function ContactAdminSection({
   onChange: (value: AdminContent['contact']) => void;
   onSave: () => void;
   isSaving: boolean;
+  createRequestId: number;
 }) {
-  const { fields: contactFields } = data;
+  const { info, recipientEmail } = data;
   const [validationError, setValidationError] = useState('');
 
-  function updateField(index: number, patch: Partial<ContactField>) {
+  function updateInfoField(key: keyof ContactInfo, value: string) {
     setValidationError('');
-    onChange({
-      fields: contactFields.map((field, fieldIndex) =>
-        fieldIndex === index ? { ...field, ...patch } : field,
-      ),
-    });
+    onChange({ ...data, info: { ...info, [key]: value } });
   }
 
-  function addField() {
-    onChange({
-      fields: [
-        ...contactFields,
-        {
-          label: 'Nuevo campo',
-          value: '',
-        },
-      ],
-    });
+  function updateRecipientEmail(value: string) {
     setValidationError('');
+    onChange({ ...data, recipientEmail: value });
   }
 
-  function deleteField(index: number) {
-    onChange({
-      fields: contactFields.filter((_, fieldIndex) => fieldIndex !== index),
-    });
-    setValidationError('');
-  }
-
-  function moveField(index: number, direction: -1 | 1) {
-    const nextIndex = index + direction;
-
-    if (nextIndex < 0 || nextIndex >= contactFields.length) {
+  function saveInfoField(key: keyof ContactInfo) {
+    if (!info[key].trim()) {
+      setValidationError('Completa el valor antes de guardar.');
       return;
     }
 
-    const nextFields = [...contactFields];
-    const currentField = nextFields[index];
-    nextFields[index] = nextFields[nextIndex];
-    nextFields[nextIndex] = currentField;
-    onChange({ fields: nextFields });
+    setValidationError('');
+    onSave();
   }
 
-  function handleSave() {
-    if (!contactFields.length) {
-      setValidationError('Debe existir al menos un campo de contacto.');
-      return;
-    }
-
-    const invalidField = contactFields.find(
-      (field) => !field.label.trim() || !field.value.trim(),
-    );
-
-    if (invalidField) {
-      setValidationError('Completa etiqueta y valor antes de guardar.');
+  function saveRecipientEmail() {
+    if (!recipientEmail.trim()) {
+      setValidationError(
+        'Completa el email al que se envia el formulario de contacto.',
+      );
       return;
     }
 
@@ -98,64 +63,54 @@ export default function ContactAdminSection({
     <div className='grid gap-5 xl:grid-cols-[1fr_360px]'>
       <Panel title='Datos de contacto' eyebrow='Contacto publico'>
         <div className='space-y-3'>
-          {contactFields.map((field, index) => (
+          {validationError ? (
+            <FormNotice tone='danger'>{validationError}</FormNotice>
+          ) : null}
+          {infoFields.map(({ key, label }) => (
             <div
-              key={`${field.label}-${index}`}
-              className='grid gap-3 rounded-md border border-neutral-200 p-3 md:grid-cols-[1fr_1.4fr_auto]'
+              key={key}
+              className='grid gap-3 rounded-md border border-neutral-200 p-3 md:grid-cols-[1fr_auto] md:items-end'
             >
               <TextField
-                label='Etiqueta'
-                value={field.label}
-                onChange={(label) => updateField(index, { label })}
+                label={label}
+                value={info[key]}
+                onChange={(value) => updateInfoField(key, value)}
               />
-              <TextField
-                label='Valor'
-                value={field.value}
-                onChange={(value) => updateField(index, { value })}
-              />
-              <div className='flex items-end gap-2'>
-                <IconButton
-                  label='Subir'
-                  onClick={() => moveField(index, -1)}
-                  disabled={index === 0}
-                >
-                  <FaArrowUp className='h-4 w-4' />
-                </IconButton>
-                <IconButton
-                  label='Bajar'
-                  onClick={() => moveField(index, 1)}
-                  disabled={index === contactFields.length - 1}
-                >
-                  <FaArrowDown className='h-4 w-4' />
-                </IconButton>
-                <IconButton
-                  label='Eliminar'
-                  onClick={() => deleteField(index)}
-                  disabled={contactFields.length === 1}
-                >
-                  <FaTrashCan className='h-4 w-4' />
-                </IconButton>
-              </div>
+              <IconButton
+                label='Guardar'
+                onClick={() => saveInfoField(key)}
+                disabled={isSaving}
+              >
+                <FaCheck className='h-4 w-4' />
+              </IconButton>
             </div>
           ))}
-          <SecondaryButton icon={FaPlus} onClick={addField}>
-            Anadir campo
-          </SecondaryButton>
         </div>
       </Panel>
 
-      <Panel title='Guardar cambios' eyebrow='JSON local'>
+      <Panel title='Formulario de contacto' eyebrow='Notificaciones'>
         <div className='space-y-4'>
-          {validationError ? (
-            <FormNotice tone='danger'>{validationError}</FormNotice>
-          ) : (
-            <FormNotice>
-              Los cambios se guardan temporalmente en data/admin/content.json.
-            </FormNotice>
-          )}
-          <PrimaryButton icon={FaCheck} onClick={handleSave} disabled={isSaving}>
-            {isSaving ? 'Guardando...' : 'Guardar JSON'}
-          </PrimaryButton>
+          <div className='flex items-end gap-2'>
+            <div className='flex-1'>
+              <TextField
+                label='Email al que se envia el formulario'
+                value={recipientEmail}
+                onChange={updateRecipientEmail}
+              />
+            </div>
+            <IconButton
+              label='Guardar'
+              onClick={saveRecipientEmail}
+              disabled={isSaving}
+            >
+              <FaCheck className='h-4 w-4' />
+            </IconButton>
+          </div>
+          <p className='text-xs text-neutral-500'>
+            Este dato queda guardado en el admin. El envio real de correos
+            todavia usa la variable de entorno CONTACT_TO_EMAIL hasta que
+            conectemos el admin con la web publica.
+          </p>
         </div>
       </Panel>
     </div>
