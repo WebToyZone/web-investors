@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum PublishStatus {
+  draft
+  published
+  scheduled
+}
+
+// -- Documents --------------------------------------------------------------
+
+model DocumentCategorySettings {
+  id    Int      @id @default(1)
+  names String[]
+}
+
+model AdminDocument {
+  id        Int           @id @default(autoincrement())
+  order     Int           @default(0)
+  category  String
+  year      String
+  status    PublishStatus
+  date      String
+  downloads Int           @default(0)
+  files     Json
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([category, year])
+}
+
+// -- KPIs / At a Glance -------------------------------------------------------
+
+model KpiStat {
+  id           Int    @id @default(autoincrement())
+  order        Int    @default(0)
+  icon         String
+  value        String
+  translations Json
+}
+
+model PlatformLocation {
+  id           Int    @id @default(autoincrement())
+  order        Int    @default(0)
+  icon         String
+  translations Json
+}
+
+// -- Board --------------------------------------------------------------------
+
+model BoardMember {
+  id           Int    @id @default(autoincrement())
+  order        Int    @default(0)
+  name         String
+  image        String
+  translations Json
+}
+
+model PendingBoardSeat {
+  id           Int    @id @default(autoincrement())
+  order        Int    @default(0)
+  name         String
+  image        String
+  translations Json
+}
+
+// -- Growth Journey -------------------------------------------------------------
+
+model GrowthRevenue {
+  id       Int    @id @default(autoincrement())
+  order    Int    @default(0)
+  year     String @unique
+  currency String
+  value    String
+}
+
+model GrowthMilestone {
+  id           Int    @id @default(autoincrement())
+  order        Int    @default(0)
+  translations Json
+}
+
+// -- Contact ----------------------------------------------------------------
+
+model ContactSettings {
+  id             Int    @id @default(1)
+  email          String
+  phone          String
+  addressLine1   String
+  addressLine2   String
+  recipientEmail String
+}
+
+// -- Videos -------------------------------------------------------------------
+
+model AdminVideo {
+  slot     String @id
+  fileName String
+  size     String
+}

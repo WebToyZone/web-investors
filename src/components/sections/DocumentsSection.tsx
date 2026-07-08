@@ -4,7 +4,7 @@ import Link from 'next/link';
 /**
  * Data shapes for the Documents section.
  *
- * Fed statically from `data/investors.ts` for now; plain serialisable fields
+ * Fed statically from `data/investorsData.ts` for now; plain serialisable fields
  * keep it ready to come from a Prisma-backed CMS later. Each column groups its
  * files under a year, so a year filter/selector can be layered on without
  * reshaping the data.

@@ -36,3 +36,7 @@ Thumbs.db
 
 # Certificates
 *.pem
+
+#Claude 
+.claude
+.env*
