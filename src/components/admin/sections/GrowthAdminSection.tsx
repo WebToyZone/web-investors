@@ -239,7 +239,7 @@ export default function GrowthAdminSection({
             onClick={handleSaveRevenue}
             disabled={isSaving}
           >
-            {isSaving ? 'Guardando...' : 'Guardar JSON'}
+            {isSaving ? 'Guardando...' : 'Guardar'}
           </PrimaryButton>
         </Panel>
 
@@ -353,7 +353,7 @@ export default function GrowthAdminSection({
             onClick={handleSaveMilestone}
             disabled={isSaving}
           >
-            {isSaving ? 'Guardando...' : 'Guardar JSON'}
+            {isSaving ? 'Guardando...' : 'Guardar'}
           </PrimaryButton>
         </div>
       </Panel>

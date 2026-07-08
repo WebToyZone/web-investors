@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   FaArrowDown,
   FaArrowUpFromBracket,
@@ -171,12 +171,12 @@ export default function DocumentsAdminSection({
     return groups;
   }, [filteredDocuments]);
 
-  function startNewDocument() {
+  const startNewDocument = useCallback(() => {
     setFormMode('new');
     setEditingId(null);
     setDraft(createDefaultDraft(categories));
     setValidationError('');
-  }
+  }, [categories]);
 
   function startEditDocument(document: AdminDocument) {
     setFormMode('edit');
@@ -207,7 +207,7 @@ export default function DocumentsAdminSection({
 
     lastCreateRequestId.current = createRequestId;
     startNewDocument();
-  }, [createRequestId]);
+  }, [createRequestId, startNewDocument]);
 
   useEffect(() => {
     if (!pendingSaveRef.current) {
@@ -833,7 +833,7 @@ export default function DocumentsAdminSection({
               onClick={handleSave}
               disabled={isSaving}
             >
-              {isSaving ? 'Guardando...' : 'Guardar JSON'}
+              {isSaving ? 'Guardando...' : 'Guardar'}
             </PrimaryButton>
           </div>
         </Panel>

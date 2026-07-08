@@ -19,14 +19,14 @@ export async function saveAdminSection<K extends AdminSectionId>(
     revalidatePath('/admin');
 
     return {
-      success: 'Cambios guardados en JSON local.',
+      success: 'Cambios guardados.',
       content,
     };
   } catch (error) {
-    console.error('Admin JSON save error:', error);
+    console.error('Admin content save error:', error);
 
     return {
-      error: 'No se pudieron guardar los cambios en el JSON local.',
+      error: 'No se pudieron guardar los cambios.',
     };
   }
 }

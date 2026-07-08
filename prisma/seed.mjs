@@ -1,8 +1,12 @@
 import { readFile } from 'fs/promises';
 import path from 'path';
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-const prisma = new PrismaClient();
+process.loadEnvFile('.env.local');
+
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   const contentPath = path.join(process.cwd(), 'data', 'admin', 'content.json');

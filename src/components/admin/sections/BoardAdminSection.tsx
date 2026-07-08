@@ -604,7 +604,7 @@ export default function BoardAdminSection({
             </div>
 
             <PrimaryButton icon={FaCheck} onClick={handleSave} disabled={isSaving}>
-              {isSaving ? 'Guardando...' : 'Guardar JSON'}
+              {isSaving ? 'Guardando...' : 'Guardar'}
             </PrimaryButton>
           </div>
         </Panel>
@@ -646,7 +646,7 @@ export default function BoardAdminSection({
               onClick={handleSaveSeat}
               disabled={isSaving}
             >
-              {isSaving ? 'Guardando...' : 'Guardar JSON'}
+              {isSaving ? 'Guardando...' : 'Guardar'}
             </PrimaryButton>
           </div>
         </Panel>

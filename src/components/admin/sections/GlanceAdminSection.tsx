@@ -632,7 +632,7 @@ export default function GlanceAdminSection({
             </div>
 
             <PrimaryButton icon={FaCheck} onClick={handleSave} disabled={isSaving}>
-              {isSaving ? 'Guardando...' : 'Guardar JSON'}
+              {isSaving ? 'Guardando...' : 'Guardar'}
             </PrimaryButton>
           </div>
         </Panel>
@@ -697,7 +697,7 @@ export default function GlanceAdminSection({
               onClick={handleSaveLocation}
               disabled={isSaving}
             >
-              {isSaving ? 'Guardando...' : 'Guardar JSON'}
+              {isSaving ? 'Guardando...' : 'Guardar'}
             </PrimaryButton>
           </div>
         </Panel>

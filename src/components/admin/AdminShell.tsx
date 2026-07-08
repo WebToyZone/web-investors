@@ -63,11 +63,11 @@ export default function AdminShell({
 
             <div className='mt-auto rounded-md border border-neutral-200 bg-neutral-50 p-4'>
               <p className='text-sm font-bold text-neutral-900'>
-                Preparado para Prisma
+                Conectado a Neon
               </p>
               <p className='mt-1 text-sm leading-relaxed text-neutral-600'>
-                Todas las vistas usan formas de datos que luego pueden venir de
-                Neon.
+                Los cambios se guardan directamente en la base de datos
+                Postgres.
               </p>
             </div>
           </div>
