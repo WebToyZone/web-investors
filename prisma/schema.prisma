@@ -103,3 +103,13 @@ model AdminVideo {
   fileName String
   size     String
 }
+
+// -- Auth ---------------------------------------------------------------------
+
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+}

@@ -90,8 +90,10 @@ function renderAdminSection(
 
 export default function AdminDocumentsPage({
   initialContent,
+  userEmail,
 }: {
   initialContent: AdminContent;
+  userEmail: string;
 }) {
   const [activeSection, setActiveSection] =
     useState<AdminSectionId>('documents');
@@ -133,6 +135,7 @@ export default function AdminDocumentsPage({
       sections={adminSections}
       onCreateContent={() => setCreateRequestId((current) => current + 1)}
       onSectionChange={setActiveSection}
+      userEmail={userEmail}
     >
       {feedback ? (
         <div className='mb-4 rounded-md border border-neutral-200 bg-white px-4 py-3 text-sm font-bold text-neutral-800'>

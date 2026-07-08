@@ -1,4 +1,5 @@
-import { FaPlus } from 'react-icons/fa6';
+import { FaPlus, FaRightFromBracket } from 'react-icons/fa6';
+import { signOutAction } from '@/actions/auth/sign-out';
 import type { AdminSection, AdminSectionId } from './types';
 import { PrimaryButton } from './ui';
 
@@ -8,12 +9,14 @@ export default function AdminShell({
   children,
   onCreateContent,
   onSectionChange,
+  userEmail,
 }: {
   activeSection: AdminSectionId;
   sections: AdminSection[];
   children: React.ReactNode;
   onCreateContent: () => void;
   onSectionChange: (section: AdminSectionId) => void;
+  userEmail: string;
 }) {
   const currentSection =
     sections.find((section) => section.id === activeSection) ?? sections[0];
@@ -63,12 +66,20 @@ export default function AdminShell({
 
             <div className='mt-auto rounded-md border border-neutral-200 bg-neutral-50 p-4'>
               <p className='text-sm font-bold text-neutral-900'>
-                Conectado a Neon
+                Sesion iniciada
               </p>
-              <p className='mt-1 text-sm leading-relaxed text-neutral-600'>
-                Los cambios se guardan directamente en la base de datos
-                Postgres.
+              <p className='mt-1 truncate text-sm leading-relaxed text-neutral-600'>
+                {userEmail}
               </p>
+              <form action={signOutAction} className='mt-3'>
+                <button
+                  type='submit'
+                  className='inline-flex items-center gap-2 text-sm font-bold text-neutral-600 transition-colors hover:text-brand'
+                >
+                  <FaRightFromBracket className='h-4 w-4' />
+                  Cerrar sesion
+                </button>
+              </form>
             </div>
           </div>
         </aside>

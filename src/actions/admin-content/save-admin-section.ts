@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { saveAdminContentSection } from '@/services/admin-content/local-store';
 import type { AdminContent, AdminSectionId } from '@/components/admin/types';
+import { auth } from '@/auth';
 
 export type SaveAdminSectionResponse = {
   success?: string;
@@ -14,6 +15,11 @@ export async function saveAdminSection<K extends AdminSectionId>(
   section: K,
   value: AdminContent[K],
 ): Promise<SaveAdminSectionResponse> {
+  const session = await auth();
+  if (!session?.user) {
+    return { error: 'No autorizado.' };
+  }
+
   try {
     const content = await saveAdminContentSection(section, value);
     revalidatePath('/admin');

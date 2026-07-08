@@ -75,15 +75,17 @@ export function PrimaryButton({
   icon: Icon,
   onClick,
   disabled = false,
+  type = 'button',
 }: {
   children: ReactNode;
   icon: ComponentType<{ className?: string }>;
   onClick?: () => void;
   disabled?: boolean;
+  type?: 'button' | 'submit';
 }) {
   return (
     <button
-      type='button'
+      type={type}
       onClick={onClick}
       disabled={disabled}
       className='inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:bg-neutral-300'
@@ -158,19 +160,25 @@ export function Panel({
 export function TextField({
   label,
   value,
+  defaultValue,
   onChange,
   multiline = false,
   type = 'text',
+  name,
+  autoComplete,
   error,
 }: {
   label: string;
-  value: string;
+  value?: string;
+  defaultValue?: string;
   onChange?: (value: string) => void;
   multiline?: boolean;
-  type?: 'text' | 'date';
+  type?: 'text' | 'date' | 'email' | 'password';
+  name?: string;
+  autoComplete?: string;
   error?: string;
 }) {
-  const readOnly = !onChange;
+  const readOnly = value !== undefined && !onChange;
 
   return (
     <label className='block'>
@@ -180,6 +188,7 @@ export function TextField({
       {multiline ? (
         <textarea
           value={value}
+          defaultValue={defaultValue}
           readOnly={readOnly}
           onChange={(event) => onChange?.(event.target.value)}
           rows={4}
@@ -188,7 +197,10 @@ export function TextField({
       ) : (
         <input
           type={type}
+          name={name}
+          autoComplete={autoComplete}
           value={value}
+          defaultValue={defaultValue}
           readOnly={readOnly}
           onChange={(event) => onChange?.(event.target.value)}
           className='mt-1 w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
