@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { saveAdminContentSection } from '@/services/admin-content/local-store';
-import type { AdminContent, AdminSectionId } from '@/components/admin/types';
+import type { AdminContent } from '@/components/admin/types';
 import { auth } from '@/auth';
 
 export type SaveAdminSectionResponse = {
@@ -11,7 +11,7 @@ export type SaveAdminSectionResponse = {
   content?: AdminContent;
 };
 
-export async function saveAdminSection<K extends AdminSectionId>(
+export async function saveAdminSection<K extends keyof AdminContent>(
   section: K,
   value: AdminContent[K],
 ): Promise<SaveAdminSectionResponse> {

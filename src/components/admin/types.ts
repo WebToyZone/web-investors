@@ -9,7 +9,8 @@ export type AdminSectionId =
   | 'board'
   | 'growth'
   | 'contact'
-  | 'videos';
+  | 'videos'
+  | 'users';
 
 export type AdminSection = {
   id: AdminSectionId;

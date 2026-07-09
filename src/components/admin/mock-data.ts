@@ -4,6 +4,7 @@ import {
   FaFilePdf,
   FaPeopleGroup,
   FaRocket,
+  FaUserGear,
   FaVideo,
 } from 'react-icons/fa6';
 import type { AdminSection } from './types';
@@ -50,5 +51,12 @@ export const adminSections: AdminSection[] = [
     eyebrow: 'Media de fondo',
     description: 'Video del Hero y de Power of a Smile.',
     icon: FaVideo,
+  },
+  {
+    id: 'users',
+    label: 'Usuarios',
+    eyebrow: 'Accesos al admin',
+    description: 'Agrega, edita y elimina usuarios con acceso al panel.',
+    icon: FaUserGear,
   },
 ];

@@ -3,7 +3,6 @@ import type { Prisma } from '@prisma/client';
 import type {
   AdminContent,
   AdminDocument,
-  AdminSectionId,
   BoardMember,
   GrowthMilestone,
   KpiStat,
@@ -132,7 +131,7 @@ export async function getAdminContent(): Promise<AdminContent> {
   };
 }
 
-async function persistSection<K extends AdminSectionId>(
+async function persistSection<K extends keyof AdminContent>(
   section: K,
   value: AdminContent[K],
 ): Promise<void> {
@@ -262,7 +261,7 @@ async function persistSection<K extends AdminSectionId>(
   });
 }
 
-export async function saveAdminContentSection<K extends AdminSectionId>(
+export async function saveAdminContentSection<K extends keyof AdminContent>(
   section: K,
   value: AdminContent[K],
 ): Promise<AdminContent> {

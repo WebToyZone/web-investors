@@ -100,9 +100,11 @@ export default function AdminShell({
               </div>
 
               <div className='flex flex-wrap items-center gap-2'>
-                <PrimaryButton icon={FaPlus} onClick={onCreateContent}>
-                  Nuevo contenido
-                </PrimaryButton>
+                {currentSection.id === 'users' ? null : (
+                  <PrimaryButton icon={FaPlus} onClick={onCreateContent}>
+                    Nuevo contenido
+                  </PrimaryButton>
+                )}
               </div>
             </div>
           </header>

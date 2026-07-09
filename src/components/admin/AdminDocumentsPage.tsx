@@ -9,19 +9,23 @@ import ContactAdminSection from './sections/ContactAdminSection';
 import DocumentsAdminSection from './sections/DocumentsAdminSection';
 import GlanceAdminSection from './sections/GlanceAdminSection';
 import GrowthAdminSection from './sections/GrowthAdminSection';
+import UsersAdminSection from './sections/UsersAdminSection';
 import VideosAdminSection from './sections/VideosAdminSection';
 import type { AdminContent, AdminSectionId } from './types';
+import type { AdminUserSummary } from '@/services/admin-users/admin-users.service';
 
 function renderAdminSection(
   section: AdminSectionId,
   content: AdminContent,
-  updateSection: <K extends AdminSectionId>(
+  updateSection: <K extends keyof AdminContent>(
     section: K,
     value: AdminContent[K],
   ) => void,
-  saveSection: <K extends AdminSectionId>(section: K) => void,
+  saveSection: <K extends keyof AdminContent>(section: K) => void,
   savingSection: AdminSectionId | null,
   createRequestId: number,
+  users: AdminUserSummary[],
+  currentUserId: number,
 ) {
   switch (section) {
     case 'documents':
@@ -83,6 +87,10 @@ function renderAdminSection(
           isSaving={savingSection === 'videos'}
         />
       );
+    case 'users':
+      return (
+        <UsersAdminSection initialUsers={users} currentUserId={currentUserId} />
+      );
     default:
       return null;
   }
@@ -90,9 +98,13 @@ function renderAdminSection(
 
 export default function AdminDocumentsPage({
   initialContent,
+  initialUsers,
+  currentUserId,
   userEmail,
 }: {
   initialContent: AdminContent;
+  initialUsers: AdminUserSummary[];
+  currentUserId: number;
   userEmail: string;
 }) {
   const [activeSection, setActiveSection] =
@@ -104,7 +116,7 @@ export default function AdminDocumentsPage({
   const [createRequestId, setCreateRequestId] = useState(0);
   const [feedback, setFeedback] = useState('');
 
-  function updateSection<K extends AdminSectionId>(
+  function updateSection<K extends keyof AdminContent>(
     section: K,
     value: AdminContent[K],
   ) {
@@ -115,7 +127,7 @@ export default function AdminDocumentsPage({
     setFeedback('');
   }
 
-  async function handleSaveSection<K extends AdminSectionId>(section: K) {
+  async function handleSaveSection<K extends keyof AdminContent>(section: K) {
     setSavingSection(section);
     setFeedback('');
 
@@ -149,6 +161,8 @@ export default function AdminDocumentsPage({
         handleSaveSection,
         savingSection,
         createRequestId,
+        initialUsers,
+        currentUserId,
       )}
     </AdminShell>
   );
