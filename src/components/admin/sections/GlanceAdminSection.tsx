@@ -4,13 +4,11 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   FaArrowDown,
   FaArrowUp,
-  FaArrowUpFromBracket,
   FaCheck,
   FaImage,
   FaPen,
   FaPlus,
   FaTrashCan,
-  FaXmark,
 } from 'react-icons/fa6';
 import type {
   AdminContent,
@@ -26,6 +24,8 @@ import {
   SecondaryButton,
   TextField,
 } from '@/components/admin/ui';
+import { AssetUploadField } from '@/components/admin/upload/AssetUploadField';
+import { getAssetUrl } from '@/services/storage/asset-url';
 
 type KpiDraft = {
   icon: string;
@@ -57,53 +57,6 @@ function createDefaultLocationDraft(): LocationDraft {
       es: { name: '', description: '' },
     },
   };
-}
-
-function IconUploadField({
-  icon,
-  onUpload,
-  onClear,
-}: {
-  icon: string;
-  onUpload: (file: File | undefined) => void;
-  onClear: () => void;
-}) {
-  return (
-    <div className='space-y-3'>
-      <span className='block text-xs font-bold uppercase text-neutral-500'>
-        Icono
-      </span>
-      {icon ? (
-        <div className='flex items-center justify-between gap-3 rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2'>
-          <div className='flex min-w-0 items-center gap-3'>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={icon}
-              alt=''
-              className='h-10 w-10 shrink-0 rounded-md border border-neutral-200 bg-white object-contain'
-            />
-            <span className='truncate text-xs text-neutral-600'>{icon}</span>
-          </div>
-          <IconButton label='Quitar icono' onClick={onClear}>
-            <FaXmark className='h-4 w-4' />
-          </IconButton>
-        </div>
-      ) : (
-        <div className='flex h-28 flex-col items-center justify-center rounded-md border border-dashed border-neutral-300 bg-neutral-50 px-4 text-center'>
-          <FaArrowUpFromBracket className='h-6 w-6 text-brand' />
-          <p className='mt-2 text-xs font-bold text-neutral-950'>
-            Sube una imagen
-          </p>
-          <input
-            type='file'
-            accept='image/*'
-            onChange={(event) => onUpload(event.target.files?.[0])}
-            className='mt-3 max-w-full text-xs text-neutral-600 file:mr-3 file:rounded-md file:border-0 file:bg-brand file:px-3 file:py-1.5 file:text-xs file:font-bold file:text-white'
-          />
-        </div>
-      )}
-    </div>
-  );
 }
 
 export default function GlanceAdminSection({
@@ -184,15 +137,9 @@ export default function GlanceAdminSection({
     }));
   }
 
-  function handleIconChange(file: File | undefined) {
-    if (!file) {
-      return;
-    }
-
-    // Local-only for now: stores the file name as the public path. The
-    // actual upload to AWS storage will replace this once wired up.
+  function handleIconChange(key: string) {
     setValidationError('');
-    setDraft((current) => ({ ...current, icon: `/icons/${file.name}` }));
+    setDraft((current) => ({ ...current, icon: key }));
   }
 
   function clearIcon() {
@@ -233,18 +180,9 @@ export default function GlanceAdminSection({
     }));
   }
 
-  function handleLocationIconChange(file: File | undefined) {
-    if (!file) {
-      return;
-    }
-
-    // Local-only for now: stores the file name as the public path. The
-    // actual upload to AWS storage will replace this once wired up.
+  function handleLocationIconChange(key: string) {
     setLocationValidationError('');
-    setLocationDraft((current) => ({
-      ...current,
-      icon: `/icons/${file.name}`,
-    }));
+    setLocationDraft((current) => ({ ...current, icon: key }));
   }
 
   function clearLocationIcon() {
@@ -451,7 +389,7 @@ export default function GlanceAdminSection({
                   {kpi.icon ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={kpi.icon}
+                      src={getAssetUrl(kpi.icon)}
                       alt=''
                       className='h-10 w-10 shrink-0 rounded-md border border-neutral-200 object-contain'
                     />
@@ -531,7 +469,7 @@ export default function GlanceAdminSection({
                   {location.icon ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={location.icon}
+                      src={getAssetUrl(location.icon)}
                       alt=''
                       className='h-10 w-10 shrink-0 rounded-full border border-neutral-200 object-contain'
                     />
@@ -597,10 +535,14 @@ export default function GlanceAdminSection({
               {formMode === 'edit' ? 'Editar KPI' : 'Nuevo KPI'}
             </h3>
 
-            <IconUploadField
-              icon={draft.icon}
-              onUpload={handleIconChange}
+            <AssetUploadField
+              kind='icons'
+              accept='image/*'
+              label='Icono'
+              value={draft.icon}
+              onChange={handleIconChange}
               onClear={clearIcon}
+              previewVariant='square'
             />
 
             <TextField
@@ -648,10 +590,14 @@ export default function GlanceAdminSection({
                 : 'Nueva ubicacion'}
             </h3>
 
-            <IconUploadField
-              icon={locationDraft.icon}
-              onUpload={handleLocationIconChange}
+            <AssetUploadField
+              kind='icons'
+              accept='image/*'
+              label='Icono'
+              value={locationDraft.icon}
+              onChange={handleLocationIconChange}
               onClear={clearLocationIcon}
+              previewVariant='square'
             />
 
             <div className='space-y-3 rounded-md border border-neutral-200 p-3'>

@@ -4,13 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 import {
   FaArrowDown,
   FaArrowUp,
-  FaArrowUpFromBracket,
   FaCheck,
   FaPen,
   FaPlus,
   FaTrashCan,
   FaUserTie,
-  FaXmark,
 } from 'react-icons/fa6';
 import type {
   AdminContent,
@@ -25,6 +23,8 @@ import {
   SecondaryButton,
   TextField,
 } from '@/components/admin/ui';
+import { AssetUploadField } from '@/components/admin/upload/AssetUploadField';
+import { getAssetUrl } from '@/services/storage/asset-url';
 
 type MemberDraft = {
   name: string;
@@ -58,53 +58,6 @@ function createDefaultSeatDraft(): SeatDraft {
       es: { role: '' },
     },
   };
-}
-
-function PhotoUploadField({
-  image,
-  onUpload,
-  onClear,
-}: {
-  image: string;
-  onUpload: (file: File | undefined) => void;
-  onClear: () => void;
-}) {
-  return (
-    <div className='space-y-3'>
-      <span className='block text-xs font-bold uppercase text-neutral-500'>
-        Foto
-      </span>
-      {image ? (
-        <div className='flex items-center justify-between gap-3 rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2'>
-          <div className='flex min-w-0 items-center gap-3'>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={image}
-              alt=''
-              className='h-10 w-10 shrink-0 rounded-full border border-neutral-200 bg-white object-cover'
-            />
-            <span className='truncate text-xs text-neutral-600'>{image}</span>
-          </div>
-          <IconButton label='Quitar foto' onClick={onClear}>
-            <FaXmark className='h-4 w-4' />
-          </IconButton>
-        </div>
-      ) : (
-        <div className='flex h-28 flex-col items-center justify-center rounded-md border border-dashed border-neutral-300 bg-neutral-50 px-4 text-center'>
-          <FaArrowUpFromBracket className='h-6 w-6 text-brand' />
-          <p className='mt-2 text-xs font-bold text-neutral-950'>
-            Sube una foto
-          </p>
-          <input
-            type='file'
-            accept='image/*'
-            onChange={(event) => onUpload(event.target.files?.[0])}
-            className='mt-3 max-w-full text-xs text-neutral-600 file:mr-3 file:rounded-md file:border-0 file:bg-brand file:px-3 file:py-1.5 file:text-xs file:font-bold file:text-white'
-          />
-        </div>
-      )}
-    </div>
-  );
 }
 
 export default function BoardAdminSection({
@@ -178,15 +131,9 @@ export default function BoardAdminSection({
     }));
   }
 
-  function handleImageChange(file: File | undefined) {
-    if (!file) {
-      return;
-    }
-
-    // Local-only for now: stores the file name as the public path. The
-    // actual upload to AWS storage will replace this once wired up.
+  function handleImageChange(key: string) {
     setValidationError('');
-    setDraft((current) => ({ ...current, image: `/board/${file.name}` }));
+    setDraft((current) => ({ ...current, image: key }));
   }
 
   function clearImage() {
@@ -230,15 +177,9 @@ export default function BoardAdminSection({
     }));
   }
 
-  function handleSeatImageChange(file: File | undefined) {
-    if (!file) {
-      return;
-    }
-
-    // Local-only for now: stores the file name as the public path. The
-    // actual upload to AWS storage will replace this once wired up.
+  function handleSeatImageChange(key: string) {
     setSeatValidationError('');
-    setSeatDraft((current) => ({ ...current, image: `/board/${file.name}` }));
+    setSeatDraft((current) => ({ ...current, image: key }));
   }
 
   function clearSeatImage() {
@@ -410,7 +351,7 @@ export default function BoardAdminSection({
                   {member.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={member.image}
+                      src={getAssetUrl(member.image)}
                       alt=''
                       className='h-20 w-20 rounded-full border border-neutral-200 object-cover'
                     />
@@ -492,7 +433,7 @@ export default function BoardAdminSection({
                   {seat.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={seat.image}
+                      src={getAssetUrl(seat.image)}
                       alt=''
                       className='h-20 w-20 rounded-full border border-neutral-200 object-cover'
                     />
@@ -553,10 +494,14 @@ export default function BoardAdminSection({
               {formMode === 'edit' ? 'Editar miembro' : 'Nuevo miembro'}
             </h3>
 
-            <PhotoUploadField
-              image={draft.image}
-              onUpload={handleImageChange}
+            <AssetUploadField
+              kind='board'
+              accept='image/*'
+              label='Foto'
+              value={draft.image}
+              onChange={handleImageChange}
               onClear={clearImage}
+              previewVariant='circle'
             />
 
             <TextField
@@ -618,10 +563,14 @@ export default function BoardAdminSection({
               {seatFormMode === 'edit' ? 'Editar asiento' : 'Nuevo asiento'}
             </h3>
 
-            <PhotoUploadField
-              image={seatDraft.image}
-              onUpload={handleSeatImageChange}
+            <AssetUploadField
+              kind='board'
+              accept='image/*'
+              label='Foto'
+              value={seatDraft.image}
+              onChange={handleSeatImageChange}
               onClear={clearSeatImage}
+              previewVariant='circle'
             />
 
             <TextField

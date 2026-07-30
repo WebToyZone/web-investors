@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   FaArrowDown,
-  FaArrowUpFromBracket,
   FaArrowUp,
   FaCheck,
   FaDownload,
@@ -30,6 +29,8 @@ import {
   StatusBadge,
   TextField,
 } from '@/components/admin/ui';
+import { AssetUploadField } from '@/components/admin/upload/AssetUploadField';
+import { getAssetUrl } from '@/services/storage/asset-url';
 
 type DocumentDraft = {
   category: string;
@@ -271,14 +272,10 @@ export default function DocumentsAdminSection({
     setValidationError('');
   }
 
-  function handleFileChange(locale: Locale, file: File | undefined) {
-    if (!file) {
-      return;
-    }
-
+  function handleFileChange(locale: Locale, key: string, file: File) {
     updateDraftFile(locale, {
       title: draft[locale].title || file.name.replace(/\.pdf$/i, ''),
-      fileName: file.name,
+      fileName: key,
       size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
     });
   }
@@ -288,13 +285,7 @@ export default function DocumentsAdminSection({
   }
 
   function downloadDocumentFile(file: DocumentLocaleFile) {
-    const href = file.fileName.startsWith('/')
-      ? file.fileName
-      : `/documents/${file.fileName}`;
-    const link = window.document.createElement('a');
-    link.href = href;
-    link.download = file.fileName;
-    link.click();
+    window.open(getAssetUrl(file.fileName), '_blank');
   }
 
   function handleSave() {
@@ -805,20 +796,14 @@ export default function DocumentsAdminSection({
                     </IconButton>
                   </div>
                 ) : (
-                  <div className='flex h-24 flex-col items-center justify-center rounded-md border border-dashed border-neutral-300 bg-neutral-50 px-4 text-center'>
-                    <FaArrowUpFromBracket className='h-5 w-5 text-brand' />
-                    <p className='mt-2 text-xs font-bold text-neutral-950'>
-                      Sube PDF
-                    </p>
-                    <input
-                      type='file'
-                      accept='application/pdf'
-                      onChange={(event) =>
-                        handleFileChange(locale, event.target.files?.[0])
-                      }
-                      className='mt-2 max-w-full text-xs text-neutral-600 file:mr-3 file:rounded-md file:border-0 file:bg-brand file:px-3 file:py-1.5 file:text-xs file:font-bold file:text-white'
-                    />
-                  </div>
+                  <AssetUploadField
+                    kind='documents'
+                    accept='application/pdf'
+                    label=''
+                    value=''
+                    onChange={(key, file) => handleFileChange(locale, key, file)}
+                    previewVariant='row'
+                  />
                 )}
               </div>
             ))}
