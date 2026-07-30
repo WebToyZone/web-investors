@@ -1,7 +1,6 @@
 import type { ComponentType } from 'react';
 
 export type Locale = 'en' | 'es';
-export type PublishStatus = 'published' | 'draft' | 'scheduled';
 
 export type AdminSectionId =
   | 'documents'
@@ -31,7 +30,6 @@ export type AdminDocument = {
   order?: number;
   category: string;
   year: string;
-  status: PublishStatus;
   date: string;
   downloads: number;
   files: Record<Locale, DocumentLocaleFile | null>;

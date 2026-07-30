@@ -28,7 +28,6 @@ async function main() {
         order: item.order ?? 0,
         category: item.category,
         year: item.year,
-        status: item.status,
         date: item.date,
         downloads: item.downloads,
         files: item.files,

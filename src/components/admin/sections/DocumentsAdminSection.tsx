@@ -17,7 +17,6 @@ import type {
   AdminDocument,
   DocumentLocaleFile,
   Locale,
-  PublishStatus,
 } from '@/components/admin/types';
 import {
   FormNotice,
@@ -26,7 +25,6 @@ import {
   Panel,
   PrimaryButton,
   SelectField,
-  StatusBadge,
   TextField,
 } from '@/components/admin/ui';
 import { AssetUploadField } from '@/components/admin/upload/AssetUploadField';
@@ -35,7 +33,6 @@ import { getAssetUrl } from '@/services/storage/asset-url';
 type DocumentDraft = {
   category: string;
   year: string;
-  status: PublishStatus;
   date: string;
   en: DocumentLocaleFile;
   es: DocumentLocaleFile;
@@ -47,7 +44,6 @@ function createDefaultDraft(categories: string[]): DocumentDraft {
   return {
     category: categories[0] ?? '',
     year: String(new Date().getFullYear()),
-    status: 'draft',
     date: new Date().toISOString().slice(0, 10),
     en: { ...emptyFile },
     es: { ...emptyFile },
@@ -58,7 +54,6 @@ function draftFromDocument(document: AdminDocument): DocumentDraft {
   return {
     category: document.category,
     year: document.year,
-    status: document.status,
     date: document.date,
     en: document.files.en ? { ...document.files.en } : { ...emptyFile },
     es: document.files.es ? { ...document.files.es } : { ...emptyFile },
@@ -89,7 +84,6 @@ export default function DocumentsAdminSection({
   const { categories, items: documents } = data;
 
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [status, setStatus] = useState<'all' | PublishStatus>('all');
 
   const [formMode, setFormMode] = useState<'new' | 'edit'>('new');
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -144,10 +138,9 @@ export default function DocumentsAdminSection({
     return orderedDocuments.filter((document) => {
       if (categoryFilter !== 'all' && document.category !== categoryFilter)
         return false;
-      if (status !== 'all' && document.status !== status) return false;
       return true;
     });
-  }, [categoryFilter, orderedDocuments, status]);
+  }, [categoryFilter, orderedDocuments]);
 
   const groupedDocuments = useMemo(() => {
     type YearGroup = { year: string; items: typeof filteredDocuments };
@@ -335,7 +328,6 @@ export default function DocumentsAdminSection({
                   ...document,
                   category: draft.category,
                   year: draft.year,
-                  status: draft.status,
                   date: draft.date,
                   files,
                 }
@@ -356,7 +348,6 @@ export default function DocumentsAdminSection({
               downloads: 0,
               category: draft.category,
               year: draft.year,
-              status: draft.status,
               date: draft.date,
               files,
             },
@@ -451,21 +442,9 @@ export default function DocumentsAdminSection({
   return (
     <div className='grid gap-5 xl:grid-cols-[1fr_360px]'>
       <div className='min-w-0 space-y-5'>
-        <section className='grid gap-3 sm:grid-cols-3'>
-          <MetricCard
-            label='Publicados'
-            value={documents.filter((item) => item.status === 'published').length}
-          />
-          <MetricCard
-            label='Borradores'
-            value={documents.filter((item) => item.status === 'draft').length}
-          />
-          <MetricCard
-            label='Programados'
-            value={
-              documents.filter((item) => item.status === 'scheduled').length
-            }
-          />
+        <section className='grid gap-3 sm:grid-cols-2'>
+          <MetricCard label='Documentos totales' value={documents.length} />
+          <MetricCard label='Categorias' value={categories.length} />
         </section>
 
         <Panel title='Categorias' eyebrow='Financial Information, Meetings & Notices...'>
@@ -543,7 +522,7 @@ export default function DocumentsAdminSection({
         </Panel>
 
         <Panel title='Biblioteca de documentos' eyebrow='Categoria > Ano > Documentos'>
-          <div className='grid gap-3 border-b border-neutral-200 pb-4 md:grid-cols-2'>
+          <div className='grid gap-3 border-b border-neutral-200 pb-4'>
             <label className='block'>
               <span className='text-xs font-bold uppercase text-neutral-500'>
                 Categoria
@@ -559,24 +538,6 @@ export default function DocumentsAdminSection({
                     {item}
                   </option>
                 ))}
-              </select>
-            </label>
-
-            <label className='block'>
-              <span className='text-xs font-bold uppercase text-neutral-500'>
-                Estado
-              </span>
-              <select
-                value={status}
-                onChange={(event) =>
-                  setStatus(event.target.value as 'all' | PublishStatus)
-                }
-                className='mt-1 w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
-              >
-                <option value='all'>Todos</option>
-                <option value='published'>Publicado</option>
-                <option value='draft'>Borrador</option>
-                <option value='scheduled'>Programado</option>
               </select>
             </label>
           </div>
@@ -608,9 +569,6 @@ export default function DocumentsAdminSection({
                               </th>
                               <th scope='col' className='px-4 py-3'>
                                 Fecha
-                              </th>
-                              <th scope='col' className='px-4 py-3'>
-                                Estado
                               </th>
                               <th scope='col' className='px-4 py-3 text-right'>
                                 Acciones
@@ -666,9 +624,6 @@ export default function DocumentsAdminSection({
                                 </td>
                                 <td className='px-4 py-4 text-neutral-700'>
                                   {document.date}
-                                </td>
-                                <td className='px-4 py-4'>
-                                  <StatusBadge status={document.status} />
                                 </td>
                                 <td className='px-4 py-4'>
                                   <div className='flex justify-end gap-2'>
@@ -737,12 +692,9 @@ export default function DocumentsAdminSection({
             {validationError ? (
               <FormNotice tone='danger'>{validationError}</FormNotice>
             ) : null}
-            <div className='flex items-start justify-between gap-3'>
-              <h3 className='text-xl font-black text-neutral-950'>
-                {formMode === 'edit' ? 'Editar documento' : 'Nuevo documento'}
-              </h3>
-              <StatusBadge status={draft.status} />
-            </div>
+            <h3 className='text-xl font-black text-neutral-950'>
+              {formMode === 'edit' ? 'Editar documento' : 'Nuevo documento'}
+            </h3>
 
             <SelectField
               label='Categoria'
@@ -768,19 +720,6 @@ export default function DocumentsAdminSection({
                 onChange={(date) => updateDraft({ date })}
               />
             </div>
-            <SelectField
-              label='Estado'
-              value={draft.status}
-              options={[
-                { label: 'Publicado', value: 'published' },
-                { label: 'Borrador', value: 'draft' },
-                { label: 'Programado', value: 'scheduled' },
-              ]}
-              onChange={(nextStatus) =>
-                updateDraft({ status: nextStatus as PublishStatus })
-              }
-            />
-
             {(['en', 'es'] as const).map((locale) => (
               <div
                 key={locale}

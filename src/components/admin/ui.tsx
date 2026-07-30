@@ -1,49 +1,4 @@
 import type { ComponentType, ReactNode } from 'react';
-import {
-  FaCheck,
-  FaClock,
-  FaRegFileLines,
-} from 'react-icons/fa6';
-import type { PublishStatus } from './types';
-
-const statusConfig = {
-  published: {
-    label: 'Publicado',
-    icon: FaCheck,
-    className: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-  },
-  draft: {
-    label: 'Borrador',
-    icon: FaRegFileLines,
-    className: 'bg-neutral-100 text-neutral-700 ring-neutral-200',
-  },
-  scheduled: {
-    label: 'Programado',
-    icon: FaClock,
-    className: 'bg-amber-50 text-amber-700 ring-amber-200',
-  },
-} satisfies Record<
-  PublishStatus,
-  {
-    label: string;
-    icon: ComponentType<{ className?: string }>;
-    className: string;
-  }
->;
-
-export function StatusBadge({ status }: { status: PublishStatus }) {
-  const config = statusConfig[status];
-  const Icon = config.icon;
-
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ring-1 ${config.className}`}
-    >
-      <Icon className='h-3 w-3' />
-      {config.label}
-    </span>
-  );
-}
 
 export function IconButton({
   label,
