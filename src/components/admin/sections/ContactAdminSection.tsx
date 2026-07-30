@@ -107,9 +107,7 @@ export default function ContactAdminSection({
             </IconButton>
           </div>
           <p className='text-xs text-neutral-500'>
-            Este dato queda guardado en el admin. El envio real de correos
-            todavia usa la variable de entorno CONTACT_TO_EMAIL hasta que
-            conectemos el admin con la web publica.
+            Los mensajes del formulario de contacto se envian a este correo.
           </p>
         </div>
       </Panel>

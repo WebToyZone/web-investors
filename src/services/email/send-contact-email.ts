@@ -1,5 +1,6 @@
 import { ContactFormInput } from '@/schemas/contact.schema';
 import { Locale } from '@/types/locale';
+import { prisma } from '@/services/db/client';
 import { emailClient } from './client';
 
 const contactEmailCopy = {
@@ -24,9 +25,14 @@ export async function sendContactEmail(data: ContactFormInput, locale: Locale) {
     timeZone: 'UTC',
   }).format(new Date());
 
+  const contactSettings = await prisma.contactSettings.findUnique({
+    where: { id: 1 },
+  });
+  const recipient = contactSettings?.recipientEmail || process.env.CONTACT_TO_EMAIL!;
+
   const { error } = await emailClient.emails.send({
     from: process.env.CONTACT_FROM_EMAIL!,
-    to: process.env.CONTACT_TO_EMAIL!,
+    to: recipient,
     subject: `${t.subject} | ${data.name} <${data.email}>`,
     replyTo: data.email,
     html: `
