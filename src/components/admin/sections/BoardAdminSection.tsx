@@ -24,11 +24,13 @@ import {
   TextField,
 } from '@/components/admin/ui';
 import { AssetUploadField } from '@/components/admin/upload/AssetUploadField';
+import { uploadAsset } from '@/components/admin/upload/upload-asset';
 import { getAssetUrl } from '@/services/storage/asset-url';
 
 type MemberDraft = {
   name: string;
   image: string;
+  pendingImageFile?: File;
   translations: BoardMember['translations'];
 };
 
@@ -46,6 +48,7 @@ function createDefaultMemberDraft(): MemberDraft {
 type SeatDraft = {
   name: string;
   image: string;
+  pendingImageFile?: File;
   translations: PendingBoardSeat['translations'];
 };
 
@@ -81,6 +84,7 @@ export default function BoardAdminSection({
     createDefaultMemberDraft(),
   );
   const [validationError, setValidationError] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
   const pendingSaveRef = useRef(false);
 
   const [seatFormMode, setSeatFormMode] = useState<'new' | 'edit'>('new');
@@ -89,6 +93,7 @@ export default function BoardAdminSection({
     createDefaultSeatDraft(),
   );
   const [seatValidationError, setSeatValidationError] = useState('');
+  const [isSeatUploading, setIsSeatUploading] = useState(false);
   const pendingSeatSaveRef = useRef(false);
 
   function startNewMember() {
@@ -131,13 +136,17 @@ export default function BoardAdminSection({
     }));
   }
 
-  function handleImageChange(key: string) {
+  function handleImageSelected(file: File) {
     setValidationError('');
-    setDraft((current) => ({ ...current, image: key }));
+    setDraft((current) => ({ ...current, pendingImageFile: file }));
   }
 
   function clearImage() {
-    setDraft((current) => ({ ...current, image: '' }));
+    setDraft((current) => ({
+      ...current,
+      image: '',
+      pendingImageFile: undefined,
+    }));
   }
 
   function startNewSeat() {
@@ -177,13 +186,17 @@ export default function BoardAdminSection({
     }));
   }
 
-  function handleSeatImageChange(key: string) {
+  function handleSeatImageSelected(file: File) {
     setSeatValidationError('');
-    setSeatDraft((current) => ({ ...current, image: key }));
+    setSeatDraft((current) => ({ ...current, pendingImageFile: file }));
   }
 
   function clearSeatImage() {
-    setSeatDraft((current) => ({ ...current, image: '' }));
+    setSeatDraft((current) => ({
+      ...current,
+      image: '',
+      pendingImageFile: undefined,
+    }));
   }
 
   const lastCreateRequestId = useRef(createRequestId);
@@ -252,10 +265,10 @@ export default function BoardAdminSection({
     setValidationError('');
   }
 
-  function handleSave() {
+  async function handleSave() {
     if (
       !draft.name.trim() ||
-      !draft.image.trim() ||
+      (!draft.image.trim() && !draft.pendingImageFile) ||
       !draft.translations.en.role.trim() ||
       !draft.translations.es.role.trim()
     ) {
@@ -265,16 +278,32 @@ export default function BoardAdminSection({
       return;
     }
 
+    let image = draft.image;
+    if (draft.pendingImageFile) {
+      setIsUploading(true);
+      const result = await uploadAsset('board', draft.pendingImageFile);
+      setIsUploading(false);
+
+      if ('error' in result) {
+        setValidationError(result.error);
+        return;
+      }
+      image = result.key;
+    }
+
     const nextMembers =
       formMode === 'edit' && editingId !== null
         ? boardMembers.map((member) =>
-            member.id === editingId ? { ...member, ...draft } : member,
+            member.id === editingId
+              ? { ...member, ...draft, image }
+              : member,
           )
         : [
             ...boardMembers,
             {
               id: Math.max(0, ...boardMembers.map((member) => member.id)) + 1,
               ...draft,
+              image,
             },
           ];
 
@@ -320,10 +349,10 @@ export default function BoardAdminSection({
     setSeatValidationError('');
   }
 
-  function handleSaveSeat() {
+  async function handleSaveSeat() {
     if (
       !seatDraft.name.trim() ||
-      !seatDraft.image.trim() ||
+      (!seatDraft.image.trim() && !seatDraft.pendingImageFile) ||
       !seatDraft.translations.en.role.trim() ||
       !seatDraft.translations.es.role.trim()
     ) {
@@ -333,16 +362,32 @@ export default function BoardAdminSection({
       return;
     }
 
+    let image = seatDraft.image;
+    if (seatDraft.pendingImageFile) {
+      setIsSeatUploading(true);
+      const result = await uploadAsset('board', seatDraft.pendingImageFile);
+      setIsSeatUploading(false);
+
+      if ('error' in result) {
+        setSeatValidationError(result.error);
+        return;
+      }
+      image = result.key;
+    }
+
     const nextSeats =
       seatFormMode === 'edit' && editingSeatId !== null
         ? pendingSeats.map((seat) =>
-            seat.id === editingSeatId ? { ...seat, ...seatDraft } : seat,
+            seat.id === editingSeatId
+              ? { ...seat, ...seatDraft, image }
+              : seat,
           )
         : [
             ...pendingSeats,
             {
               id: Math.max(0, ...pendingSeats.map((seat) => seat.id)) + 1,
               ...seatDraft,
+              image,
             },
           ];
 
@@ -515,13 +560,14 @@ export default function BoardAdminSection({
             </h3>
 
             <AssetUploadField
-              kind='board'
               accept='image/*'
               label='Foto'
               value={draft.image}
-              onChange={handleImageChange}
+              pendingFile={draft.pendingImageFile}
+              onFileSelected={handleImageSelected}
               onClear={clearImage}
               previewVariant='circle'
+              disabled={isUploading}
             />
 
             <TextField
@@ -568,8 +614,16 @@ export default function BoardAdminSection({
               />
             </div>
 
-            <PrimaryButton icon={FaCheck} onClick={handleSave} disabled={isSaving}>
-              {isSaving ? 'Guardando...' : 'Guardar'}
+            <PrimaryButton
+              icon={FaCheck}
+              onClick={handleSave}
+              disabled={isSaving || isUploading}
+            >
+              {isUploading
+                ? 'Subiendo...'
+                : isSaving
+                  ? 'Guardando...'
+                  : 'Guardar'}
             </PrimaryButton>
           </div>
         </Panel>
@@ -584,13 +638,14 @@ export default function BoardAdminSection({
             </h3>
 
             <AssetUploadField
-              kind='board'
               accept='image/*'
               label='Foto'
               value={seatDraft.image}
-              onChange={handleSeatImageChange}
+              pendingFile={seatDraft.pendingImageFile}
+              onFileSelected={handleSeatImageSelected}
               onClear={clearSeatImage}
               previewVariant='circle'
+              disabled={isSeatUploading}
             />
 
             <TextField
@@ -613,9 +668,13 @@ export default function BoardAdminSection({
             <PrimaryButton
               icon={FaCheck}
               onClick={handleSaveSeat}
-              disabled={isSaving}
+              disabled={isSaving || isSeatUploading}
             >
-              {isSaving ? 'Guardando...' : 'Guardar'}
+              {isSeatUploading
+                ? 'Subiendo...'
+                : isSaving
+                  ? 'Guardando...'
+                  : 'Guardar'}
             </PrimaryButton>
           </div>
         </Panel>

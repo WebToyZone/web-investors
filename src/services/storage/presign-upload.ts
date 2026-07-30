@@ -20,18 +20,38 @@ function sanitizeFileName(fileName: string): { base: string; ext: string } {
       .trim()
       .replace(/\s+/g, '-')
       .replace(/[^a-zA-Z0-9._-]/g, '')
+      .toLowerCase()
       .slice(0, 100) || 'file';
   const ext = rawExt.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
 
   return { base, ext };
 }
 
-function buildKey(kind: string, fileName: string): string {
+function slugify(text: string): string {
+  return (
+    text
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 80) || 'sin-categoria'
+  );
+}
+
+function buildKey(
+  kind: string,
+  fileName: string,
+  prefixParts: string[] = [],
+): string {
   const { base, ext } = sanitizeFileName(fileName);
   const uniqueSuffix = randomBytes(4).toString('hex');
   const nameWithSuffix = `${base}-${uniqueSuffix}`;
+  const fileSegment = ext ? `${nameWithSuffix}.${ext}` : nameWithSuffix;
 
-  return ext ? `${kind}/${nameWithSuffix}.${ext}` : `${kind}/${nameWithSuffix}`;
+  const segments = [kind, ...prefixParts.map(slugify), fileSegment];
+  return segments.join('/');
 }
 
 export class InvalidContentTypeError extends Error {}
@@ -40,6 +60,7 @@ export async function createPresignedUploadUrl({
   kind,
   fileName,
   contentType,
+  prefixParts,
 }: CreateUploadUrlInput): Promise<{ url: string; key: string }> {
   if (!ALLOWED_CONTENT_TYPES[kind].includes(contentType)) {
     throw new InvalidContentTypeError(
@@ -47,7 +68,7 @@ export async function createPresignedUploadUrl({
     );
   }
 
-  const key = buildKey(kind, fileName);
+  const key = buildKey(kind, fileName, prefixParts);
 
   const command = new PutObjectCommand({
     Bucket: process.env.AWS_S3_BUCKET_NAME,

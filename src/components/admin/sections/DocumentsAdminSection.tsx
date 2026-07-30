@@ -29,6 +29,7 @@ import {
   TextField,
 } from '@/components/admin/ui';
 import { AssetUploadField } from '@/components/admin/upload/AssetUploadField';
+import { uploadAsset } from '@/components/admin/upload/upload-asset';
 import { getAssetUrl } from '@/services/storage/asset-url';
 import { createDocumentCategoryAction } from '@/actions/document-categories/create-document-category';
 import { updateDocumentCategoryAction } from '@/actions/document-categories/update-document-category';
@@ -106,6 +107,11 @@ export default function DocumentsAdminSection({
     createDefaultDraft(categories),
   );
   const [validationError, setValidationError] = useState('');
+  const [pendingFiles, setPendingFiles] = useState<{
+    en?: File;
+    es?: File;
+  }>({});
+  const [isUploading, setIsUploading] = useState(false);
   const pendingSaveRef = useRef(false);
 
   const [newCategoryEn, setNewCategoryEn] = useState('');
@@ -208,6 +214,7 @@ export default function DocumentsAdminSection({
     setFormMode('new');
     setEditingId(null);
     setDraft(createDefaultDraft(categories));
+    setPendingFiles({});
     setValidationError('');
   }, [categories]);
 
@@ -215,6 +222,7 @@ export default function DocumentsAdminSection({
     setFormMode('edit');
     setEditingId(document.id);
     setDraft(draftFromDocument(document));
+    setPendingFiles({});
     setValidationError('');
   }
 
@@ -318,46 +326,92 @@ export default function DocumentsAdminSection({
     setValidationError('');
   }
 
-  function handleFileChange(locale: Locale, key: string, file: File) {
-    updateDraftFile(locale, {
-      title: draft[locale].title || file.name.replace(/\.pdf$/i, ''),
-      fileName: key,
-      size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
-    });
+  function handleFileSelected(locale: Locale, file: File) {
+    setValidationError('');
+    setPendingFiles((current) => ({ ...current, [locale]: file }));
+    if (!draft[locale].title) {
+      updateDraftFile(locale, { title: file.name.replace(/\.pdf$/i, '') });
+    }
   }
 
   function clearDraftFile(locale: Locale) {
     updateDraftFile(locale, { title: '', fileName: '', size: '' });
+    setPendingFiles((current) => ({ ...current, [locale]: undefined }));
   }
 
   function downloadDocumentFile(file: DocumentLocaleFile) {
     window.open(getAssetUrl(file.fileName), '_blank');
   }
 
-  function handleSave() {
+  async function handleSave() {
     if (!draft.categoryId || !draft.year.trim() || !draft.date.trim()) {
       setValidationError('Completa categoria, ano y fecha.');
       return;
     }
 
-    const en = normalizeFile(draft.en);
-    const es = normalizeFile(draft.es);
+    const hasEn = Boolean(draft.en.fileName.trim() || pendingFiles.en);
+    const hasEs = Boolean(draft.es.fileName.trim() || pendingFiles.es);
 
-    if (!en && !es) {
+    if (!hasEn && !hasEs) {
       setValidationError(
         'Sube al menos un archivo (ingles o espanol) para este documento.',
       );
       return;
     }
 
-    if (en && !en.title.trim()) {
+    if (hasEn && !draft.en.title.trim()) {
       setValidationError('Falta el titulo del archivo en ingles.');
       return;
     }
 
-    if (es && !es.title.trim()) {
+    if (hasEs && !draft.es.title.trim()) {
       setValidationError('Falta el titulo del archivo en espanol.');
       return;
+    }
+
+    let en = normalizeFile(draft.en);
+    let es = normalizeFile(draft.es);
+
+    if (pendingFiles.en || pendingFiles.es) {
+      setIsUploading(true);
+
+      if (pendingFiles.en) {
+        const result = await uploadAsset(
+          'documents',
+          pendingFiles.en,
+          uploadPrefixParts,
+        );
+        if ('error' in result) {
+          setIsUploading(false);
+          setValidationError(result.error);
+          return;
+        }
+        en = {
+          title: draft.en.title,
+          fileName: result.key,
+          size: `${(pendingFiles.en.size / 1024 / 1024).toFixed(1)} MB`,
+        };
+      }
+
+      if (pendingFiles.es) {
+        const result = await uploadAsset(
+          'documents',
+          pendingFiles.es,
+          uploadPrefixParts,
+        );
+        if ('error' in result) {
+          setIsUploading(false);
+          setValidationError(result.error);
+          return;
+        }
+        es = {
+          title: draft.es.title,
+          fileName: result.key,
+          size: `${(pendingFiles.es.size / 1024 / 1024).toFixed(1)} MB`,
+        };
+      }
+
+      setIsUploading(false);
     }
 
     const files = { en, es };
@@ -512,6 +566,13 @@ export default function DocumentsAdminSection({
       setCategories(result.categories);
     }
   }
+
+  const selectedCategory = categories.find(
+    (category) => String(category.id) === draft.categoryId,
+  );
+  const uploadPrefixParts = selectedCategory
+    ? [selectedCategory.translations.es.name, draft.year]
+    : undefined;
 
   return (
     <div className='grid gap-5 xl:grid-cols-[1fr_360px]'>
@@ -854,53 +915,45 @@ export default function DocumentsAdminSection({
                 onChange={(date) => updateDraft({ date })}
               />
             </div>
-            {(['en', 'es'] as const).map((locale) => (
-              <div
-                key={locale}
-                className='space-y-3 rounded-md border border-neutral-200 p-3'
-              >
-                <div className='flex items-center justify-between'>
-                  <span className='text-xs font-bold uppercase text-neutral-500'>
-                    Archivo {locale === 'en' ? 'ingles' : 'espanol'}
-                  </span>
-                  {draft[locale].fileName ? (
-                    <IconButton
-                      label='Quitar archivo'
-                      onClick={() => clearDraftFile(locale)}
-                    >
-                      <FaXmark className='h-4 w-4' />
-                    </IconButton>
-                  ) : null}
-                </div>
-                <TextField
-                  label='Titulo'
-                  value={draft[locale].title}
-                  onChange={(title) => updateDraftFile(locale, { title })}
-                />
-                {draft[locale].fileName ? (
-                  <div className='flex items-center justify-between gap-2 rounded-md bg-neutral-50 px-3 py-2 text-xs text-neutral-600'>
-                    <span className='truncate'>
-                      {draft[locale].fileName} - {draft[locale].size}
+            {(['en', 'es'] as const).map((locale) => {
+              const persistedFileName = draft[locale].fileName;
+              const pendingFile = pendingFiles[locale];
+              return (
+                <div
+                  key={locale}
+                  className='space-y-3 rounded-md border border-neutral-200 p-3'
+                >
+                  <div className='flex items-center justify-between'>
+                    <span className='text-xs font-bold uppercase text-neutral-500'>
+                      Archivo {locale === 'en' ? 'ingles' : 'espanol'}
                     </span>
-                    <IconButton
-                      label='Descargar'
-                      onClick={() => downloadDocumentFile(draft[locale])}
-                    >
-                      <FaDownload className='h-4 w-4' />
-                    </IconButton>
+                    {persistedFileName && !pendingFile ? (
+                      <IconButton
+                        label='Descargar'
+                        onClick={() => downloadDocumentFile(draft[locale])}
+                      >
+                        <FaDownload className='h-4 w-4' />
+                      </IconButton>
+                    ) : null}
                   </div>
-                ) : (
+                  <TextField
+                    label='Titulo'
+                    value={draft[locale].title}
+                    onChange={(title) => updateDraftFile(locale, { title })}
+                  />
                   <AssetUploadField
-                    kind='documents'
                     accept='application/pdf'
                     label=''
-                    value=''
-                    onChange={(key, file) => handleFileChange(locale, key, file)}
+                    value={persistedFileName}
+                    pendingFile={pendingFile}
+                    onFileSelected={(file) => handleFileSelected(locale, file)}
+                    onClear={() => clearDraftFile(locale)}
                     previewVariant='row'
+                    disabled={isUploading}
                   />
-                )}
-              </div>
-            ))}
+                </div>
+              );
+            })}
 
             <p className='text-xs text-neutral-500'>
               Puedes guardar con un solo idioma cargado; el otro quedara
@@ -910,9 +963,13 @@ export default function DocumentsAdminSection({
             <PrimaryButton
               icon={FaCheck}
               onClick={handleSave}
-              disabled={isSaving}
+              disabled={isSaving || isUploading}
             >
-              {isSaving ? 'Guardando...' : 'Guardar'}
+              {isUploading
+                ? 'Subiendo...'
+                : isSaving
+                  ? 'Guardando...'
+                  : 'Guardar'}
             </PrimaryButton>
           </div>
         </Panel>

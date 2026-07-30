@@ -25,10 +25,12 @@ import {
   TextField,
 } from '@/components/admin/ui';
 import { AssetUploadField } from '@/components/admin/upload/AssetUploadField';
+import { uploadAsset } from '@/components/admin/upload/upload-asset';
 import { getAssetUrl } from '@/services/storage/asset-url';
 
 type KpiDraft = {
   icon: string;
+  pendingIconFile?: File;
   value: string;
   translations: KpiStat['translations'];
 };
@@ -46,6 +48,7 @@ function createDefaultKpiDraft(): KpiDraft {
 
 type LocationDraft = {
   icon: string;
+  pendingIconFile?: File;
   translations: PlatformLocation['translations'];
 };
 
@@ -78,6 +81,7 @@ export default function GlanceAdminSection({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<KpiDraft>(() => createDefaultKpiDraft());
   const [validationError, setValidationError] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
   const pendingSaveRef = useRef(false);
 
   const [locationFormMode, setLocationFormMode] = useState<'new' | 'edit'>(
@@ -90,6 +94,7 @@ export default function GlanceAdminSection({
     createDefaultLocationDraft(),
   );
   const [locationValidationError, setLocationValidationError] = useState('');
+  const [isLocationUploading, setIsLocationUploading] = useState(false);
   const pendingLocationSaveRef = useRef(false);
 
   const orderedKpis = useMemo(() => {
@@ -137,13 +142,17 @@ export default function GlanceAdminSection({
     }));
   }
 
-  function handleIconChange(key: string) {
+  function handleIconSelected(file: File) {
     setValidationError('');
-    setDraft((current) => ({ ...current, icon: key }));
+    setDraft((current) => ({ ...current, pendingIconFile: file }));
   }
 
   function clearIcon() {
-    setDraft((current) => ({ ...current, icon: '' }));
+    setDraft((current) => ({
+      ...current,
+      icon: '',
+      pendingIconFile: undefined,
+    }));
   }
 
   function startNewLocation() {
@@ -180,13 +189,17 @@ export default function GlanceAdminSection({
     }));
   }
 
-  function handleLocationIconChange(key: string) {
+  function handleLocationIconSelected(file: File) {
     setLocationValidationError('');
-    setLocationDraft((current) => ({ ...current, icon: key }));
+    setLocationDraft((current) => ({ ...current, pendingIconFile: file }));
   }
 
   function clearLocationIcon() {
-    setLocationDraft((current) => ({ ...current, icon: '' }));
+    setLocationDraft((current) => ({
+      ...current,
+      icon: '',
+      pendingIconFile: undefined,
+    }));
   }
 
   const lastCreateRequestId = useRef(createRequestId);
@@ -265,9 +278,9 @@ export default function GlanceAdminSection({
     setValidationError('');
   }
 
-  function handleSave() {
+  async function handleSave() {
     if (
-      !draft.icon.trim() ||
+      (!draft.icon.trim() && !draft.pendingIconFile) ||
       !draft.value.trim() ||
       !draft.translations.en.label.trim() ||
       !draft.translations.es.label.trim()
@@ -278,10 +291,25 @@ export default function GlanceAdminSection({
       return;
     }
 
+    let icon = draft.icon;
+    if (draft.pendingIconFile) {
+      setIsUploading(true);
+      const result = await uploadAsset('icons', draft.pendingIconFile);
+      setIsUploading(false);
+
+      if ('error' in result) {
+        setValidationError(result.error);
+        return;
+      }
+      icon = result.key;
+    }
+
+    const savedKpi = { icon, value: draft.value, translations: draft.translations };
+
     const nextKpis =
       formMode === 'edit' && editingId !== null
         ? kpis.map((kpi) =>
-            kpi.id === editingId ? { ...kpi, ...draft } : kpi,
+            kpi.id === editingId ? { ...kpi, ...savedKpi } : kpi,
           )
         : [
             ...kpis,
@@ -290,7 +318,7 @@ export default function GlanceAdminSection({
                 Math.max(0, ...kpis.map((kpi) => Number(kpi.id) || 0)) + 1,
               ),
               order: kpis.length + 1,
-              ...draft,
+              ...savedKpi,
             },
           ];
 
@@ -348,9 +376,9 @@ export default function GlanceAdminSection({
     setLocationValidationError('');
   }
 
-  function handleSaveLocation() {
+  async function handleSaveLocation() {
     if (
-      !locationDraft.icon.trim() ||
+      (!locationDraft.icon.trim() && !locationDraft.pendingIconFile) ||
       !locationDraft.translations.en.name.trim() ||
       !locationDraft.translations.en.description.trim() ||
       !locationDraft.translations.es.name.trim() ||
@@ -362,11 +390,26 @@ export default function GlanceAdminSection({
       return;
     }
 
+    let icon = locationDraft.icon;
+    if (locationDraft.pendingIconFile) {
+      setIsLocationUploading(true);
+      const result = await uploadAsset('icons', locationDraft.pendingIconFile);
+      setIsLocationUploading(false);
+
+      if ('error' in result) {
+        setLocationValidationError(result.error);
+        return;
+      }
+      icon = result.key;
+    }
+
+    const savedLocation = { icon, translations: locationDraft.translations };
+
     const nextLocations =
       locationFormMode === 'edit' && editingLocationId !== null
         ? locations.map((location) =>
             location.id === editingLocationId
-              ? { ...location, ...locationDraft }
+              ? { ...location, ...savedLocation }
               : location,
           )
         : [
@@ -379,7 +422,7 @@ export default function GlanceAdminSection({
                 ) + 1,
               ),
               order: locations.length + 1,
-              ...locationDraft,
+              ...savedLocation,
             },
           ];
 
@@ -556,13 +599,14 @@ export default function GlanceAdminSection({
             </h3>
 
             <AssetUploadField
-              kind='icons'
               accept='image/*'
               label='Icono'
               value={draft.icon}
-              onChange={handleIconChange}
+              pendingFile={draft.pendingIconFile}
+              onFileSelected={handleIconSelected}
               onClear={clearIcon}
               previewVariant='square'
+              disabled={isUploading}
             />
 
             <TextField
@@ -593,8 +637,16 @@ export default function GlanceAdminSection({
               />
             </div>
 
-            <PrimaryButton icon={FaCheck} onClick={handleSave} disabled={isSaving}>
-              {isSaving ? 'Guardando...' : 'Guardar'}
+            <PrimaryButton
+              icon={FaCheck}
+              onClick={handleSave}
+              disabled={isSaving || isUploading}
+            >
+              {isUploading
+                ? 'Subiendo...'
+                : isSaving
+                  ? 'Guardando...'
+                  : 'Guardar'}
             </PrimaryButton>
           </div>
         </Panel>
@@ -611,13 +663,14 @@ export default function GlanceAdminSection({
             </h3>
 
             <AssetUploadField
-              kind='icons'
               accept='image/*'
               label='Icono'
               value={locationDraft.icon}
-              onChange={handleLocationIconChange}
+              pendingFile={locationDraft.pendingIconFile}
+              onFileSelected={handleLocationIconSelected}
               onClear={clearLocationIcon}
               previewVariant='square'
+              disabled={isLocationUploading}
             />
 
             <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
@@ -661,9 +714,13 @@ export default function GlanceAdminSection({
             <PrimaryButton
               icon={FaCheck}
               onClick={handleSaveLocation}
-              disabled={isSaving}
+              disabled={isSaving || isLocationUploading}
             >
-              {isSaving ? 'Guardando...' : 'Guardar'}
+              {isLocationUploading
+                ? 'Subiendo...'
+                : isSaving
+                  ? 'Guardando...'
+                  : 'Guardar'}
             </PrimaryButton>
           </div>
         </Panel>

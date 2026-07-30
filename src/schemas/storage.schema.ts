@@ -16,6 +16,7 @@ export const CreateUploadUrlSchema = z.object({
   kind: z.enum(ASSET_KINDS),
   fileName: z.string().trim().min(1).max(200),
   contentType: z.string().trim().min(1).max(100),
+  prefixParts: z.array(z.string().trim().min(1).max(100)).max(4).optional(),
 });
 
 export type CreateUploadUrlInput = z.infer<typeof CreateUploadUrlSchema>;
