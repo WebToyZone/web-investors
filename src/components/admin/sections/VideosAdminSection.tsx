@@ -17,7 +17,7 @@ function VideoSlot({
   title: string;
   eyebrow: string;
   video: AdminVideo;
-  onUpload: (key: string) => void;
+  onUpload: (key: string, file: File) => void;
   onSave: () => void;
   isSaving: boolean;
 }) {
@@ -56,11 +56,18 @@ export default function VideosAdminSection({
 }) {
   const [validationError, setValidationError] = useState('');
 
-  function handleUpload(slot: 'hero' | 'powerOfASmile', key: string) {
+  function handleUpload(
+    slot: 'hero' | 'powerOfASmile',
+    key: string,
+    file: File,
+  ) {
     setValidationError('');
     onChange({
       ...data,
-      [slot]: { fileName: key, size: '' },
+      [slot]: {
+        fileName: key,
+        size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
+      },
     });
   }
 
@@ -86,7 +93,7 @@ export default function VideosAdminSection({
         title='Hero'
         eyebrow='Video de fondo, seccion inicial'
         video={data.hero}
-        onUpload={(key) => handleUpload('hero', key)}
+        onUpload={(key, file) => handleUpload('hero', key, file)}
         onSave={() => saveVideo('hero')}
         isSaving={isSaving}
       />
@@ -95,7 +102,7 @@ export default function VideosAdminSection({
         title='Power of a Smile'
         eyebrow='Video de fondo, banner emocional'
         video={data.powerOfASmile}
-        onUpload={(key) => handleUpload('powerOfASmile', key)}
+        onUpload={(key, file) => handleUpload('powerOfASmile', key, file)}
         onSave={() => saveVideo('powerOfASmile')}
         isSaving={isSaving}
       />
