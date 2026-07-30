@@ -118,6 +118,18 @@ export default function DocumentsAdminSection({
   const [editCategoryEn, setEditCategoryEn] = useState('');
   const [editCategoryEs, setEditCategoryEs] = useState('');
 
+  const yearOptions = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const years = new Set<string>();
+    for (let year = currentYear + 1; year >= currentYear - 15; year--) {
+      years.add(String(year));
+    }
+    if (draft.year) {
+      years.add(draft.year);
+    }
+    return Array.from(years).sort((a, b) => Number(b) - Number(a));
+  }, [draft.year]);
+
   const categoryCounts = useMemo(() => {
     const counts = new Map<number, number>();
     for (const document of documents) {
@@ -826,9 +838,13 @@ export default function DocumentsAdminSection({
               }
             />
             <div className='grid grid-cols-2 gap-3'>
-              <TextField
+              <SelectField
                 label='Ano'
                 value={draft.year}
+                options={yearOptions.map((year) => ({
+                  label: year,
+                  value: year,
+                }))}
                 onChange={(year) => updateDraft({ year })}
               />
               <TextField
