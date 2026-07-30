@@ -15,18 +15,25 @@ async function main() {
   const contentPath = path.join(process.cwd(), 'data', 'admin', 'content.json');
   const content = JSON.parse(await readFile(contentPath, 'utf8'));
 
-  await prisma.documentCategorySettings.upsert({
-    where: { id: 1 },
-    create: { id: 1, names: content.documents.categories },
-    update: { names: content.documents.categories },
-  });
-
   await prisma.adminDocument.deleteMany();
+  await prisma.documentCategory.deleteMany();
+
+  const categoryIdByName = new Map();
+  for (const [index, name] of content.documents.categories.entries()) {
+    const category = await prisma.documentCategory.create({
+      data: {
+        order: index + 1,
+        translations: { en: { name }, es: { name } },
+      },
+    });
+    categoryIdByName.set(name, category.id);
+  }
+
   for (const item of content.documents.items) {
     await prisma.adminDocument.create({
       data: {
         order: item.order ?? 0,
-        category: item.category,
+        categoryId: categoryIdByName.get(item.category),
         year: item.year,
         date: item.date,
         downloads: item.downloads,

@@ -4,6 +4,7 @@ import type {
   AdminContent,
   AdminDocument,
   BoardMember,
+  DocumentCategory,
   GrowthMilestone,
   KpiStat,
   PendingBoardSeat,
@@ -12,7 +13,7 @@ import type {
 
 export async function getAdminContent(): Promise<AdminContent> {
   const [
-    categorySettings,
+    categories,
     documents,
     kpis,
     locations,
@@ -23,7 +24,7 @@ export async function getAdminContent(): Promise<AdminContent> {
     contactSettings,
     videos,
   ] = await Promise.all([
-    prisma.documentCategorySettings.findUniqueOrThrow({ where: { id: 1 } }),
+    prisma.documentCategory.findMany({ orderBy: { order: 'asc' } }),
     prisma.adminDocument.findMany({ orderBy: { order: 'asc' } }),
     prisma.kpiStat.findMany({ orderBy: { order: 'asc' } }),
     prisma.platformLocation.findMany({ orderBy: { order: 'asc' } }),
@@ -41,12 +42,19 @@ export async function getAdminContent(): Promise<AdminContent> {
 
   return {
     documents: {
-      categories: categorySettings.names,
+      categories: categories.map(
+        (category): DocumentCategory => ({
+          id: category.id,
+          order: category.order,
+          translations:
+            category.translations as unknown as DocumentCategory['translations'],
+        }),
+      ),
       items: documents.map(
         (doc): AdminDocument => ({
           id: doc.id,
           order: doc.order,
-          category: doc.category,
+          categoryId: doc.categoryId,
           year: doc.year,
           date: doc.date,
           downloads: doc.downloads,
@@ -138,16 +146,11 @@ async function persistSection<K extends keyof AdminContent>(
     switch (section) {
       case 'documents': {
         const data = value as AdminContent['documents'];
-        await tx.documentCategorySettings.upsert({
-          where: { id: 1 },
-          create: { id: 1, names: data.categories },
-          update: { names: data.categories },
-        });
         await tx.adminDocument.deleteMany();
         await tx.adminDocument.createMany({
           data: data.items.map((item, index) => ({
             order: item.order ?? index + 1,
-            category: item.category,
+            categoryId: item.categoryId,
             year: item.year,
             date: item.date,
             downloads: item.downloads,

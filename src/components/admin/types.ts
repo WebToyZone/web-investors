@@ -25,10 +25,20 @@ export type DocumentLocaleFile = {
   size: string;
 };
 
+export type DocumentCategoryTranslation = {
+  name: string;
+};
+
+export type DocumentCategory = {
+  id: number;
+  order: number;
+  translations: Record<Locale, DocumentCategoryTranslation>;
+};
+
 export type AdminDocument = {
   id: number;
   order?: number;
-  category: string;
+  categoryId: number;
   year: string;
   date: string;
   downloads: number;
@@ -112,7 +122,7 @@ export type AdminVideo = {
 
 export type AdminContent = {
   documents: {
-    categories: string[];
+    categories: DocumentCategory[];
     items: AdminDocument[];
   };
   glance: {

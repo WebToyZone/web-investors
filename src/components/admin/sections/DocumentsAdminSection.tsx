@@ -15,6 +15,7 @@ import {
 import type {
   AdminContent,
   AdminDocument,
+  DocumentCategory,
   DocumentLocaleFile,
   Locale,
 } from '@/components/admin/types';
@@ -29,9 +30,13 @@ import {
 } from '@/components/admin/ui';
 import { AssetUploadField } from '@/components/admin/upload/AssetUploadField';
 import { getAssetUrl } from '@/services/storage/asset-url';
+import { createDocumentCategoryAction } from '@/actions/document-categories/create-document-category';
+import { updateDocumentCategoryAction } from '@/actions/document-categories/update-document-category';
+import { deleteDocumentCategoryAction } from '@/actions/document-categories/delete-document-category';
+import { reorderDocumentCategoryAction } from '@/actions/document-categories/reorder-document-category';
 
 type DocumentDraft = {
-  category: string;
+  categoryId: string;
   year: string;
   date: string;
   en: DocumentLocaleFile;
@@ -40,9 +45,9 @@ type DocumentDraft = {
 
 const emptyFile: DocumentLocaleFile = { title: '', fileName: '', size: '' };
 
-function createDefaultDraft(categories: string[]): DocumentDraft {
+function createDefaultDraft(categories: DocumentCategory[]): DocumentDraft {
   return {
-    category: categories[0] ?? '',
+    categoryId: categories[0] ? String(categories[0].id) : '',
     year: String(new Date().getFullYear()),
     date: new Date().toISOString().slice(0, 10),
     en: { ...emptyFile },
@@ -52,7 +57,7 @@ function createDefaultDraft(categories: string[]): DocumentDraft {
 
 function draftFromDocument(document: AdminDocument): DocumentDraft {
   return {
-    category: document.category,
+    categoryId: String(document.categoryId),
     year: document.year,
     date: document.date,
     en: document.files.en ? { ...document.files.en } : { ...emptyFile },
@@ -64,8 +69,15 @@ function normalizeFile(file: DocumentLocaleFile): DocumentLocaleFile | null {
   return file.fileName.trim() ? file : null;
 }
 
-function bucketKey(document: Pick<AdminDocument, 'category' | 'year'>) {
-  return `${document.category}__${document.year}`;
+function bucketKey(document: Pick<AdminDocument, 'categoryId' | 'year'>) {
+  return `${document.categoryId}__${document.year}`;
+}
+
+function categoryLabel(categories: DocumentCategory[], categoryId: number) {
+  return (
+    categories.find((category) => category.id === categoryId)?.translations
+      .es.name ?? 'Sin categoria'
+  );
 }
 
 export default function DocumentsAdminSection({
@@ -81,8 +93,11 @@ export default function DocumentsAdminSection({
   isSaving: boolean;
   createRequestId: number;
 }) {
-  const { categories, items: documents } = data;
+  const { items: documents } = data;
 
+  const [categories, setCategories] = useState<DocumentCategory[]>(
+    data.categories,
+  );
   const [categoryFilter, setCategoryFilter] = useState('all');
 
   const [formMode, setFormMode] = useState<'new' | 'edit'>('new');
@@ -93,17 +108,23 @@ export default function DocumentsAdminSection({
   const [validationError, setValidationError] = useState('');
   const pendingSaveRef = useRef(false);
 
-  const [newCategory, setNewCategory] = useState('');
+  const [newCategoryEn, setNewCategoryEn] = useState('');
+  const [newCategoryEs, setNewCategoryEs] = useState('');
   const [categoryError, setCategoryError] = useState('');
-  const [renamingCategory, setRenamingCategory] = useState<string | null>(
+  const [categorySaving, setCategorySaving] = useState(false);
+  const [editingCategoryId, setEditingCategoryId] = useState<number | null>(
     null,
   );
-  const [renameValue, setRenameValue] = useState('');
+  const [editCategoryEn, setEditCategoryEn] = useState('');
+  const [editCategoryEs, setEditCategoryEs] = useState('');
 
   const categoryCounts = useMemo(() => {
-    const counts = new Map<string, number>();
+    const counts = new Map<number, number>();
     for (const document of documents) {
-      counts.set(document.category, (counts.get(document.category) ?? 0) + 1);
+      counts.set(
+        document.categoryId,
+        (counts.get(document.categoryId) ?? 0) + 1,
+      );
     }
     return counts;
   }, [documents]);
@@ -115,11 +136,14 @@ export default function DocumentsAdminSection({
         order: document.order ?? index + 1,
       }))
       .sort((firstDocument, secondDocument) => {
-        if (firstDocument.category !== secondDocument.category) {
-          return (
-            categories.indexOf(firstDocument.category) -
-            categories.indexOf(secondDocument.category)
+        if (firstDocument.categoryId !== secondDocument.categoryId) {
+          const firstIndex = categories.findIndex(
+            (category) => category.id === firstDocument.categoryId,
           );
+          const secondIndex = categories.findIndex(
+            (category) => category.id === secondDocument.categoryId,
+          );
+          return firstIndex - secondIndex;
         }
 
         if (firstDocument.year !== secondDocument.year) {
@@ -136,7 +160,10 @@ export default function DocumentsAdminSection({
 
   const filteredDocuments = useMemo(() => {
     return orderedDocuments.filter((document) => {
-      if (categoryFilter !== 'all' && document.category !== categoryFilter)
+      if (
+        categoryFilter !== 'all' &&
+        String(document.categoryId) !== categoryFilter
+      )
         return false;
       return true;
     });
@@ -144,12 +171,12 @@ export default function DocumentsAdminSection({
 
   const groupedDocuments = useMemo(() => {
     type YearGroup = { year: string; items: typeof filteredDocuments };
-    const groups: { category: string; years: YearGroup[] }[] = [];
+    const groups: { categoryId: number; years: YearGroup[] }[] = [];
 
     for (const document of filteredDocuments) {
       let categoryGroup = groups[groups.length - 1];
-      if (!categoryGroup || categoryGroup.category !== document.category) {
-        categoryGroup = { category: document.category, years: [] };
+      if (!categoryGroup || categoryGroup.categoryId !== document.categoryId) {
+        categoryGroup = { categoryId: document.categoryId, years: [] };
         groups.push(categoryGroup);
       }
 
@@ -214,9 +241,12 @@ export default function DocumentsAdminSection({
 
   function deleteDocument(id: number) {
     const document = documents.find((current) => current.id === id);
+    const label = document
+      ? `${categoryLabel(categories, document.categoryId)} (${document.year})`
+      : '';
     if (
       !window.confirm(
-        `Eliminar el documento de ${document?.category ?? ''} (${document?.year ?? ''})? Esta accion no se puede deshacer.`,
+        `Eliminar el documento de ${label}? Esta accion no se puede deshacer.`,
       )
     ) {
       return;
@@ -224,7 +254,7 @@ export default function DocumentsAdminSection({
 
     const nextDocuments = documents.filter((current) => current.id !== id);
     pendingSaveRef.current = true;
-    onChange({ ...data, items: nextDocuments });
+    onChange({ ...data, categories, items: nextDocuments });
 
     if (editingId === id) {
       startNewDocument();
@@ -272,7 +302,7 @@ export default function DocumentsAdminSection({
     });
 
     pendingSaveRef.current = true;
-    onChange({ ...data, items: nextDocuments });
+    onChange({ ...data, categories, items: nextDocuments });
     setValidationError('');
   }
 
@@ -293,7 +323,7 @@ export default function DocumentsAdminSection({
   }
 
   function handleSave() {
-    if (!draft.category.trim() || !draft.year.trim() || !draft.date.trim()) {
+    if (!draft.categoryId || !draft.year.trim() || !draft.date.trim()) {
       setValidationError('Completa categoria, ano y fecha.');
       return;
     }
@@ -319,6 +349,7 @@ export default function DocumentsAdminSection({
     }
 
     const files = { en, es };
+    const categoryId = Number(draft.categoryId);
 
     const nextItems =
       formMode === 'edit' && editingId !== null
@@ -326,7 +357,7 @@ export default function DocumentsAdminSection({
             document.id === editingId
               ? {
                   ...document,
-                  category: draft.category,
+                  categoryId,
                   year: draft.year,
                   date: draft.date,
                   files,
@@ -346,7 +377,7 @@ export default function DocumentsAdminSection({
                   ),
                 ) + 1,
               downloads: 0,
-              category: draft.category,
+              categoryId,
               year: draft.year,
               date: draft.date,
               files,
@@ -354,69 +385,77 @@ export default function DocumentsAdminSection({
           ];
 
     pendingSaveRef.current = true;
-    onChange({ ...data, items: nextItems });
+    onChange({ ...data, categories, items: nextItems });
     startNewDocument();
   }
 
-  function addCategory() {
-    const trimmed = newCategory.trim();
-    if (!trimmed) {
-      setCategoryError('Escribe un nombre de categoria.');
+  async function addCategory() {
+    const en = newCategoryEn.trim();
+    const es = newCategoryEs.trim();
+
+    if (!en || !es) {
+      setCategoryError('Completa el nombre en ingles y espanol.');
       return;
     }
 
-    if (categories.some((item) => item.toLowerCase() === trimmed.toLowerCase())) {
-      setCategoryError('Esa categoria ya existe.');
+    setCategorySaving(true);
+    setCategoryError('');
+    const result = await createDocumentCategoryAction({
+      translations: { en: { name: en }, es: { name: es } },
+    });
+    setCategorySaving(false);
+
+    if (result.error) {
+      setCategoryError(result.error);
       return;
     }
 
-    pendingSaveRef.current = true;
-    onChange({ ...data, categories: [...categories, trimmed] });
-    setNewCategory('');
+    if (result.categories) {
+      setCategories(result.categories);
+    }
+    setNewCategoryEn('');
+    setNewCategoryEs('');
+  }
+
+  function startEditCategory(category: DocumentCategory) {
+    setEditingCategoryId(category.id);
+    setEditCategoryEn(category.translations.en.name);
+    setEditCategoryEs(category.translations.es.name);
     setCategoryError('');
   }
 
-  function startRenameCategory(category: string) {
-    setRenamingCategory(category);
-    setRenameValue(category);
-    setCategoryError('');
-  }
+  async function confirmEditCategory() {
+    if (editingCategoryId === null) return;
 
-  function confirmRenameCategory() {
-    if (!renamingCategory) return;
+    const en = editCategoryEn.trim();
+    const es = editCategoryEs.trim();
 
-    const trimmed = renameValue.trim();
-    if (!trimmed) {
-      setCategoryError('Escribe un nombre de categoria.');
+    if (!en || !es) {
+      setCategoryError('Completa el nombre en ingles y espanol.');
       return;
     }
 
-    if (
-      trimmed.toLowerCase() !== renamingCategory.toLowerCase() &&
-      categories.some((item) => item.toLowerCase() === trimmed.toLowerCase())
-    ) {
-      setCategoryError('Esa categoria ya existe.');
+    setCategorySaving(true);
+    setCategoryError('');
+    const result = await updateDocumentCategoryAction({
+      id: editingCategoryId,
+      translations: { en: { name: en }, es: { name: es } },
+    });
+    setCategorySaving(false);
+
+    if (result.error) {
+      setCategoryError(result.error);
       return;
     }
 
-    const nextCategories = categories.map((item) =>
-      item === renamingCategory ? trimmed : item,
-    );
-    const nextItems = documents.map((document) =>
-      document.category === renamingCategory
-        ? { ...document, category: trimmed }
-        : document,
-    );
-
-    pendingSaveRef.current = true;
-    onChange({ ...data, categories: nextCategories, items: nextItems });
-    setRenamingCategory(null);
-    setRenameValue('');
-    setCategoryError('');
+    if (result.categories) {
+      setCategories(result.categories);
+    }
+    setEditingCategoryId(null);
   }
 
-  function deleteCategory(category: string) {
-    if ((categoryCounts.get(category) ?? 0) > 0) {
+  async function removeCategory(category: DocumentCategory) {
+    if ((categoryCounts.get(category.id) ?? 0) > 0) {
       setCategoryError(
         'No puedes eliminar una categoria con documentos asignados.',
       );
@@ -425,18 +464,41 @@ export default function DocumentsAdminSection({
 
     if (
       !window.confirm(
-        `Eliminar la categoria ${category}? Esta accion no se puede deshacer.`,
+        `Eliminar la categoria ${category.translations.es.name}? Esta accion no se puede deshacer.`,
       )
     ) {
       return;
     }
 
-    pendingSaveRef.current = true;
-    onChange({
-      ...data,
-      categories: categories.filter((item) => item !== category),
-    });
+    setCategorySaving(true);
     setCategoryError('');
+    const result = await deleteDocumentCategoryAction(category.id);
+    setCategorySaving(false);
+
+    if (result.error) {
+      setCategoryError(result.error);
+      return;
+    }
+
+    if (result.categories) {
+      setCategories(result.categories);
+    }
+  }
+
+  async function moveCategory(id: number, direction: -1 | 1) {
+    setCategorySaving(true);
+    setCategoryError('');
+    const result = await reorderDocumentCategoryAction(id, direction);
+    setCategorySaving(false);
+
+    if (result.error) {
+      setCategoryError(result.error);
+      return;
+    }
+
+    if (result.categories) {
+      setCategories(result.categories);
+    }
   }
 
   return (
@@ -454,69 +516,125 @@ export default function DocumentsAdminSection({
             ) : null}
 
             <ul className='divide-y divide-neutral-200'>
-              {categories.map((category) => (
-                <li
-                  key={category}
-                  className='flex items-center gap-3 py-3'
-                >
-                  {renamingCategory === category ? (
-                    <>
-                      <input
-                        value={renameValue}
-                        onChange={(event) => setRenameValue(event.target.value)}
-                        className='min-w-0 flex-1 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
-                        autoFocus
-                      />
-                      <IconButton label='Guardar' onClick={confirmRenameCategory}>
-                        <FaCheck className='h-4 w-4' />
-                      </IconButton>
-                      <IconButton
-                        label='Cancelar'
-                        onClick={() => {
-                          setRenamingCategory(null);
-                          setCategoryError('');
-                        }}
-                      >
-                        <FaXmark className='h-4 w-4' />
-                      </IconButton>
-                    </>
+              {categories.map((category, index) => (
+                <li key={category.id} className='py-3'>
+                  {editingCategoryId === category.id ? (
+                    <div className='space-y-2'>
+                      <div className='grid grid-cols-2 gap-2'>
+                        <input
+                          value={editCategoryEn}
+                          onChange={(event) =>
+                            setEditCategoryEn(event.target.value)
+                          }
+                          placeholder='Nombre (ingles)'
+                          className='min-w-0 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
+                          autoFocus
+                        />
+                        <input
+                          value={editCategoryEs}
+                          onChange={(event) =>
+                            setEditCategoryEs(event.target.value)
+                          }
+                          placeholder='Nombre (espanol)'
+                          className='min-w-0 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
+                        />
+                      </div>
+                      <div className='flex justify-end gap-2'>
+                        <IconButton
+                          label='Guardar'
+                          onClick={confirmEditCategory}
+                          disabled={categorySaving}
+                        >
+                          <FaCheck className='h-4 w-4' />
+                        </IconButton>
+                        <IconButton
+                          label='Cancelar'
+                          onClick={() => {
+                            setEditingCategoryId(null);
+                            setCategoryError('');
+                          }}
+                          disabled={categorySaving}
+                        >
+                          <FaXmark className='h-4 w-4' />
+                        </IconButton>
+                      </div>
+                    </div>
                   ) : (
-                    <>
-                      <span className='min-w-0 flex-1 truncate font-bold text-neutral-950'>
-                        {category}
+                    <div className='flex items-center gap-3'>
+                      <span className='min-w-0 flex-1'>
+                        <span className='block truncate font-bold text-neutral-950'>
+                          {category.translations.es.name}
+                        </span>
+                        <span className='block truncate text-xs text-neutral-500'>
+                          EN: {category.translations.en.name}
+                        </span>
                       </span>
                       <span className='text-xs font-bold text-neutral-500'>
-                        {categoryCounts.get(category) ?? 0} doc.
+                        {categoryCounts.get(category.id) ?? 0} doc.
                       </span>
                       <IconButton
+                        label='Subir'
+                        onClick={() => moveCategory(category.id, -1)}
+                        disabled={categorySaving || index <= 0}
+                      >
+                        <FaArrowUp className='h-4 w-4' />
+                      </IconButton>
+                      <IconButton
+                        label='Bajar'
+                        onClick={() => moveCategory(category.id, 1)}
+                        disabled={
+                          categorySaving || index === categories.length - 1
+                        }
+                      >
+                        <FaArrowDown className='h-4 w-4' />
+                      </IconButton>
+                      <IconButton
                         label='Renombrar'
-                        onClick={() => startRenameCategory(category)}
+                        onClick={() => startEditCategory(category)}
+                        disabled={categorySaving}
                       >
                         <FaPen className='h-4 w-4' />
                       </IconButton>
                       <IconButton
                         label='Eliminar'
-                        onClick={() => deleteCategory(category)}
-                        disabled={(categoryCounts.get(category) ?? 0) > 0}
+                        onClick={() => removeCategory(category)}
+                        disabled={
+                          categorySaving ||
+                          (categoryCounts.get(category.id) ?? 0) > 0
+                        }
                       >
                         <FaTrashCan className='h-4 w-4' />
                       </IconButton>
-                    </>
+                    </div>
                   )}
                 </li>
               ))}
             </ul>
 
-            <div className='flex items-center gap-3 border-t border-neutral-200 pt-3'>
-              <input
-                value={newCategory}
-                onChange={(event) => setNewCategory(event.target.value)}
-                placeholder='Nueva categoria'
-                className='min-w-0 flex-1 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
-              />
-              <IconButton label='Anadir categoria' onClick={addCategory}>
-                <FaPlus className='h-4 w-4' />
-              </IconButton>
+            <div className='space-y-2 border-t border-neutral-200 pt-3'>
+              <div className='grid grid-cols-2 gap-2'>
+                <input
+                  value={newCategoryEn}
+                  onChange={(event) => setNewCategoryEn(event.target.value)}
+                  placeholder='Nueva categoria (ingles)'
+                  className='min-w-0 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
+                />
+                <input
+                  value={newCategoryEs}
+                  onChange={(event) => setNewCategoryEs(event.target.value)}
+                  placeholder='Nueva categoria (espanol)'
+                  className='min-w-0 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
+                />
+              </div>
+              <div className='flex justify-end'>
+                <IconButton
+                  label='Anadir categoria'
+                  onClick={addCategory}
+                  disabled={categorySaving}
+                >
+                  <FaPlus className='h-4 w-4' />
+                </IconButton>
+              </div>
             </div>
           </div>
         </Panel>
@@ -533,9 +651,9 @@ export default function DocumentsAdminSection({
                 className='mt-1 w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
               >
                 <option value='all'>Todas</option>
-                {categories.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
+                {categories.map((category) => (
+                  <option key={category.id} value={String(category.id)}>
+                    {category.translations.es.name}
                   </option>
                 ))}
               </select>
@@ -548,9 +666,9 @@ export default function DocumentsAdminSection({
 
           <div className='mt-4 space-y-8'>
             {groupedDocuments.map((categoryGroup) => (
-              <div key={categoryGroup.category}>
+              <div key={categoryGroup.categoryId}>
                 <h3 className='text-sm font-black uppercase text-brand'>
-                  {categoryGroup.category}
+                  {categoryLabel(categories, categoryGroup.categoryId)}
                 </h3>
 
                 <div className='mt-3 space-y-5'>
@@ -698,13 +816,13 @@ export default function DocumentsAdminSection({
 
             <SelectField
               label='Categoria'
-              value={draft.category}
-              options={categories.map((item) => ({
-                label: item,
-                value: item,
+              value={draft.categoryId}
+              options={categories.map((category) => ({
+                label: category.translations.es.name,
+                value: String(category.id),
               }))}
-              onChange={(nextCategory) =>
-                updateDraft({ category: nextCategory })
+              onChange={(nextCategoryId) =>
+                updateDraft({ categoryId: nextCategoryId })
               }
             />
             <div className='grid grid-cols-2 gap-3'>

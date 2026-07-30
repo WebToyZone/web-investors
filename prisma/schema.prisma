@@ -8,23 +8,24 @@ datasource db {
 
 // -- Documents --------------------------------------------------------------
 
-model DocumentCategorySettings {
-  id    Int      @id @default(1)
-  names String[]
+model DocumentCategory {
+  id           Int    @id @default(autoincrement())
+  order        Int    @default(0)
+  translations Json
 }
 
 model AdminDocument {
-  id        Int      @id @default(autoincrement())
-  order     Int      @default(0)
-  category  String
-  year      String
-  date      String
-  downloads Int      @default(0)
-  files     Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  order      Int      @default(0)
+  categoryId Int
+  year       String
+  date       String
+  downloads  Int      @default(0)
+  files      Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  @@index([category, year])
+  @@index([categoryId, year])
 }
 
 // -- KPIs / At a Glance -------------------------------------------------------
