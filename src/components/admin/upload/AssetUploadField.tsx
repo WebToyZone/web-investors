@@ -96,6 +96,7 @@ export function AssetUploadField({
           {displayName ? 'Reemplazar archivo' : 'Sube un archivo'}
         </p>
         <input
+          key={pendingFile ? `pending:${pendingFile.name}:${pendingFile.lastModified}` : `saved:${value}`}
           type='file'
           accept={accept}
           disabled={disabled}
