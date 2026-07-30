@@ -229,6 +229,7 @@ export default function GlanceAdminSection({
     }
 
     const nextKpis = kpis.filter((current) => current.id !== id);
+    pendingSaveRef.current = true;
     onChange({ ...data, kpis: nextKpis });
 
     if (editingId === id) {
@@ -259,6 +260,7 @@ export default function GlanceAdminSection({
       order: index + 1,
     }));
 
+    pendingSaveRef.current = true;
     onChange({ ...data, kpis: nextKpis });
     setValidationError('');
   }
@@ -308,6 +310,7 @@ export default function GlanceAdminSection({
     }
 
     const nextLocations = locations.filter((current) => current.id !== id);
+    pendingLocationSaveRef.current = true;
     onChange({ ...data, locations: nextLocations });
 
     if (editingLocationId === id) {
@@ -340,6 +343,7 @@ export default function GlanceAdminSection({
       order: index + 1,
     }));
 
+    pendingLocationSaveRef.current = true;
     onChange({ ...data, locations: nextLocations });
     setLocationValidationError('');
   }

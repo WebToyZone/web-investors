@@ -131,6 +131,7 @@ export default function GrowthAdminSection({
     }
 
     const nextMilestones = milestones.filter((current) => current.id !== id);
+    pendingSaveRef.current = true;
     onChange({ ...data, milestones: nextMilestones });
 
     if (editingId === id) {
@@ -153,6 +154,7 @@ export default function GrowthAdminSection({
     nextMilestones[currentIndex] = nextMilestones[nextIndex];
     nextMilestones[nextIndex] = currentMilestone;
 
+    pendingSaveRef.current = true;
     onChange({ ...data, milestones: nextMilestones });
     setValidationError('');
   }

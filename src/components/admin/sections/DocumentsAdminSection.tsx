@@ -230,6 +230,7 @@ export default function DocumentsAdminSection({
     }
 
     const nextDocuments = documents.filter((current) => current.id !== id);
+    pendingSaveRef.current = true;
     onChange({ ...data, items: nextDocuments });
 
     if (editingId === id) {
@@ -277,6 +278,7 @@ export default function DocumentsAdminSection({
       return document;
     });
 
+    pendingSaveRef.current = true;
     onChange({ ...data, items: nextDocuments });
     setValidationError('');
   }
@@ -377,6 +379,7 @@ export default function DocumentsAdminSection({
       return;
     }
 
+    pendingSaveRef.current = true;
     onChange({ ...data, categories: [...categories, trimmed] });
     setNewCategory('');
     setCategoryError('');
@@ -414,6 +417,7 @@ export default function DocumentsAdminSection({
         : document,
     );
 
+    pendingSaveRef.current = true;
     onChange({ ...data, categories: nextCategories, items: nextItems });
     setRenamingCategory(null);
     setRenameValue('');
@@ -436,6 +440,7 @@ export default function DocumentsAdminSection({
       return;
     }
 
+    pendingSaveRef.current = true;
     onChange({
       ...data,
       categories: categories.filter((item) => item !== category),

@@ -226,6 +226,7 @@ export default function BoardAdminSection({
     }
 
     const nextMembers = boardMembers.filter((current) => current.id !== id);
+    pendingSaveRef.current = true;
     onChange({ ...data, members: nextMembers });
 
     if (editingId === id) {
@@ -246,6 +247,7 @@ export default function BoardAdminSection({
     nextMembers[currentIndex] = nextMembers[nextIndex];
     nextMembers[nextIndex] = currentMember;
 
+    pendingSaveRef.current = true;
     onChange({ ...data, members: nextMembers });
     setValidationError('');
   }
@@ -292,6 +294,7 @@ export default function BoardAdminSection({
     }
 
     const nextSeats = pendingSeats.filter((current) => current.id !== id);
+    pendingSeatSaveRef.current = true;
     onChange({ ...data, pendingSeats: nextSeats });
 
     if (editingSeatId === id) {
@@ -312,6 +315,7 @@ export default function BoardAdminSection({
     nextSeats[currentIndex] = nextSeats[nextIndex];
     nextSeats[nextIndex] = currentSeat;
 
+    pendingSeatSaveRef.current = true;
     onChange({ ...data, pendingSeats: nextSeats });
     setSeatValidationError('');
   }
