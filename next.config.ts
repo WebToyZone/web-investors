@@ -5,9 +5,14 @@ const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   images: {
-    // When assets move to a CMS, allow its host here, e.g.:
-    // remotePatterns: [{ protocol: "https", hostname: "cms.eolo.com" }],
-    remotePatterns: [],
+    remotePatterns: process.env.NEXT_PUBLIC_CDN_URL
+      ? [
+          {
+            protocol: 'https' as const,
+            hostname: new URL(process.env.NEXT_PUBLIC_CDN_URL).hostname,
+          },
+        ]
+      : [],
   },
 };
 
