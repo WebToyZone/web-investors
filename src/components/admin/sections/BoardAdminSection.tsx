@@ -216,7 +216,16 @@ export default function BoardAdminSection({
   }, [pendingSeats, onSave]);
 
   function deleteMember(id: number) {
-    const nextMembers = boardMembers.filter((member) => member.id !== id);
+    const member = boardMembers.find((current) => current.id === id);
+    if (
+      !window.confirm(
+        `Eliminar a ${member?.name ?? 'este miembro'}? Esta accion no se puede deshacer.`,
+      )
+    ) {
+      return;
+    }
+
+    const nextMembers = boardMembers.filter((current) => current.id !== id);
     onChange({ ...data, members: nextMembers });
 
     if (editingId === id) {
@@ -273,7 +282,16 @@ export default function BoardAdminSection({
   }
 
   function deleteSeat(id: number) {
-    const nextSeats = pendingSeats.filter((seat) => seat.id !== id);
+    const seat = pendingSeats.find((current) => current.id === id);
+    if (
+      !window.confirm(
+        `Eliminar el asiento ${seat?.name ?? 'pendiente'}? Esta accion no se puede deshacer.`,
+      )
+    ) {
+      return;
+    }
+
+    const nextSeats = pendingSeats.filter((current) => current.id !== id);
     onChange({ ...data, pendingSeats: nextSeats });
 
     if (editingSeatId === id) {

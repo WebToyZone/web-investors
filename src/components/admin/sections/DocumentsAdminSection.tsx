@@ -220,7 +220,16 @@ export default function DocumentsAdminSection({
   }, [documents, onSave]);
 
   function deleteDocument(id: number) {
-    const nextDocuments = documents.filter((document) => document.id !== id);
+    const document = documents.find((current) => current.id === id);
+    if (
+      !window.confirm(
+        `Eliminar el documento de ${document?.category ?? ''} (${document?.year ?? ''})? Esta accion no se puede deshacer.`,
+      )
+    ) {
+      return;
+    }
+
+    const nextDocuments = documents.filter((current) => current.id !== id);
     onChange({ ...data, items: nextDocuments });
 
     if (editingId === id) {
@@ -416,6 +425,14 @@ export default function DocumentsAdminSection({
       setCategoryError(
         'No puedes eliminar una categoria con documentos asignados.',
       );
+      return;
+    }
+
+    if (
+      !window.confirm(
+        `Eliminar la categoria ${category}? Esta accion no se puede deshacer.`,
+      )
+    ) {
       return;
     }
 

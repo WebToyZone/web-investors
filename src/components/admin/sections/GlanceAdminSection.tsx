@@ -219,7 +219,16 @@ export default function GlanceAdminSection({
   }, [locations, onSave]);
 
   function deleteKpi(id: string) {
-    const nextKpis = kpis.filter((kpi) => kpi.id !== id);
+    const kpi = kpis.find((current) => current.id === id);
+    if (
+      !window.confirm(
+        `Eliminar el KPI ${kpi?.translations.en.label ?? ''}? Esta accion no se puede deshacer.`,
+      )
+    ) {
+      return;
+    }
+
+    const nextKpis = kpis.filter((current) => current.id !== id);
     onChange({ ...data, kpis: nextKpis });
 
     if (editingId === id) {
@@ -289,7 +298,16 @@ export default function GlanceAdminSection({
   }
 
   function deleteLocation(id: string) {
-    const nextLocations = locations.filter((location) => location.id !== id);
+    const location = locations.find((current) => current.id === id);
+    if (
+      !window.confirm(
+        `Eliminar la ubicacion ${location?.translations.en.name ?? ''}? Esta accion no se puede deshacer.`,
+      )
+    ) {
+      return;
+    }
+
+    const nextLocations = locations.filter((current) => current.id !== id);
     onChange({ ...data, locations: nextLocations });
 
     if (editingLocationId === id) {

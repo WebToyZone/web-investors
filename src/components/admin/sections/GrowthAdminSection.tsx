@@ -121,9 +121,16 @@ export default function GrowthAdminSection({
   }, [milestones, onSave]);
 
   function deleteMilestone(id: number) {
-    const nextMilestones = milestones.filter(
-      (milestone) => milestone.id !== id,
-    );
+    const milestone = milestones.find((current) => current.id === id);
+    if (
+      !window.confirm(
+        `Eliminar el milestone ${milestone?.translations.en.title ?? ''}? Esta accion no se puede deshacer.`,
+      )
+    ) {
+      return;
+    }
+
+    const nextMilestones = milestones.filter((current) => current.id !== id);
     onChange({ ...data, milestones: nextMilestones });
 
     if (editingId === id) {
