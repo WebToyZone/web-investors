@@ -706,7 +706,6 @@ export default function DocumentsAdminSection({
                                       onClick={() =>
                                         deleteDocument(document.id)
                                       }
-                                      disabled={documents.length === 1}
                                     >
                                       <FaTrashCan className='h-4 w-4' />
                                     </IconButton>

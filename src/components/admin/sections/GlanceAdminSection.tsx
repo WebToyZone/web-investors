@@ -456,7 +456,6 @@ export default function GlanceAdminSection({
                   <IconButton
                     label='Eliminar'
                     onClick={() => deleteKpi(kpi.id)}
-                    disabled={kpis.length === 1}
                   >
                     <FaTrashCan className='h-4 w-4' />
                   </IconButton>
@@ -536,7 +535,6 @@ export default function GlanceAdminSection({
                   <IconButton
                     label='Eliminar'
                     onClick={() => deleteLocation(location.id)}
-                    disabled={locations.length === 1}
                   >
                     <FaTrashCan className='h-4 w-4' />
                   </IconButton>

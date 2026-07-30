@@ -299,7 +299,6 @@ export default function GrowthAdminSection({
                   <IconButton
                     label='Eliminar'
                     onClick={() => deleteMilestone(milestone.id)}
-                    disabled={milestones.length === 1}
                   >
                     <FaTrashCan className='h-4 w-4' />
                   </IconButton>

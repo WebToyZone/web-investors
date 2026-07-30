@@ -416,7 +416,6 @@ export default function BoardAdminSection({
                   <IconButton
                     label='Eliminar'
                     onClick={() => deleteMember(member.id)}
-                    disabled={boardMembers.length === 1}
                   >
                     <FaTrashCan className='h-4 w-4' />
                   </IconButton>
@@ -495,7 +494,6 @@ export default function BoardAdminSection({
                   <IconButton
                     label='Eliminar'
                     onClick={() => deleteSeat(seat.id)}
-                    disabled={pendingSeats.length === 1}
                   >
                     <FaTrashCan className='h-4 w-4' />
                   </IconButton>
