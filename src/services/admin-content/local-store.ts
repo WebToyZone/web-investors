@@ -1,4 +1,5 @@
 import { prisma } from '@/services/db/client';
+import { deleteAssets } from '@/services/storage/delete-assets';
 import type { Prisma } from '@prisma/client';
 import type {
   AdminContent,
@@ -262,10 +263,63 @@ async function persistSection<K extends keyof AdminContent>(
   });
 }
 
+/**
+ * Every S3 key referenced by a section. Uploads are immutable and always get a
+ * fresh key, so any key present before a save but absent after it is no longer
+ * reachable and can be removed from the bucket.
+ */
+function collectAssetKeys<K extends keyof AdminContent>(
+  section: K,
+  value: AdminContent[K],
+): string[] {
+  switch (section) {
+    case 'documents': {
+      const data = value as AdminContent['documents'];
+      return data.items.flatMap((item) =>
+        (['en', 'es'] as const).map(
+          (locale) => item.files[locale]?.fileName ?? '',
+        ),
+      );
+    }
+    case 'glance': {
+      const data = value as AdminContent['glance'];
+      return [
+        ...data.kpis.map((kpi) => kpi.icon),
+        ...data.locations.map((location) => location.icon),
+      ];
+    }
+    case 'board': {
+      const data = value as AdminContent['board'];
+      return [
+        ...data.members.map((member) => member.image),
+        ...data.pendingSeats.map((seat) => seat.image),
+      ];
+    }
+    case 'videos': {
+      const data = value as AdminContent['videos'];
+      return [data.hero.fileName, data.powerOfASmile.fileName];
+    }
+    default:
+      // growth and contact hold no assets.
+      return [];
+  }
+}
+
 export async function saveAdminContentSection<K extends keyof AdminContent>(
   section: K,
   value: AdminContent[K],
 ): Promise<AdminContent> {
+  const previousKeys = collectAssetKeys(
+    section,
+    (await getAdminContent())[section],
+  );
+
   await persistSection(section, value);
+
+  // Only after the write commits: dropping the old object earlier would leave
+  // the record pointing at a deleted file if the save failed.
+  const nextKeys = new Set(collectAssetKeys(section, value));
+  await deleteAssets(previousKeys.filter((key) => key && !nextKeys.has(key)));
+
   return getAdminContent();
 }
