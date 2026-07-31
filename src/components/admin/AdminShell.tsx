@@ -23,8 +23,14 @@ export default function AdminShell({
 
   return (
     <main className='min-h-screen bg-neutral-100 text-neutral-900'>
-      <div className='grid min-h-screen xl:grid-cols-[280px_1fr]'>
-        <aside className='border-b border-neutral-200 bg-white xl:border-b-0 xl:border-r'>
+      {/*
+        Below xl the shell keeps the original stacked grid (sidebar on top,
+        page scrolls normally). From xl up the sidebar is pinned to the
+        viewport and the main section becomes the only scroll container, so
+        the page itself never scrolls and only one scrollbar is visible.
+      */}
+      <div className='grid min-h-screen xl:block'>
+        <aside className='border-b border-neutral-200 bg-white xl:fixed xl:left-0 xl:top-0 xl:h-screen xl:w-[280px] xl:overflow-y-auto xl:border-b-0 xl:border-r'>
           <div className='flex h-full flex-col px-5 py-6'>
             <div>
               <p className='font-heading text-4xl leading-none text-brand'>
@@ -84,7 +90,7 @@ export default function AdminShell({
           </div>
         </aside>
 
-        <section className='min-w-0'>
+        <section className='min-w-0 xl:ml-[280px] xl:h-screen xl:overflow-y-auto'>
           <header className='border-b border-neutral-200 bg-white'>
             <div className='flex flex-col gap-4 px-5 py-5 lg:flex-row lg:items-center lg:justify-between lg:px-8'>
               <div>
