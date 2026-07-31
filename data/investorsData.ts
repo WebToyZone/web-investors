@@ -92,9 +92,10 @@ const enContent: InvestorsPageContent = {
     accentPosition: 'start',
     // subtitle:
     //   'A scalable operating platform designed to maximize flexibility, speed-to-market and capital efficiency.',
-    // accentSubtitle: 'Breaking the mold of the toy industry.',  
+    // accentSubtitle: 'Breaking the mold of the toy industry.',
     accentSubtitle: 'EOLO is breaking the mold of the toy industry',
-    subtitle: 'with a lighter, faster, and more flexible operating model, turning adaptability into a competitive advantage.',
+    subtitle:
+      'with a lighter, faster, and more flexible operating model, turning adaptability into a competitive advantage.',
     features: [
       {
         title: 'Asset-Light',
@@ -259,7 +260,27 @@ const enContent: InvestorsPageContent = {
     columns: [
       {
         title: 'Financial Information',
-        per_year: [{ year: '2026', documents: [] }],
+        per_year: [
+          {
+            year: '2026',
+            documents: [
+              {
+                title: 'Eolo Toys Int SA_FS Group Consolidated 2025',
+                date: '31/07/2026',
+                format: 'PDF',
+                size: '1.28 MB',
+                href: '/docs/Eolo_Toys_Int_SA_CCAACC_2025.pdf',
+              },
+              {
+                title: 'Eolo Toys Int SA_FS 2025',
+                date: '31/07/2026',
+                format: 'PDF',
+                size: '0.67 MB',
+                href: '/docs/Eolo_Toys_Int_SA_CCAA_2025.pdf',
+              },
+            ],
+          },
+        ],
       },
       {
         title: 'Meetings & Notices',
@@ -272,11 +293,32 @@ const enContent: InvestorsPageContent = {
             year: '2026',
             documents: [
               {
-                title: 'BME Scaleup Market Admission Document',
-                date: '01/07/2026',
+                title: 'Eolo Toys Int SA_DIAM_20260731',
+                date: '31/07/2026',
                 format: 'PDF',
-                size: '8.4 MB',
-                href: '/docs/bme-scaleup-market-admission.pdf',
+                size: '35.63 MB',
+                href: '/docs/Eolo_Toys_Int_SA_DIAM_20260731.pdf',
+              },
+              {
+                title: 'Eolo Toys Int SA_Articles of Association',
+                date: '31/07/2026',
+                format: 'PDF',
+                size: '0.29 MB',
+                href: '/docs/Eolo_Toys_Int_SA_Estatutos_Sociales.pdf',
+              },
+              {
+                title: 'Eolo Toys Int SA_Group Organizational Structure Report',
+                date: '31/07/2026',
+                format: 'PDF',
+                size: '0.26 MB',
+                href: '/docs/Eolo_Toys_Int_SA_Informe_Estructura_Organizativa.pdf',
+              },
+              {
+                title: 'Eolo Toys Int SA_Internal Code of Conduct',
+                date: '31/07/2026',
+                format: 'PDF',
+                size: '0.38 MB',
+                href: '/docs/Eolo_Toys_Int_SA_Reglamento_Interno_de_Conducta.pdf',
               },
             ],
           },
@@ -561,7 +603,27 @@ const esContent: InvestorsPageContent = {
     columns: [
       {
         title: 'Información Financiera',
-        per_year: [{ year: '2026', documents: [] }],
+        per_year: [
+          {
+            year: '2026',
+            documents: [
+              {
+                title: 'Eolo Toys Int SA_CCAACC 2025',
+                date: '31/07/2026',
+                format: 'PDF',
+                size: '1.28 MB',
+                href: '/docs/Eolo_Toys_Int_SA_CCAACC_2025.pdf',
+              },
+              {
+                title: 'Eolo Toys Int SA_CCAA 2025',
+                date: '31/07/2026',
+                format: 'PDF',
+                size: '0.67 MB',
+                href: '/docs/Eolo_Toys_Int_SA_CCAA_2025.pdf',
+              },
+            ],
+          },
+        ],
       },
       {
         title: 'Juntas y Convocatorias',
@@ -574,11 +636,32 @@ const esContent: InvestorsPageContent = {
             year: '2026',
             documents: [
               {
-                title: 'Documento de Admisión al Mercado BME Scaleup',
-                date: '01/07/2026',
+                title: 'Eolo Toys Int SA_DIAM_20260731',
+                date: '31/07/2026',
                 format: 'PDF',
-                size: '8.4 MB',
-                href: '/docs/bme-scaleup-market-admission.pdf',
+                size: '35.63 MB',
+                href: '/docs/Eolo_Toys_Int_SA_DIAM_20260731.pdf',
+              },
+              {
+                title: 'Eolo Toys Int SA_Estatutos Sociales',
+                date: '31/07/2026',
+                format: 'PDF',
+                size: '0.29 MB',
+                href: '/docs/Eolo_Toys_Int_SA_Estatutos_Sociales.pdf',
+              },
+              {
+                title: 'Eolo Toys Int SA_Informe Estructura Organizativa',
+                date: '31/07/2026',
+                format: 'PDF',
+                size: '0.26 MB',
+                href: '/docs/Eolo_Toys_Int_SA_Informe_Estructura_Organizativa.pdf',
+              },
+              {
+                title: 'Eolo Toys Int SA_Reglamento Interno de Conducta',
+                date: '31/07/2026',
+                format: 'PDF',
+                size: '0.38 MB',
+                href: '/docs/Eolo_Toys_Int_SA_Reglamento_Interno_de_Conducta.pdf',
               },
             ],
           },
