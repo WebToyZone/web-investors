@@ -81,6 +81,126 @@ function categoryLabel(categories: DocumentCategory[], categoryId: number) {
   );
 }
 
+/**
+ * Single source of truth for the documents grid. Every category/year group
+ * renders through here with the same fixed column layout, so the Fecha and
+ * Acciones columns land in the same place regardless of how long the titles
+ * in any given group happen to be.
+ */
+function DocumentsTable({
+  items,
+  editingDocumentId,
+  onEdit,
+  onMove,
+  onDelete,
+}: {
+  items: AdminDocument[];
+  editingDocumentId: number | null;
+  onEdit: (document: AdminDocument) => void;
+  onMove: (id: number, direction: -1 | 1) => void;
+  onDelete: (id: number) => void;
+}) {
+  return (
+    <div className='overflow-x-auto'>
+      <table className='w-full min-w-[680px] table-fixed text-left text-sm'>
+        <colgroup>
+          <col />
+          <col className='w-[140px]' />
+          <col className='w-[220px]' />
+        </colgroup>
+        <thead className='border-b border-neutral-200 bg-neutral-50 text-xs uppercase text-neutral-500'>
+          <tr>
+            <th scope='col' className='px-4 py-3'>
+              Documento
+            </th>
+            <th scope='col' className='px-4 py-3'>
+              Fecha
+            </th>
+            <th scope='col' className='px-4 py-3 text-right'>
+              Acciones
+            </th>
+          </tr>
+        </thead>
+        <tbody className='divide-y divide-neutral-200'>
+          {items.map((document, indexInGroup) => (
+            <tr
+              key={document.id}
+              className={
+                editingDocumentId === document.id ? 'bg-red-50/50' : 'bg-white'
+              }
+            >
+              <td className='px-4 py-4 align-middle'>
+                <div className='flex min-w-0 items-center gap-3'>
+                  <span className='flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-red-50 text-brand'>
+                    <FaFilePdf className='h-5 w-5' />
+                  </span>
+                  <span className='min-w-0'>
+                    {(['en', 'es'] as const).map((locale) => {
+                      const file = document.files[locale];
+                      return (
+                        <span
+                          key={locale}
+                          className='block truncate text-neutral-950'
+                        >
+                          <span className='mr-1 text-xs font-bold uppercase text-neutral-400'>
+                            {locale}
+                          </span>
+                          {file ? (
+                            <span className='font-bold'>
+                              {file.title}{' '}
+                              <span className='font-normal text-neutral-500'>
+                                ({file.size})
+                              </span>
+                            </span>
+                          ) : (
+                            <span className='italic text-neutral-400'>
+                              pendiente
+                            </span>
+                          )}
+                        </span>
+                      );
+                    })}
+                  </span>
+                </div>
+              </td>
+              <td className='px-4 py-4 align-middle text-neutral-700'>
+                {document.date}
+              </td>
+              <td className='px-4 py-4 align-middle'>
+                <div className='flex justify-end gap-2'>
+                  <IconButton label='Editar' onClick={() => onEdit(document)}>
+                    <FaPen className='h-4 w-4' />
+                  </IconButton>
+                  <IconButton
+                    label='Subir'
+                    onClick={() => onMove(document.id, -1)}
+                    disabled={indexInGroup <= 0}
+                  >
+                    <FaArrowUp className='h-4 w-4' />
+                  </IconButton>
+                  <IconButton
+                    label='Bajar'
+                    onClick={() => onMove(document.id, 1)}
+                    disabled={indexInGroup === items.length - 1}
+                  >
+                    <FaArrowDown className='h-4 w-4' />
+                  </IconButton>
+                  <IconButton
+                    label='Eliminar'
+                    onClick={() => onDelete(document.id)}
+                  >
+                    <FaTrashCan className='h-4 w-4' />
+                  </IconButton>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default function DocumentsAdminSection({
   data,
   onChange,
@@ -751,116 +871,16 @@ export default function DocumentsAdminSection({
                         {yearGroup.year}
                       </span>
 
-                      <div className='mt-2 overflow-x-auto'>
-                        <table className='w-full min-w-[760px] text-left text-sm'>
-                          <thead className='border-b border-neutral-200 bg-neutral-50 text-xs uppercase text-neutral-500'>
-                            <tr>
-                              <th scope='col' className='px-4 py-3'>
-                                Documento
-                              </th>
-                              <th scope='col' className='px-4 py-3'>
-                                Fecha
-                              </th>
-                              <th scope='col' className='px-4 py-3 text-right'>
-                                Acciones
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className='divide-y divide-neutral-200'>
-                            {yearGroup.items.map((document, indexInGroup) => (
-                              <tr
-                                key={document.id}
-                                className={
-                                  formMode === 'edit' &&
-                                  editingId === document.id
-                                    ? 'bg-red-50/50'
-                                    : 'bg-white'
-                                }
-                              >
-                                <td className='px-4 py-4'>
-                                  <div className='flex min-w-0 items-center gap-3'>
-                                    <span className='flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-red-50 text-brand'>
-                                      <FaFilePdf className='h-5 w-5' />
-                                    </span>
-                                    <span className='min-w-0'>
-                                      {(['en', 'es'] as const).map(
-                                        (locale) => {
-                                          const file = document.files[locale];
-                                          return (
-                                            <span
-                                              key={locale}
-                                              className='block truncate text-neutral-950'
-                                            >
-                                              <span className='mr-1 text-xs font-bold uppercase text-neutral-400'>
-                                                {locale}
-                                              </span>
-                                              {file ? (
-                                                <span className='font-bold'>
-                                                  {file.title}{' '}
-                                                  <span className='font-normal text-neutral-500'>
-                                                    ({file.size})
-                                                  </span>
-                                                </span>
-                                              ) : (
-                                                <span className='italic text-neutral-400'>
-                                                  pendiente
-                                                </span>
-                                              )}
-                                            </span>
-                                          );
-                                        },
-                                      )}
-                                    </span>
-                                  </div>
-                                </td>
-                                <td className='px-4 py-4 text-neutral-700'>
-                                  {document.date}
-                                </td>
-                                <td className='px-4 py-4'>
-                                  <div className='flex justify-end gap-2'>
-                                    <IconButton
-                                      label='Editar'
-                                      onClick={() =>
-                                        startEditDocument(document)
-                                      }
-                                    >
-                                      <FaPen className='h-4 w-4' />
-                                    </IconButton>
-                                    <IconButton
-                                      label='Subir'
-                                      onClick={() =>
-                                        moveDocument(document.id, -1)
-                                      }
-                                      disabled={indexInGroup <= 0}
-                                    >
-                                      <FaArrowUp className='h-4 w-4' />
-                                    </IconButton>
-                                    <IconButton
-                                      label='Bajar'
-                                      onClick={() =>
-                                        moveDocument(document.id, 1)
-                                      }
-                                      disabled={
-                                        indexInGroup ===
-                                        yearGroup.items.length - 1
-                                      }
-                                    >
-                                      <FaArrowDown className='h-4 w-4' />
-                                    </IconButton>
-                                    <IconButton
-                                      label='Eliminar'
-                                      onClick={() =>
-                                        deleteDocument(document.id)
-                                      }
-                                    >
-                                      <FaTrashCan className='h-4 w-4' />
-                                    </IconButton>
-                                  </div>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                      <div className='mt-2'>
+                        <DocumentsTable
+                          items={yearGroup.items}
+                          editingDocumentId={
+                            formMode === 'edit' ? editingId : null
+                          }
+                          onEdit={startEditDocument}
+                          onMove={moveDocument}
+                          onDelete={deleteDocument}
+                        />
                       </div>
                     </div>
                   ))}
