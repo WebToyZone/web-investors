@@ -14,7 +14,8 @@ export const adminSections: AdminSection[] = [
     id: 'documents',
     label: 'Documentos',
     eyebrow: 'Subida y publicacion',
-    description: 'PDFs, categorias, anos, idiomas y estados de publicacion.',
+    description:
+      'PDF, Excel y CSV, categorias, anos, idiomas y estados de publicacion.',
     icon: FaFilePdf,
   },
   {

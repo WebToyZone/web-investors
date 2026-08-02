@@ -5,6 +5,28 @@ import { ASSET_CACHE_CONTROL, type AssetKind } from '@/schemas/storage.schema';
 
 const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024;
 
+/**
+ * Spreadsheets are the unreliable case: depending on what is registered on the
+ * machine, the browser reports one as the legacy Excel type, as
+ * `application/octet-stream`, or as nothing at all — and the server would
+ * reject the last two. A `.csv` gets reported as `application/vnd.ms-excel`
+ * whenever Excel is installed, which would store a plain text file under a
+ * binary type. The extension is what we key the S3 object on anyway, so
+ * deriving the type from it keeps the stored Content-Type consistent with the
+ * object's name.
+ */
+const CONTENT_TYPE_BY_EXTENSION: Record<string, string> = {
+  pdf: 'application/pdf',
+  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  xls: 'application/vnd.ms-excel',
+  csv: 'text/csv',
+};
+
+function resolveContentType(file: File): string {
+  const extension = file.name.split('.').pop()?.toLowerCase() ?? '';
+  return CONTENT_TYPE_BY_EXTENSION[extension] ?? file.type;
+}
+
 export type UploadAssetResult = { key: string } | { error: string };
 
 export async function uploadAsset(
@@ -16,10 +38,12 @@ export async function uploadAsset(
     return { error: 'Archivo demasiado grande (max. 100MB).' };
   }
 
+  const contentType = resolveContentType(file);
+
   const result = await createUploadUrl({
     kind,
     fileName: file.name,
-    contentType: file.type,
+    contentType,
     prefixParts,
   });
 
@@ -32,7 +56,9 @@ export async function uploadAsset(
       method: 'PUT',
       body: file,
       headers: {
-        'Content-Type': file.type,
+        // S3 stores whatever this header says, so it has to be the same value
+        // the server validated before signing.
+        'Content-Type': contentType,
         'Cache-Control': ASSET_CACHE_CONTROL,
       },
     });

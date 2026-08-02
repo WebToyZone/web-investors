@@ -6,9 +6,23 @@ export type AssetKind = (typeof ASSET_KINDS)[number];
 export const ALLOWED_CONTENT_TYPES: Record<AssetKind, string[]> = {
   board: ['image/jpeg', 'image/png', 'image/webp'],
   icons: ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'],
-  documents: ['application/pdf'],
+  documents: [
+    'application/pdf',
+    // .xlsx
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    // .xls
+    'application/vnd.ms-excel',
+    'text/csv',
+  ],
   videos: ['video/webm', 'video/mp4'],
 };
+
+/**
+ * What the document picker offers. Extensions are listed alongside the MIME
+ * types because Windows only reports a spreadsheet's type when an application
+ * is registered for it, and without them the file would appear greyed out.
+ */
+export const DOCUMENT_FILE_ACCEPT = 'application/pdf,.pdf,.xlsx,.xls,.csv';
 
 export const ASSET_CACHE_CONTROL = 'public, max-age=31536000, immutable';
 
