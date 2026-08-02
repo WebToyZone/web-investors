@@ -305,6 +305,20 @@ function collectAssetKeys<K extends keyof AdminContent>(
   }
 }
 
+/** The sections that reference uploaded files at all. */
+const ASSET_SECTIONS = ['documents', 'glance', 'board', 'videos'] as const;
+
+/**
+ * Every key referenced anywhere in the admin content. Used to decide whether
+ * an object is safe to delete: anything absent from this set is unreachable
+ * from the site, whichever section it was uploaded for.
+ */
+export function collectAllAssetKeys(content: AdminContent): string[] {
+  return ASSET_SECTIONS.flatMap((section) =>
+    collectAssetKeys(section, content[section]),
+  );
+}
+
 export async function saveAdminContentSection<K extends keyof AdminContent>(
   section: K,
   value: AdminContent[K],
@@ -313,12 +327,26 @@ export async function saveAdminContentSection<K extends keyof AdminContent>(
     section,
     (await getAdminContent())[section],
   );
+  const nextKeys = new Set(collectAssetKeys(section, value));
 
-  await persistSection(section, value);
+  try {
+    await persistSection(section, value);
+  } catch (error) {
+    // The upload runs before the save, so a failed write leaves objects in the
+    // bucket that no record will ever point at. Anything this save introduced
+    // — a key that was not already in use — is unreachable now and has to go.
+    // Keys that survive from the previous state are left alone: they are still
+    // referenced by the rows the failed transaction rolled back to.
+    const stillReferenced = new Set(previousKeys);
+    await deleteAssets(
+      [...nextKeys].filter((key) => key && !stillReferenced.has(key)),
+    );
+
+    throw error;
+  }
 
   // Only after the write commits: dropping the old object earlier would leave
   // the record pointing at a deleted file if the save failed.
-  const nextKeys = new Set(collectAssetKeys(section, value));
   await deleteAssets(previousKeys.filter((key) => key && !nextKeys.has(key)));
 
   return getAdminContent();
