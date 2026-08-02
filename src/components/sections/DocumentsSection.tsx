@@ -73,9 +73,16 @@ function DownloadIcon() {
 function DocumentRow({ document }: { document: DocumentItem }) {
   return (
     <li className='border-b border-neutral-200'>
+      {/*
+        The whole row is one link, so the badge, the title and the icon all
+        behave the same. No `download`: the files are served from the CDN, a
+        different origin, where browsers ignore that attribute anyway — and it
+        would fight the new tab, forcing a save instead of opening the file.
+      */}
       <Link
         href={document.href}
-        download
+        target='_blank'
+        rel='noopener noreferrer'
         className='group flex items-center gap-4 py-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand'
       >
         <FormatBadge format={document.format} />
