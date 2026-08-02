@@ -38,6 +38,19 @@ export interface DocumentsSectionProps {
   content: DocumentsContent;
 }
 
+/**
+ * Column tracks for the desktop grid when there are fewer than three
+ * categories to show. Each track keeps the width it would have in the full
+ * three-column layout — `gap-10` is 2.5rem, so two gaps come off the total —
+ * which paired with `justify-center` re-centres the row instead of leaving the
+ * missing columns as dead space on the right. Written out in full because
+ * Tailwind only ships classes it can find literally in the source.
+ */
+const COLUMN_TRACKS: Record<number, string> = {
+  1: 'lg:grid-cols-[repeat(1,calc((100%_-_5rem)/3))]',
+  2: 'lg:grid-cols-[repeat(2,calc((100%_-_5rem)/3))]',
+};
+
 /** Simple PDF/format badge rendered from text (no icon asset required). */
 function FormatBadge({ format }: { format: string }) {
   return (
@@ -116,7 +129,11 @@ export default function DocumentsSection({ content }: DocumentsSectionProps) {
       <div className='container-site py-20 lg:py-24'>
         <SectionHeader accent={accent} titleId='documents-title' />
 
-        <div className='mt-12 lg:mt-16 grid grid-cols-1 gap-10 lg:grid-cols-3 px-8 lg:px-0'>
+        <div
+          className={`mt-12 lg:mt-16 grid grid-cols-1 gap-10 px-8 lg:justify-center lg:px-0 ${
+            COLUMN_TRACKS[columns.length] ?? 'lg:grid-cols-3'
+          }`}
+        >
           {columns.map((column) => (
             <div key={column.title}>
               <h3 className='text-center text-2xl lg:text-3xl font-bold text-neutral'>
