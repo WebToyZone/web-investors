@@ -6,12 +6,15 @@ import {
   FaArrowUp,
   FaCheck,
   FaDownload,
+  FaFileCsv,
+  FaFileExcel,
   FaFilePdf,
   FaPen,
   FaPlus,
   FaTrashCan,
   FaXmark,
 } from 'react-icons/fa6';
+import type { IconType } from 'react-icons';
 import type {
   AdminContent,
   AdminDocument,
@@ -29,45 +32,76 @@ import {
   TextField,
 } from '@/components/admin/ui';
 import { AssetUploadField } from '@/components/admin/upload/AssetUploadField';
+import { DOCUMENT_FILE_ACCEPT } from '@/schemas/storage.schema';
 import { uploadAsset } from '@/components/admin/upload/upload-asset';
+import { discardUploads } from '@/actions/storage/discard-uploads';
 import { getAssetUrl } from '@/services/storage/asset-url';
 import { createDocumentCategoryAction } from '@/actions/document-categories/create-document-category';
 import { updateDocumentCategoryAction } from '@/actions/document-categories/update-document-category';
 import { deleteDocumentCategoryAction } from '@/actions/document-categories/delete-document-category';
 import { reorderDocumentCategoryAction } from '@/actions/document-categories/reorder-document-category';
 
+/**
+ * Whether both languages point at the same uploaded file. It is never stored:
+ * a document is shared exactly when its two locales carry the same S3 key, so
+ * the mode is derived on open and can never drift from the data.
+ */
+type FileMode = 'shared' | 'perLocale';
+
+/** Upload targets: one box per language, or a single shared one. */
+type FileSlot = Locale | 'shared';
+
+type UploadedAsset = Pick<DocumentLocaleFile, 'fileName' | 'size'>;
+
+const LOCALES: Locale[] = ['en', 'es'];
+
 type DocumentDraft = {
   categoryId: string;
   year: string;
   date: string;
+  fileMode: FileMode;
   en: DocumentLocaleFile;
   es: DocumentLocaleFile;
 };
 
 const emptyFile: DocumentLocaleFile = { title: '', fileName: '', size: '' };
 
+const GLYPH_BY_EXTENSION: Record<string, IconType> = {
+  xlsx: FaFileExcel,
+  xls: FaFileExcel,
+  csv: FaFileCsv,
+};
+
+/** Row glyph. Documents are usually PDFs, but spreadsheets are allowed too. */
+function FileGlyph({ fileName }: { fileName: string }) {
+  const extension = fileName.split('.').pop()?.toLowerCase() ?? '';
+  const Icon = GLYPH_BY_EXTENSION[extension] ?? FaFilePdf;
+  return <Icon className='h-5 w-5' />;
+}
+
 function createDefaultDraft(categories: DocumentCategory[]): DocumentDraft {
   return {
     categoryId: categories[0] ? String(categories[0].id) : '',
     year: String(new Date().getFullYear()),
     date: new Date().toISOString().slice(0, 10),
+    fileMode: 'perLocale',
     en: { ...emptyFile },
     es: { ...emptyFile },
   };
 }
 
 function draftFromDocument(document: AdminDocument): DocumentDraft {
+  const enFileName = document.files.en?.fileName ?? '';
+  const esFileName = document.files.es?.fileName ?? '';
+
   return {
     categoryId: String(document.categoryId),
     year: document.year,
     date: document.date,
+    fileMode: enFileName && enFileName === esFileName ? 'shared' : 'perLocale',
     en: document.files.en ? { ...document.files.en } : { ...emptyFile },
     es: document.files.es ? { ...document.files.es } : { ...emptyFile },
   };
-}
-
-function normalizeFile(file: DocumentLocaleFile): DocumentLocaleFile | null {
-  return file.fileName.trim() ? file : null;
 }
 
 function bucketKey(document: Pick<AdminDocument, 'categoryId' | 'year'>) {
@@ -132,7 +166,11 @@ function DocumentsTable({
               <td className='px-4 py-4 align-middle'>
                 <div className='flex min-w-0 items-center gap-3'>
                   <span className='flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-red-50 text-brand'>
-                    <FaFilePdf className='h-5 w-5' />
+                    <FileGlyph
+                      fileName={
+                        (document.files.en ?? document.files.es)?.fileName ?? ''
+                      }
+                    />
                   </span>
                   <span className='min-w-0'>
                     {(['en', 'es'] as const).map((locale) => {
@@ -230,7 +268,11 @@ export default function DocumentsAdminSection({
   const [pendingFiles, setPendingFiles] = useState<{
     en?: File;
     es?: File;
+    shared?: File;
   }>({});
+  // Which language's existing file becomes the shared one. Only consulted
+  // while sharing without a freshly uploaded file to override both.
+  const [sharedSource, setSharedSource] = useState<Locale>('en');
   const [isUploading, setIsUploading] = useState(false);
   const pendingSaveRef = useRef(false);
 
@@ -335,6 +377,7 @@ export default function DocumentsAdminSection({
     setEditingId(null);
     setDraft(createDefaultDraft(categories));
     setPendingFiles({});
+    setSharedSource('en');
     setValidationError('');
   }, [categories]);
 
@@ -343,6 +386,7 @@ export default function DocumentsAdminSection({
     setEditingId(document.id);
     setDraft(draftFromDocument(document));
     setPendingFiles({});
+    setSharedSource('en');
     setValidationError('');
   }
 
@@ -446,21 +490,121 @@ export default function DocumentsAdminSection({
     setValidationError('');
   }
 
-  function handleFileSelected(locale: Locale, file: File) {
+  function handleFileSelected(slot: FileSlot, file: File) {
     setValidationError('');
-    setPendingFiles((current) => ({ ...current, [locale]: file }));
-    if (!draft[locale].title) {
-      updateDraftFile(locale, { title: file.name.replace(/\.pdf$/i, '') });
+    setPendingFiles((current) => ({ ...current, [slot]: file }));
+
+    // A shared upload seeds both titles, since both languages describe it.
+    const derivedTitle = file.name.replace(/\.[^.]+$/, '');
+    for (const locale of slot === 'shared' ? LOCALES : [slot]) {
+      if (!draft[locale].title) {
+        updateDraftFile(locale, { title: derivedTitle });
+      }
     }
   }
 
-  function clearDraftFile(locale: Locale) {
-    updateDraftFile(locale, { title: '', fileName: '', size: '' });
-    setPendingFiles((current) => ({ ...current, [locale]: undefined }));
+  function clearDraftFile(slot: FileSlot) {
+    for (const locale of slot === 'shared' ? LOCALES : [slot]) {
+      updateDraftFile(locale, { title: '', fileName: '', size: '' });
+    }
+    // Clearing the shared box drops everything staged: any of the three slots
+    // could be the file it is currently showing.
+    setPendingFiles((current) =>
+      slot === 'shared' ? {} : { ...current, [slot]: undefined },
+    );
+  }
+
+  /**
+   * Switching is non-destructive — nothing has reached S3 yet, and the
+   * per-language files stay put so the choice is reversible. The one thing
+   * dropped is a staged shared file when leaving shared mode, which would
+   * otherwise sit in state with no box showing it.
+   */
+  function changeFileMode(fileMode: FileMode) {
+    updateDraft({ fileMode });
+    if (fileMode === 'perLocale') {
+      setPendingFiles((current) => ({ ...current, shared: undefined }));
+    }
   }
 
   function downloadDocumentFile(file: DocumentLocaleFile) {
     window.open(getAssetUrl(file.fileName), '_blank');
+  }
+
+  /**
+   * What a language would contribute if the document switched to one shared
+   * file: whatever is staged for upload, else whatever is already saved. The
+   * id exists to tell two candidates apart without comparing File objects.
+   */
+  function sharedCandidate(locale: Locale) {
+    const pending = pendingFiles[locale];
+    if (pending) {
+      return {
+        id: `pending:${pending.name}:${pending.size}:${pending.lastModified}`,
+        label: pending.name,
+      };
+    }
+
+    const fileName = draft[locale].fileName.trim();
+    if (fileName) {
+      return {
+        id: `saved:${fileName}`,
+        label: fileName.split('/').pop() ?? fileName,
+      };
+    }
+
+    return null;
+  }
+
+  const candidates = { en: sharedCandidate('en'), es: sharedCandidate('es') };
+
+  /** Falls back to whichever language actually has a file to offer. */
+  const effectiveSharedSource: Locale | null =
+    candidates.en && candidates.es
+      ? sharedSource
+      : candidates.en
+        ? 'en'
+        : candidates.es
+          ? 'es'
+          : null;
+
+  // Only worth asking when the two languages would contribute different files
+  // and no fresh upload is about to replace both anyway.
+  const mustPickSharedSource =
+    draft.fileMode === 'shared' &&
+    !pendingFiles.shared &&
+    Boolean(candidates.en && candidates.es) &&
+    candidates.en?.id !== candidates.es?.id;
+
+  /**
+   * What the shared box shows. A file staged in one language's box before
+   * switching mode still counts, so nothing selected is silently dropped.
+   */
+  const sharedStagedFile =
+    pendingFiles.shared ??
+    (effectiveSharedSource ? pendingFiles[effectiveSharedSource] : undefined);
+
+  const sharedPersistedFile =
+    !sharedStagedFile &&
+    effectiveSharedSource &&
+    draft[effectiveSharedSource].fileName
+      ? draft[effectiveSharedSource]
+      : null;
+
+  async function uploadDraftFile(
+    file: File,
+  ): Promise<{ asset: UploadedAsset } | { error: string }> {
+    const result = await uploadAsset('documents', file, uploadPrefixParts);
+    if ('error' in result) {
+      return { error: result.error };
+    }
+
+    return {
+      asset: {
+        fileName: result.key,
+        size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
+      },
+    };
   }
 
   async function handleSave() {
@@ -469,70 +613,98 @@ export default function DocumentsAdminSection({
       return;
     }
 
-    const hasEn = Boolean(draft.en.fileName.trim() || pendingFiles.en);
-    const hasEs = Boolean(draft.es.fileName.trim() || pendingFiles.es);
-
-    if (!hasEn && !hasEs) {
-      setValidationError(
-        'Sube al menos un archivo (ingles o espanol) para este documento.',
-      );
+    // Both languages are mandatory now, so both titles always are too.
+    if (!draft.en.title.trim()) {
+      setValidationError('Falta el titulo en ingles.');
       return;
     }
 
-    if (hasEn && !draft.en.title.trim()) {
-      setValidationError('Falta el titulo del archivo en ingles.');
+    if (!draft.es.title.trim()) {
+      setValidationError('Falta el titulo en espanol.');
       return;
     }
 
-    if (hasEs && !draft.es.title.trim()) {
-      setValidationError('Falta el titulo del archivo en espanol.');
+    const isShared = draft.fileMode === 'shared';
+
+    if (isShared && !pendingFiles.shared && !effectiveSharedSource) {
+      setValidationError('Sube el archivo que compartiran los dos idiomas.');
       return;
     }
 
-    let en = normalizeFile(draft.en);
-    let es = normalizeFile(draft.es);
+    if (!isShared) {
+      if (!draft.en.fileName.trim() && !pendingFiles.en) {
+        setValidationError('Falta el archivo en ingles.');
+        return;
+      }
 
-    if (pendingFiles.en || pendingFiles.es) {
-      setIsUploading(true);
+      if (!draft.es.fileName.trim() && !pendingFiles.es) {
+        setValidationError('Falta el archivo en espanol.');
+        return;
+      }
+    }
 
-      if (pendingFiles.en) {
-        const result = await uploadAsset(
-          'documents',
-          pendingFiles.en,
-          uploadPrefixParts,
-        );
+    let en: DocumentLocaleFile;
+    let es: DocumentLocaleFile;
+
+    setIsUploading(true);
+
+    if (isShared) {
+      let asset: UploadedAsset;
+
+      if (sharedStagedFile) {
+        const result = await uploadDraftFile(sharedStagedFile);
         if ('error' in result) {
           setIsUploading(false);
           setValidationError(result.error);
           return;
         }
-        en = {
-          title: draft.en.title,
-          fileName: result.key,
-          size: `${(pendingFiles.en.size / 1024 / 1024).toFixed(1)} MB`,
+        asset = result.asset;
+      } else {
+        // Reusing an already uploaded file: no second copy goes to S3, both
+        // languages simply point at the same key.
+        const source = effectiveSharedSource as Locale;
+        asset = {
+          fileName: draft[source].fileName,
+          size: draft[source].size,
         };
       }
 
-      if (pendingFiles.es) {
-        const result = await uploadAsset(
-          'documents',
-          pendingFiles.es,
-          uploadPrefixParts,
-        );
+      en = { title: draft.en.title, ...asset };
+      es = { title: draft.es.title, ...asset };
+    } else {
+      en = { ...draft.en };
+      es = { ...draft.es };
+
+      // Two uploads, one save. If the second fails there is no record to hold
+      // the first, so it has to come back out of the bucket.
+      const uploadedKeys: string[] = [];
+
+      for (const locale of LOCALES) {
+        const stagedFile = pendingFiles[locale];
+        if (!stagedFile) {
+          continue;
+        }
+
+        const result = await uploadDraftFile(stagedFile);
         if ('error' in result) {
+          await discardUploads(uploadedKeys);
           setIsUploading(false);
           setValidationError(result.error);
           return;
         }
-        es = {
-          title: draft.es.title,
-          fileName: result.key,
-          size: `${(pendingFiles.es.size / 1024 / 1024).toFixed(1)} MB`,
-        };
-      }
 
-      setIsUploading(false);
+        uploadedKeys.push(result.asset.fileName);
+
+        const next = { title: draft[locale].title, ...result.asset };
+        if (locale === 'en') {
+          en = next;
+        } else {
+          es = next;
+        }
+      }
     }
+
+    setIsUploading(false);
 
     const files = { en, es };
     const categoryId = Number(draft.categoryId);
@@ -935,49 +1107,114 @@ export default function DocumentsAdminSection({
                 onChange={(date) => updateDraft({ date })}
               />
             </div>
-            {(['en', 'es'] as const).map((locale) => {
-              const persistedFileName = draft[locale].fileName;
-              const pendingFile = pendingFiles[locale];
-              return (
-                <div
-                  key={locale}
-                  className='space-y-3 rounded-md border border-neutral-200 p-3'
-                >
-                  <div className='flex items-center justify-between'>
-                    <span className='text-xs font-bold uppercase text-neutral-500'>
-                      Archivo {locale === 'en' ? 'ingles' : 'espanol'}
-                    </span>
-                    {persistedFileName && !pendingFile ? (
-                      <IconButton
-                        label='Descargar'
-                        onClick={() => downloadDocumentFile(draft[locale])}
-                      >
-                        <FaDownload className='h-4 w-4' />
-                      </IconButton>
-                    ) : null}
-                  </div>
+            <SelectField
+              label='Archivos'
+              value={draft.fileMode}
+              options={[
+                { label: 'Un archivo por idioma', value: 'perLocale' },
+                { label: 'Un archivo para los dos idiomas', value: 'shared' },
+              ]}
+              onChange={(fileMode) => changeFileMode(fileMode as FileMode)}
+            />
+
+            {draft.fileMode === 'shared' ? (
+              <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
+                <div className='flex items-center justify-between'>
+                  <span className='text-xs font-bold uppercase text-neutral-500'>
+                    Archivo compartido
+                  </span>
+                  {sharedPersistedFile ? (
+                    <IconButton
+                      label='Descargar'
+                      onClick={() => downloadDocumentFile(sharedPersistedFile)}
+                    >
+                      <FaDownload className='h-4 w-4' />
+                    </IconButton>
+                  ) : null}
+                </div>
+
+                {mustPickSharedSource ? (
+                  <SelectField
+                    label='Cual conservar'
+                    value={sharedSource}
+                    options={LOCALES.map((locale) => ({
+                      label: `El de ${locale === 'en' ? 'ingles' : 'espanol'} - ${
+                        candidates[locale]?.label ?? ''
+                      }`,
+                      value: locale,
+                    }))}
+                    onChange={(locale) => {
+                      setValidationError('');
+                      setSharedSource(locale as Locale);
+                    }}
+                  />
+                ) : null}
+
+                <AssetUploadField
+                  accept={DOCUMENT_FILE_ACCEPT}
+                  label=''
+                  value={sharedPersistedFile?.fileName ?? ''}
+                  pendingFile={sharedStagedFile}
+                  onFileSelected={(file) => handleFileSelected('shared', file)}
+                  onClear={() => clearDraftFile('shared')}
+                  previewVariant='row'
+                  disabled={isUploading}
+                />
+
+                {LOCALES.map((locale) => (
                   <TextField
-                    label='Titulo'
+                    key={locale}
+                    label={`Titulo ${locale === 'en' ? 'ingles' : 'espanol'}`}
                     value={draft[locale].title}
                     onChange={(title) => updateDraftFile(locale, { title })}
                   />
-                  <AssetUploadField
-                    accept='application/pdf'
-                    label=''
-                    value={persistedFileName}
-                    pendingFile={pendingFile}
-                    onFileSelected={(file) => handleFileSelected(locale, file)}
-                    onClear={() => clearDraftFile(locale)}
-                    previewVariant='row'
-                    disabled={isUploading}
-                  />
-                </div>
-              );
-            })}
+                ))}
+              </div>
+            ) : (
+              LOCALES.map((locale) => {
+                const persistedFileName = draft[locale].fileName;
+                const pendingFile = pendingFiles[locale];
+                return (
+                  <div
+                    key={locale}
+                    className='space-y-3 rounded-md border border-neutral-200 p-3'
+                  >
+                    <div className='flex items-center justify-between'>
+                      <span className='text-xs font-bold uppercase text-neutral-500'>
+                        Archivo {locale === 'en' ? 'ingles' : 'espanol'}
+                      </span>
+                      {persistedFileName && !pendingFile ? (
+                        <IconButton
+                          label='Descargar'
+                          onClick={() => downloadDocumentFile(draft[locale])}
+                        >
+                          <FaDownload className='h-4 w-4' />
+                        </IconButton>
+                      ) : null}
+                    </div>
+                    <TextField
+                      label='Titulo'
+                      value={draft[locale].title}
+                      onChange={(title) => updateDraftFile(locale, { title })}
+                    />
+                    <AssetUploadField
+                      accept={DOCUMENT_FILE_ACCEPT}
+                      label=''
+                      value={persistedFileName}
+                      pendingFile={pendingFile}
+                      onFileSelected={(file) => handleFileSelected(locale, file)}
+                      onClear={() => clearDraftFile(locale)}
+                      previewVariant='row'
+                      disabled={isUploading}
+                    />
+                  </div>
+                );
+              })
+            )}
 
             <p className='text-xs text-neutral-500'>
-              Puedes guardar con un solo idioma cargado; el otro quedara
-              marcado como pendiente hasta que lo subas.
+              Los dos idiomas son obligatorios. Con un archivo compartido se
+              sube una sola vez y cada idioma le pone su propio titulo.
             </p>
 
             <PrimaryButton
