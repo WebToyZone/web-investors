@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
+import { revalidatePublicSite } from '@/services/admin-content/revalidate';
 import {
   CategoryHasDocumentsError,
   deleteDocumentCategory,
@@ -27,6 +28,7 @@ export async function deleteDocumentCategoryAction(
     await deleteDocumentCategory(id);
     const categories = await listDocumentCategories();
     revalidatePath('/admin');
+    revalidatePublicSite();
 
     return { success: 'Categoria eliminada.', categories };
   } catch (error) {

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
+import { revalidatePublicSite } from '@/services/admin-content/revalidate';
 import { CreateDocumentCategorySchema } from '@/schemas/document-category.schema';
 import {
   createDocumentCategory,
@@ -32,6 +33,7 @@ export async function createDocumentCategoryAction(
     await createDocumentCategory(parsed.data.translations);
     const categories = await listDocumentCategories();
     revalidatePath('/admin');
+    revalidatePublicSite();
 
     return { success: 'Categoria creada.', categories };
   } catch (error) {

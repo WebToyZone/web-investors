@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { saveAdminContentSection } from '@/services/admin-content/local-store';
+import { revalidatePublicSite } from '@/services/admin-content/revalidate';
 import type { AdminContent } from '@/components/admin/types';
 import { auth } from '@/auth';
 
@@ -23,6 +24,12 @@ export async function saveAdminSection<K extends keyof AdminContent>(
   try {
     const content = await saveAdminContentSection(section, value);
     revalidatePath('/admin');
+
+    // Documents is the only section the public page reads from the database
+    // so far; the rest still render from the static content file.
+    if (section === 'documents') {
+      revalidatePublicSite();
+    }
 
     return {
       success: 'Cambios guardados.',

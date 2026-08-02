@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
+import { revalidatePublicSite } from '@/services/admin-content/revalidate';
 import { UpdateDocumentCategorySchema } from '@/schemas/document-category.schema';
 import {
   listDocumentCategories,
@@ -35,6 +36,7 @@ export async function updateDocumentCategoryAction(
     );
     const categories = await listDocumentCategories();
     revalidatePath('/admin');
+    revalidatePublicSite();
 
     return { success: 'Categoria actualizada.', categories };
   } catch (error) {
