@@ -52,8 +52,13 @@ export async function createPresignedUploadUrl({
     CacheControl: ASSET_CACHE_CONTROL,
   });
 
+  // Signing the header binds the upload to the type validated above. Without
+  // it S3 stores whatever Content-Type the PUT happens to carry, which would
+  // leave the allow-list depending on the client staying in agreement with
+  // this function rather than on anything enforced.
   const url = await getSignedUrl(s3Client, command, {
     expiresIn: UPLOAD_URL_EXPIRES_IN_SECONDS,
+    signableHeaders: new Set(['content-type']),
   });
 
   return { url, key };
