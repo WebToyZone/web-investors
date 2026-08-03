@@ -30,7 +30,8 @@ export async function saveAdminSection<K extends keyof AdminContent>(
     if (
       section === 'documents' ||
       section === 'glance' ||
-      section === 'growth'
+      section === 'growth' ||
+      section === 'contact'
     ) {
       revalidatePublicSite();
     }
