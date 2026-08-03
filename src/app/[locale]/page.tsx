@@ -13,6 +13,7 @@ import { getInvestorsPage, type Locale } from '@data/investorsData';
 import { getPublicDocuments } from '@/services/documents/public-documents';
 import { getPublicGlance } from '@/services/glance/public-glance';
 import { getPublicGrowth } from '@/services/growth/public-growth';
+import { getPublicContact } from '@/services/contact/public-contact';
 import { getLocale, getTranslations } from 'next-intl/server';
 
 export default async function InvestorsPage() {
@@ -33,6 +34,7 @@ export default async function InvestorsPage() {
   const documentColumns = await getPublicDocuments(locale);
   const glance = await getPublicGlance(locale);
   const growth = await getPublicGrowth(locale);
+  const contactInfo = await getPublicContact(locale);
 
   return (
     <>
@@ -72,7 +74,10 @@ export default async function InvestorsPage() {
           }}
         />
         <ContactSection
-          content={content.contact}
+          content={{
+            ...content.contact,
+            info: contactInfo ?? content.contact.info,
+          }}
           locale={locale}
           decoration={content.contactDecoration}
         />
