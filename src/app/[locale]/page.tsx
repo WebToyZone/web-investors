@@ -11,6 +11,7 @@ import DocumentsSection from '@/components/sections/DocumentsSection';
 import ContactSection from '@/components/sections/ContactSection';
 import { getInvestorsPage, type Locale } from '@data/investorsData';
 import { getPublicDocuments } from '@/services/documents/public-documents';
+import { getPublicGlance } from '@/services/glance/public-glance';
 import { getLocale, getTranslations } from 'next-intl/server';
 
 export default async function InvestorsPage() {
@@ -29,6 +30,7 @@ export default async function InvestorsPage() {
   // The section heading is i18n copy and stays in the static content; the
   // columns themselves are whatever the admin has published.
   const documentColumns = await getPublicDocuments(locale);
+  const glance = await getPublicGlance(locale);
 
   return (
     <>
@@ -45,7 +47,16 @@ export default async function InvestorsPage() {
           src={content.cockpitBand.src}
           alt={content.cockpitBand.alt}
         />
-        <EoloAtAGlanceSection content={content.glance} />
+        <EoloAtAGlanceSection
+          content={{
+            ...content.glance,
+            stats: glance.stats,
+            platform: {
+              ...content.glance.platform,
+              locations: glance.locations,
+            },
+          }}
+        />
         <BoardOfDirectorsSection content={content.board} />
         <PowerOfASmileSection content={content.powerOfASmile} />
         <DocumentsSection

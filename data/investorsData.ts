@@ -127,64 +127,13 @@ const enContent: InvestorsPageContent = {
     title: 'at a Glance 2025',
     subtitle:
       'A global toy platform with nearly 50 years of experience, operating across 59 countries and serving leading retailers worldwide.',
-    stats: [
-      {
-        icon: { src: '/icons/toy-industry-experience.webp' },
-        value: '~50 years',
-        label: 'Toy Industry Experience',
-      },
-      {
-        icon: { src: '/icons/revenue.webp' },
-        value: '$19,75M',
-        label: '2025 Revenue',
-      },
-      {
-        icon: { src: '/icons/countries.webp' },
-        value: '59',
-        label: 'Countries',
-      },
-      { icon: { src: '/icons/clients.webp' }, value: '180', label: 'Clients' },
-      {
-        icon: { src: '/icons/direct-retailers.webp' },
-        value: '125',
-        label: 'Direct Retailers',
-      },
-      {
-        icon: { src: '/icons/distributors.webp' },
-        value: '55',
-        label: 'Distributors',
-      },
-      {
-        icon: { src: '/icons/storefronts.webp' },
-        value: '33.000',
-        label: 'Storefronts',
-      },
-      {
-        icon: { src: '/icons/revenue-employee.webp' },
-        value: '$681K',
-        label: 'Revenue / Employee',
-      },
-    ],
+    // The KPI cards and the operating locations now come from the database:
+    // see `getPublicGlance`, which the page merges over this content. Only the
+    // headings below are still copy that lives here.
+    stats: [],
     platform: {
       heading: 'Global Operating Platform',
-      locations: [
-        {
-          icon: { src: '/icons/spain.webp' },
-          name: 'Spain',
-          description: 'Corporate, Product Development, Finance & Creativity.',
-        },
-        {
-          icon: { src: '/icons/china.webp' },
-          name: 'Hong Kong / China',
-          description:
-            'Sourcing, Manufacturing, Supplier Management & Quality Assurance.',
-        },
-        {
-          icon: { src: '/icons/usa.webp' },
-          name: 'United States',
-          description: 'Commercial Scale, Retail & Expansion.',
-        },
-      ],
+      locations: [],
     },
   },
 
@@ -480,64 +429,10 @@ const esContent: InvestorsPageContent = {
     title: 'en un Vistazo 2025',
     subtitle:
       'Una plataforma global de juguetes con casi 50 años de experiencia, operando en 59 países y sirviendo a los principales minoristas del mundo.',
-    stats: [
-      {
-        icon: { src: '/icons/toy-industry-experience.webp' },
-        value: '~50 años',
-        label: 'Trayectoria en juguetes',
-      },
-      {
-        icon: { src: '/icons/revenue.webp' },
-        value: '$19,75M',
-        label: 'Ingresos 2025',
-      },
-      {
-        icon: { src: '/icons/countries.webp' },
-        value: '59',
-        label: 'Países',
-      },
-      { icon: { src: '/icons/clients.webp' }, value: '180', label: 'Clientes' },
-      {
-        icon: { src: '/icons/direct-retailers.webp' },
-        value: '125',
-        label: 'Minoristas Directos',
-      },
-      {
-        icon: { src: '/icons/distributors.webp' },
-        value: '55',
-        label: 'Distribuidores',
-      },
-      {
-        icon: { src: '/icons/storefronts.webp' },
-        value: '33.000',
-        label: 'Puntos de venta',
-      },
-      {
-        icon: { src: '/icons/revenue-employee.webp' },
-        value: '$681K',
-        label: 'Ingresos / Empleado',
-      },
-    ],
+    stats: [],
     platform: {
       heading: 'Plataforma Operativa Global',
-      locations: [
-        {
-          icon: { src: '/icons/spain.webp' },
-          name: 'España',
-          description:
-            'Corporativo, Desarrollo de Producto, Finanzas y Creatividad.',
-        },
-        {
-          icon: { src: '/icons/china.webp' },
-          name: 'Hong Kong / China',
-          description: 'Sourcing, Manufactura, Gestión de Proveedores y QA.',
-        },
-        {
-          icon: { src: '/icons/usa.webp' },
-          name: 'Estados Unidos',
-          description: 'Escala Comercial, Retail y Expansión.',
-        },
-      ],
+      locations: [],
     },
   },
 
