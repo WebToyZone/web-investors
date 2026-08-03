@@ -12,6 +12,7 @@ import ContactSection from '@/components/sections/ContactSection';
 import { getInvestorsPage, type Locale } from '@data/investorsData';
 import { getPublicDocuments } from '@/services/documents/public-documents';
 import { getPublicGlance } from '@/services/glance/public-glance';
+import { getPublicGrowth } from '@/services/growth/public-growth';
 import { getLocale, getTranslations } from 'next-intl/server';
 
 export default async function InvestorsPage() {
@@ -31,6 +32,7 @@ export default async function InvestorsPage() {
   // columns themselves are whatever the admin has published.
   const documentColumns = await getPublicDocuments(locale);
   const glance = await getPublicGlance(locale);
+  const growth = await getPublicGrowth(locale);
 
   return (
     <>
@@ -39,7 +41,11 @@ export default async function InvestorsPage() {
       <main id='top'>
         <HeroSection video={content.hero} />
         <GrowthJourneySection
-          content={content.growthJourney}
+          content={{
+            ...content.growthJourney,
+            chart: { ...content.growthJourney.chart, data: growth.revenue },
+            milestones: growth.milestones,
+          }}
           decoration={content.growthDecoration}
         />
         <BusinessModelSection content={content.businessModel} />

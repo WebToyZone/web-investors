@@ -16,6 +16,12 @@ export interface RevenueDatum {
 }
 
 export interface Milestone {
+  /**
+   * Stable identity for the list key. Database rows always carry one; the
+   * static content in `data/investorsData.ts` predates it and falls back to
+   * the title, which is why this stays optional.
+   */
+  id?: string;
   /** Year / headline prefix, e.g. "2020 - CuiCui Studios". */
   title: string;
   /** Supporting description. */
@@ -86,8 +92,11 @@ export default function GrowthJourneySection({
 
   const plotHeight = CHART_HEIGHT - PADDING_TOP - PADDING_BOTTOM;
   const maxValue = Math.max(...chart.data.map((d) => d.value), 0) || 1;
-  const barWidth =
-    (CHART_WIDTH - BAR_GAP * (chart.data.length + 1)) / chart.data.length;
+  // Guarded because the data is admin-managed now: dividing by an empty set
+  // would make every bar coordinate NaN and render a broken SVG.
+  const barWidth = chart.data.length
+    ? (CHART_WIDTH - BAR_GAP * (chart.data.length + 1)) / chart.data.length
+    : 0;
 
   const bars = chart.data.map((datum, index) => {
     const barHeight = (datum.value / maxValue) * plotHeight;
@@ -127,7 +136,9 @@ export default function GrowthJourneySection({
           </p>
         </div>
 
-        {/* Column 2 — revenue chart */}
+        {/* Column 2 — revenue chart. Omitted entirely with no data, rather
+            than leaving an empty frame and its caption behind. */}
+        {chart.data.length > 0 ? (
         <figure className='flex flex-col items-center justify-center'>
           <svg
             viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
@@ -186,12 +197,14 @@ export default function GrowthJourneySection({
             </tbody>
           </table>
         </figure>
+        ) : null}
 
         {/* Column 3 — milestones timeline */}
         <div className='relative'>
+          {milestones.length > 0 ? (
           <ol className="relative z-10 ml-1 space-y-8 before:absolute before:bottom-2 before:left-1.25 before:top-2 before:w-0.5 before:bg-brand before:content-['']">
             {milestones.map((milestone) => (
-              <li key={milestone.title} className='relative pl-8'>
+              <li key={milestone.id ?? milestone.title} className='relative pl-8'>
                 <span
                   className='absolute left-0 top-1.5 h-3 w-3 rounded-full bg-brand ring-4 ring-white'
                   aria-hidden='true'
@@ -205,6 +218,7 @@ export default function GrowthJourneySection({
               </li>
             ))}
           </ol>
+          ) : null}
           {decoration && (
             <div className='z-0 pointer-events-none absolute -bottom-64 hidden w-200 2xl:block'>
               <Image
