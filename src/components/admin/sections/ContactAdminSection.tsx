@@ -2,15 +2,44 @@
 
 import { useState } from 'react';
 import { FaCheck } from 'react-icons/fa6';
-import type { AdminContent, ContactInfo } from '@/components/admin/types';
+import type {
+  AdminContent,
+  ContactInfo,
+  Locale,
+} from '@/components/admin/types';
 import { FormNotice, IconButton, Panel, TextField } from '@/components/admin/ui';
+import {
+  joinAddressLine2,
+  splitAddressLine2,
+} from '@/services/contact/address';
 
-const infoFields: { key: keyof ContactInfo; label: string }[] = [
+/** Shared by both languages: a phone number and an inbox do not translate. */
+const sharedFields: { key: 'email' | 'phone'; label: string }[] = [
   { key: 'email', label: 'Email' },
   { key: 'phone', label: 'Telefono' },
-  { key: 'addressLine1', label: 'Direccion - Calle y numero' },
-  { key: 'addressLine2', label: 'Direccion - Ciudad y pais' },
 ];
+
+/**
+ * Rebuilds both languages from the address being edited. Street and locality
+ * are identical in each; only the country differs.
+ */
+function buildAddressTranslations(
+  street: string,
+  locality: string,
+  countryEs: string,
+  countryEn: string,
+): ContactInfo['translations'] {
+  return {
+    en: {
+      addressLine1: street,
+      addressLine2: joinAddressLine2(locality, countryEn),
+    },
+    es: {
+      addressLine1: street,
+      addressLine2: joinAddressLine2(locality, countryEs),
+    },
+  };
+}
 
 export default function ContactAdminSection({
   data,
@@ -27,24 +56,55 @@ export default function ContactAdminSection({
   const { info, recipientEmail } = data;
   const [validationError, setValidationError] = useState('');
 
-  function updateInfoField(key: keyof ContactInfo, value: string) {
+  function updateSharedField(key: 'email' | 'phone', value: string) {
     setValidationError('');
     onChange({ ...data, info: { ...info, [key]: value } });
   }
 
-  function updateRecipientEmail(value: string) {
+  // Street and locality are shared, so the Spanish side is the one read back;
+  // each country comes from its own language.
+  const street = info.translations.es.addressLine1;
+  const { locality, country: countryEs } = splitAddressLine2(
+    info.translations.es.addressLine2,
+  );
+  const { country: countryEn } = splitAddressLine2(
+    info.translations.en.addressLine2,
+  );
+
+  function updateAddress(patch: {
+    street?: string;
+    locality?: string;
+    countryEs?: string;
+    countryEn?: string;
+  }) {
     setValidationError('');
-    onChange({ ...data, recipientEmail: value });
+    onChange({
+      ...data,
+      info: {
+        ...info,
+        translations: buildAddressTranslations(
+          patch.street ?? street,
+          patch.locality ?? locality,
+          patch.countryEs ?? countryEs,
+          patch.countryEn ?? countryEn,
+        ),
+      },
+    });
   }
 
-  function saveInfoField(key: keyof ContactInfo) {
-    if (!info[key].trim()) {
+  function saveField(value: string) {
+    if (!value.trim()) {
       setValidationError('Completa el valor antes de guardar.');
       return;
     }
 
     setValidationError('');
     onSave();
+  }
+
+  function updateRecipientEmail(value: string) {
+    setValidationError('');
+    onChange({ ...data, recipientEmail: value });
   }
 
   function saveRecipientEmail() {
@@ -66,7 +126,7 @@ export default function ContactAdminSection({
           {validationError ? (
             <FormNotice tone='danger'>{validationError}</FormNotice>
           ) : null}
-          {infoFields.map(({ key, label }) => (
+          {sharedFields.map(({ key, label }) => (
             <div
               key={key}
               className='grid gap-3 rounded-md border border-neutral-200 p-3 md:grid-cols-[1fr_auto] md:items-end'
@@ -74,17 +134,82 @@ export default function ContactAdminSection({
               <TextField
                 label={label}
                 value={info[key]}
-                onChange={(value) => updateInfoField(key, value)}
+                onChange={(value) => updateSharedField(key, value)}
               />
               <IconButton
                 label='Guardar'
-                onClick={() => saveInfoField(key)}
+                onClick={() => saveField(info[key])}
                 disabled={isSaving}
               >
                 <FaCheck className='h-4 w-4' />
               </IconButton>
             </div>
           ))}
+
+          <div className='grid gap-3 rounded-md border border-neutral-200 p-3 md:grid-cols-[1fr_auto] md:items-end'>
+            <TextField
+              label='Direccion - Calle y numero'
+              value={street}
+              onChange={(value) => updateAddress({ street: value })}
+            />
+            <IconButton
+              label='Guardar'
+              onClick={() => saveField(street)}
+              disabled={isSaving}
+            >
+              <FaCheck className='h-4 w-4' />
+            </IconButton>
+          </div>
+
+          <div className='grid gap-3 rounded-md border border-neutral-200 p-3 md:grid-cols-[1fr_auto] md:items-end'>
+            <TextField
+              label='Direccion - Codigo postal, ciudad y provincia'
+              value={locality}
+              onChange={(value) => updateAddress({ locality: value })}
+            />
+            <IconButton
+              label='Guardar'
+              onClick={() => saveField(locality)}
+              disabled={isSaving}
+            >
+              <FaCheck className='h-4 w-4' />
+            </IconButton>
+          </div>
+
+          <div className='grid gap-3 rounded-md border border-neutral-200 p-3 md:grid-cols-[1fr_auto] md:items-end'>
+            <TextField
+              label='Pais en espanol'
+              value={countryEs}
+              onChange={(value) => updateAddress({ countryEs: value })}
+            />
+            <IconButton
+              label='Guardar'
+              onClick={() => saveField(countryEs)}
+              disabled={isSaving}
+            >
+              <FaCheck className='h-4 w-4' />
+            </IconButton>
+          </div>
+
+          <div className='grid gap-3 rounded-md border border-neutral-200 p-3 md:grid-cols-[1fr_auto] md:items-end'>
+            <TextField
+              label='Pais en ingles'
+              value={countryEn}
+              onChange={(value) => updateAddress({ countryEn: value })}
+            />
+            <IconButton
+              label='Guardar'
+              onClick={() => saveField(countryEn)}
+              disabled={isSaving}
+            >
+              <FaCheck className='h-4 w-4' />
+            </IconButton>
+          </div>
+
+          <p className='text-xs text-neutral-500'>
+            La calle y la localidad son comunes a los dos idiomas; solo el pais
+            cambia. Se publica como &laquo;localidad, pais&raquo;.
+          </p>
         </div>
       </Panel>
 

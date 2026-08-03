@@ -1,10 +1,13 @@
 import { prisma } from '@/services/db/client';
 import { deleteAssets } from '@/services/storage/delete-assets';
+import { splitAddressLine2 } from '@/services/contact/address';
 import type { Prisma } from '@prisma/client';
 import type {
   AdminContent,
   AdminDocument,
   BoardMember,
+  ContactAddressTranslation,
+  ContactInfo,
   DocumentCategory,
   GrowthMilestone,
   KpiStat,
@@ -42,6 +45,28 @@ export async function getAdminContent(): Promise<AdminContent> {
   const videosBySlot = Object.fromEntries(
     videos.map((video) => [video.slot, video]),
   );
+
+  // The address used to be a single pair of columns shared by both languages.
+  // Rows saved before it became translatable fall back to them, so the address
+  // never renders empty while the change rolls out.
+  const addressTranslations = contactSettings.translations as unknown as Record<
+    Locale,
+    Partial<ContactAddressTranslation> | undefined
+  > | null;
+
+  const contactAddress = Object.fromEntries(
+    (['en', 'es'] as const).map((locale) => [
+      locale,
+      {
+        addressLine1:
+          addressTranslations?.[locale]?.addressLine1 ??
+          contactSettings.addressLine1,
+        addressLine2:
+          addressTranslations?.[locale]?.addressLine2 ??
+          contactSettings.addressLine2,
+      },
+    ]),
+  ) as ContactInfo['translations'];
 
   return {
     documents: {
@@ -139,8 +164,7 @@ export async function getAdminContent(): Promise<AdminContent> {
       info: {
         email: contactSettings.email,
         phone: contactSettings.phone,
-        addressLine1: contactSettings.addressLine1,
-        addressLine2: contactSettings.addressLine2,
+        translations: contactAddress,
       },
       recipientEmail: contactSettings.recipientEmail,
     },
@@ -249,23 +273,27 @@ async function persistSection<K extends keyof AdminContent>(
       }
       case 'contact': {
         const data = value as AdminContent['contact'];
+        // The flat columns hold the language-neutral address: the street, and
+        // the locality without the country. Each entry in `translations` is
+        // that same locality joined to its own country name, which is the only
+        // part that differs. Kept in sync because the previously deployed
+        // admin still selects these columns.
+        const contactFields = {
+          email: data.info.email,
+          phone: data.info.phone,
+          addressLine1: data.info.translations.es.addressLine1,
+          addressLine2: splitAddressLine2(
+            data.info.translations.es.addressLine2,
+          ).locality,
+          translations: data.info
+            .translations as unknown as Prisma.InputJsonValue,
+          recipientEmail: data.recipientEmail,
+        };
+
         await tx.contactSettings.upsert({
           where: { id: 1 },
-          create: {
-            id: 1,
-            email: data.info.email,
-            phone: data.info.phone,
-            addressLine1: data.info.addressLine1,
-            addressLine2: data.info.addressLine2,
-            recipientEmail: data.recipientEmail,
-          },
-          update: {
-            email: data.info.email,
-            phone: data.info.phone,
-            addressLine1: data.info.addressLine1,
-            addressLine2: data.info.addressLine2,
-            recipientEmail: data.recipientEmail,
-          },
+          create: { id: 1, ...contactFields },
+          update: contactFields,
         });
         break;
       }

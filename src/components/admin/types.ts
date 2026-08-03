@@ -112,11 +112,20 @@ export type GrowthMilestone = {
   translations: Record<Locale, GrowthMilestoneTranslation>;
 };
 
+/**
+ * The address per language: the country name differs ("SPAIN." against
+ * "ESPAÑA.") and the street wording may too. Email and phone are the same
+ * everywhere, so they stay outside.
+ */
+export type ContactAddressTranslation = {
+  addressLine1: string;
+  addressLine2: string;
+};
+
 export type ContactInfo = {
   email: string;
   phone: string;
-  addressLine1: string;
-  addressLine2: string;
+  translations: Record<Locale, ContactAddressTranslation>;
 };
 
 export type AdminVideo = {

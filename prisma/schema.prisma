@@ -82,9 +82,14 @@ model GrowthMilestone {
 // -- Contact ----------------------------------------------------------------
 
 model ContactSettings {
-  id             Int    @id @default(1)
-  email          String
-  phone          String
+  id    Int    @id @default(1)
+  email String
+  phone String
+  // Street and city/country lines per language: the country name differs
+  // ("SPAIN." against "ESPAÑA.") and so may the street wording.
+  translations Json?
+  // Superseded by `translations`, kept so the previously deployed admin —
+  // which still selects these — keeps working. Mirrors the English lines.
   addressLine1   String
   addressLine2   String
   recipientEmail String
