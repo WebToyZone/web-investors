@@ -9,8 +9,12 @@ import DecorativeLine from '../ui/DecorativeLine';
  * keep it ready to come from a Prisma-backed CMS later.
  */
 export interface GlanceStat {
-  /** Stable identity for the list key: labels can repeat, ids cannot. */
-  id: string;
+  /**
+   * Stable identity for the list key. Database rows always carry one; the
+   * static content in `data/investorsData.ts` predates it and falls back to
+   * the label, which is why this stays optional.
+   */
+  id?: string;
   /** 3D icon asset. */
   icon: { src: string; alt?: string };
   /** Highlighted figure, e.g. "$19,75M" or "~50 years". */
@@ -20,8 +24,12 @@ export interface GlanceStat {
 }
 
 export interface OperatingLocation {
-  /** Stable identity for the list key: names can repeat, ids cannot. */
-  id: string;
+  /**
+   * Stable identity for the list key. Database rows always carry one; the
+   * static content in `data/investorsData.ts` predates it and falls back to
+   * the name, which is why this stays optional.
+   */
+  id?: string;
   /** Line icon asset shown inside a circle. */
   icon: { src: string; alt?: string };
   /** Location name, e.g. "España". */
@@ -73,7 +81,7 @@ export default function EoloAtAGlanceSection({
         <ul className='mt-14 lg:mt-16 flex flex-wrap justify-center gap-5'>
           {stats.map((stat) => (
             <li
-              key={stat.id}
+              key={stat.id ?? stat.label}
               className='flex min-w-75 max-w-87.5 flex-1 items-center justify-center gap-3 rounded-2xl border border-neutral-200 bg-white py-3 md:py-4 shadow-sm'
             >
               <Image
@@ -105,7 +113,7 @@ export default function EoloAtAGlanceSection({
           </h3>
           <ul className='mt-10 lg:mt-16 grid grid-cols-1 gap-10 lg:grid-cols-3'>
             {platform.locations.map((location) => (
-              <li key={location.id} className='flex items-start gap-5 px-8 lg:px-0 '>
+              <li key={location.id ?? location.name} className='flex items-start gap-5 px-8 lg:px-0 '>
                 <span className='flex h-28 w-28 md:h-32 md:w-32 shrink-0 items-center justify-center rounded-full border border-neutral-200 bg-white shadow-md'>
                   <Image
                     src={location.icon.src}
