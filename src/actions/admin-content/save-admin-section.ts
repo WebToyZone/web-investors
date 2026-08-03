@@ -25,9 +25,9 @@ export async function saveAdminSection<K extends keyof AdminContent>(
     const content = await saveAdminContentSection(section, value);
     revalidatePath('/admin');
 
-    // Documents is the only section the public page reads from the database
-    // so far; the rest still render from the static content file.
-    if (section === 'documents') {
+    // Only the sections the public page reads from the database; the rest
+    // still render from the static content file.
+    if (section === 'documents' || section === 'glance') {
       revalidatePublicSite();
     }
 
