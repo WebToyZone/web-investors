@@ -27,7 +27,11 @@ export async function saveAdminSection<K extends keyof AdminContent>(
 
     // Only the sections the public page reads from the database; the rest
     // still render from the static content file.
-    if (section === 'documents' || section === 'glance') {
+    if (
+      section === 'documents' ||
+      section === 'glance' ||
+      section === 'growth'
+    ) {
       revalidatePublicSite();
     }
 
