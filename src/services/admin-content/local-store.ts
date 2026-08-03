@@ -8,6 +8,8 @@ import type {
   DocumentCategory,
   GrowthMilestone,
   KpiStat,
+  KpiTranslation,
+  Locale,
   PendingBoardSeat,
   PlatformLocation,
 } from '@/components/admin/types';
@@ -64,15 +66,31 @@ export async function getAdminContent(): Promise<AdminContent> {
       ),
     },
     glance: {
-      kpis: kpis.map(
-        (kpi): KpiStat => ({
+      kpis: kpis.map((kpi): KpiStat => {
+        const translations = kpi.translations as unknown as Record<
+          Locale,
+          Partial<KpiTranslation> | undefined
+        >;
+
+        return {
           id: String(kpi.id),
           order: kpi.order,
           icon: kpi.icon,
-          value: kpi.value,
-          translations: kpi.translations as unknown as KpiStat['translations'],
-        }),
-      ),
+          // The figure used to be a single column shared by both languages.
+          // Rows saved before it became translatable still have it there, so
+          // fall back to it rather than render an empty KPI mid-rollout.
+          translations: {
+            en: {
+              label: translations.en?.label ?? '',
+              value: translations.en?.value ?? kpi.value,
+            },
+            es: {
+              label: translations.es?.label ?? '',
+              value: translations.es?.value ?? kpi.value,
+            },
+          },
+        };
+      }),
       locations: locations.map(
         (location): PlatformLocation => ({
           id: String(location.id),
@@ -167,7 +185,10 @@ async function persistSection<K extends keyof AdminContent>(
           data: data.kpis.map((kpi, index) => ({
             order: kpi.order ?? index + 1,
             icon: kpi.icon,
-            value: kpi.value,
+            // Legacy column, kept in sync so the currently deployed admin —
+            // which still selects it — keeps working until this ships. The
+            // translations are the source of truth.
+            value: kpi.translations.en.value,
             translations: kpi.translations as unknown as Prisma.InputJsonValue,
           })),
         });

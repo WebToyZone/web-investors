@@ -47,13 +47,17 @@ export type AdminDocument = {
 
 export type KpiTranslation = {
   label: string;
+  /**
+   * The figure itself. Per language because it can carry a unit — "~50 years"
+   * against "~50 años" — even though plain numbers read the same in both.
+   */
+  value: string;
 };
 
 export type KpiStat = {
   id: string;
   order: number;
   icon: string;
-  value: string;
   translations: Record<Locale, KpiTranslation>;
 };
 

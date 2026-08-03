@@ -31,17 +31,15 @@ import { getAssetUrl } from '@/services/storage/asset-url';
 type KpiDraft = {
   icon: string;
   pendingIconFile?: File;
-  value: string;
   translations: KpiStat['translations'];
 };
 
 function createDefaultKpiDraft(): KpiDraft {
   return {
     icon: '',
-    value: '',
     translations: {
-      en: { label: '' },
-      es: { label: '' },
+      en: { label: '', value: '' },
+      es: { label: '', value: '' },
     },
   };
 }
@@ -117,7 +115,6 @@ export default function GlanceAdminSection({
     setEditingId(kpi.id);
     setDraft({
       icon: kpi.icon,
-      value: kpi.value,
       translations: {
         en: { ...kpi.translations.en },
         es: { ...kpi.translations.es },
@@ -126,18 +123,23 @@ export default function GlanceAdminSection({
     setValidationError('');
   }
 
-  function updateDraft(patch: Partial<Pick<KpiDraft, 'icon' | 'value'>>) {
+  function updateDraft(patch: Partial<Pick<KpiDraft, 'icon'>>) {
     setValidationError('');
     setDraft((current) => ({ ...current, ...patch }));
   }
 
-  function updateLabel(locale: 'en' | 'es', label: string) {
+  function updateKpiTranslation(
+    locale: 'en' | 'es',
+    patch: Partial<KpiStat['translations']['en']>,
+  ) {
     setValidationError('');
     setDraft((current) => ({
       ...current,
       translations: {
         ...current.translations,
-        [locale]: { label },
+        // Merged rather than replaced: the label and the figure live side by
+        // side in here, and writing one whole would drop the other.
+        [locale]: { ...current.translations[locale], ...patch },
       },
     }));
   }
@@ -281,7 +283,8 @@ export default function GlanceAdminSection({
   async function handleSave() {
     if (
       (!draft.icon.trim() && !draft.pendingIconFile) ||
-      !draft.value.trim() ||
+      !draft.translations.en.value.trim() ||
+      !draft.translations.es.value.trim() ||
       !draft.translations.en.label.trim() ||
       !draft.translations.es.label.trim()
     ) {
@@ -304,7 +307,7 @@ export default function GlanceAdminSection({
       icon = result.key;
     }
 
-    const savedKpi = { icon, value: draft.value, translations: draft.translations };
+    const savedKpi = { icon, translations: draft.translations };
 
     const nextKpis =
       formMode === 'edit' && editingId !== null
@@ -465,7 +468,7 @@ export default function GlanceAdminSection({
                   )}
                   <span className='min-w-0'>
                     <p className='text-2xl font-black text-brand'>
-                      {kpi.value}
+                      {kpi.translations.en.value}
                     </p>
                     <p className='truncate text-sm font-bold text-neutral-950'>
                       {kpi.translations.en.label}
@@ -609,33 +612,27 @@ export default function GlanceAdminSection({
               disabled={isUploading}
             />
 
-            <TextField
-              label='Cifra (comun a ambos idiomas)'
-              value={draft.value}
-              onChange={(value) => updateDraft({ value })}
-            />
 
-            <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
-              <span className='text-xs font-bold uppercase text-neutral-500'>
-                Ingles
-              </span>
-              <TextField
-                label='Etiqueta'
-                value={draft.translations.en.label}
-                onChange={(label) => updateLabel('en', label)}
-              />
-            </div>
-
-            <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
-              <span className='text-xs font-bold uppercase text-neutral-500'>
-                Espanol
-              </span>
-              <TextField
-                label='Etiqueta'
-                value={draft.translations.es.label}
-                onChange={(label) => updateLabel('es', label)}
-              />
-            </div>
+            {(['en', 'es'] as const).map((locale) => (
+              <div
+                key={locale}
+                className='space-y-3 rounded-md border border-neutral-200 p-3'
+              >
+                <span className='text-xs font-bold uppercase text-neutral-500'>
+                  {locale === 'en' ? 'Ingles' : 'Espanol'}
+                </span>
+                <TextField
+                  label='Cifra'
+                  value={draft.translations[locale].value}
+                  onChange={(value) => updateKpiTranslation(locale, { value })}
+                />
+                <TextField
+                  label='Etiqueta'
+                  value={draft.translations[locale].label}
+                  onChange={(label) => updateKpiTranslation(locale, { label })}
+                />
+              </div>
+            ))}
 
             <PrimaryButton
               icon={FaCheck}
