@@ -25,17 +25,9 @@ export async function saveAdminSection<K extends keyof AdminContent>(
     const content = await saveAdminContentSection(section, value);
     revalidatePath('/admin');
 
-    // Only the sections the public page reads from the database; the board
-    // still renders from the static content file.
-    if (
-      section === 'documents' ||
-      section === 'glance' ||
-      section === 'growth' ||
-      section === 'contact' ||
-      section === 'videos'
-    ) {
-      revalidatePublicSite();
-    }
+    // Every section the public page renders now comes from the database, so
+    // any save has to drop the prerender.
+    revalidatePublicSite();
 
     return {
       success: 'Cambios guardados.',

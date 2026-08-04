@@ -8,6 +8,12 @@ import PersonCard from "@/components/ui/PersonCard";
  * keep it ready to come from a Prisma-backed CMS later.
  */
 export interface BoardMember {
+  /**
+   * Stable identity for the list key. Database rows always carry one; the
+   * static content in `data/investorsData.ts` predates it and falls back to
+   * the name, which is why this stays optional.
+   */
+  id?: string;
   name: string;
   role: string;
   description?: string;
@@ -58,7 +64,7 @@ export default function BoardOfDirectorsSection({
         {/* Appointed members */}
         <ul className="mt-12 lg:mt-16 grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-3 xl:grid-cols-5">
           {members.map((member) => (
-            <li key={member.name}>
+            <li key={member.id ?? member.name}>
               <PersonCard
                 name={member.name}
                 role={member.role}
@@ -73,7 +79,7 @@ export default function BoardOfDirectorsSection({
         {pending.length > 0 ? (
           <ul className="mx-auto mt-10 lg:mt-16 grid max-w-3xl grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-3">
             {pending.map((seat) => (
-              <li key={seat.role}>
+              <li key={seat.id ?? seat.role}>
                 <PersonCard
                   name={seat.name}
                   role={seat.role}

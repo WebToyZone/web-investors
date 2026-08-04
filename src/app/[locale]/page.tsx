@@ -15,6 +15,7 @@ import { getPublicGlance } from '@/services/glance/public-glance';
 import { getPublicGrowth } from '@/services/growth/public-growth';
 import { getPublicContact } from '@/services/contact/public-contact';
 import { getPublicVideos } from '@/services/videos/public-videos';
+import { getPublicBoard } from '@/services/board/public-board';
 import { getLocale, getTranslations } from 'next-intl/server';
 
 export default async function InvestorsPage() {
@@ -37,6 +38,7 @@ export default async function InvestorsPage() {
   const growth = await getPublicGrowth(locale);
   const contactInfo = await getPublicContact(locale);
   const videos = await getPublicVideos();
+  const board = await getPublicBoard(locale);
 
   return (
     <>
@@ -69,7 +71,13 @@ export default async function InvestorsPage() {
             },
           }}
         />
-        <BoardOfDirectorsSection content={content.board} />
+        <BoardOfDirectorsSection
+          content={{
+            ...content.board,
+            members: board.members,
+            pending: board.pending,
+          }}
+        />
         <PowerOfASmileSection
           content={{
             ...content.powerOfASmile,
