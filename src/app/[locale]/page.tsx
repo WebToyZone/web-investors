@@ -14,6 +14,7 @@ import { getPublicDocuments } from '@/services/documents/public-documents';
 import { getPublicGlance } from '@/services/glance/public-glance';
 import { getPublicGrowth } from '@/services/growth/public-growth';
 import { getPublicContact } from '@/services/contact/public-contact';
+import { getPublicVideos } from '@/services/videos/public-videos';
 import { getLocale, getTranslations } from 'next-intl/server';
 
 export default async function InvestorsPage() {
@@ -35,13 +36,16 @@ export default async function InvestorsPage() {
   const glance = await getPublicGlance(locale);
   const growth = await getPublicGrowth(locale);
   const contactInfo = await getPublicContact(locale);
+  const videos = await getPublicVideos();
 
   return (
     <>
       <Navbar logo={content.navbar.logo} links={links} />
 
       <main id='top'>
-        <HeroSection video={content.hero} />
+        {/* The clip comes from the admin; the poster and the accessible
+            description stay in the static content. */}
+        <HeroSection video={{ ...content.hero, ...videos.hero }} />
         <GrowthJourneySection
           content={{
             ...content.growthJourney,
@@ -66,7 +70,12 @@ export default async function InvestorsPage() {
           }}
         />
         <BoardOfDirectorsSection content={content.board} />
-        <PowerOfASmileSection content={content.powerOfASmile} />
+        <PowerOfASmileSection
+          content={{
+            ...content.powerOfASmile,
+            video: { ...content.powerOfASmile.video, ...videos.powerOfASmile },
+          }}
+        />
         <DocumentsSection
           content={{
             accent: content.documents.accent,
