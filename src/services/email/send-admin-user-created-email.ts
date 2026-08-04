@@ -1,8 +1,46 @@
+import { headers } from 'next/headers';
 import { emailClient } from './client';
 
-function loginUrl() {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
-  return `${base.replace(/\/$/, '')}/admin/login`;
+const FALLBACK_ORIGIN = 'http://localhost:3000';
+
+/**
+ * Where the recipient has to log in.
+ *
+ * Read from the request the administrator was on, so it is correct in
+ * development, in previews and in production without anything to configure —
+ * `NEXT_PUBLIC_SITE_URL` was never set outside local, which is why these
+ * emails were pointing everyone at localhost.
+ *
+ * The variable still wins when present, to force a canonical domain.
+ */
+async function resolveLoginUrl(): Promise<string> {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (configured) {
+    return `${configured.replace(/\/$/, '')}/admin/login`;
+  }
+
+  try {
+    const requestHeaders = await headers();
+    const host = requestHeaders.get('host');
+
+    if (host) {
+      // Behind more than one proxy the header arrives as a list; the first
+      // entry is the protocol the browser actually used.
+      const forwarded = requestHeaders
+        .get('x-forwarded-proto')
+        ?.split(',')[0]
+        ?.trim();
+
+      const isLocal = /^(localhost|127\.0\.0\.1|\[::1\])(:|$)/.test(host);
+      const protocol = forwarded || (isLocal ? 'http' : 'https');
+
+      return `${protocol}://${host}/admin/login`;
+    }
+  } catch {
+    // Called outside a request (a script, a job): fall through.
+  }
+
+  return `${FALLBACK_ORIGIN}/admin/login`;
 }
 
 function credentialsEmailHtml({
@@ -11,12 +49,14 @@ function credentialsEmailHtml({
   name,
   email,
   temporaryPassword,
+  loginUrl,
 }: {
   title: string;
   intro: string;
   name: string;
   email: string;
   temporaryPassword: string;
+  loginUrl: string;
 }) {
   return `
     <div style="font-family: Arial, Helvetica, sans-serif; color:#333; line-height:1.6;">
@@ -40,7 +80,7 @@ function credentialsEmailHtml({
 
       <p style="margin-top:20px;">
         Ingresa en
-        <a href="${loginUrl()}">${loginUrl()}</a>
+        <a href="${loginUrl}">${loginUrl}</a>
         con estos datos.
       </p>
     </div>
@@ -67,6 +107,7 @@ export async function sendAdminUserCreatedEmail({
       name,
       email,
       temporaryPassword,
+      loginUrl: await resolveLoginUrl(),
     }),
   });
 
@@ -95,6 +136,7 @@ export async function sendAdminUserPasswordResetEmail({
       name,
       email,
       temporaryPassword,
+      loginUrl: await resolveLoginUrl(),
     }),
   });
 
