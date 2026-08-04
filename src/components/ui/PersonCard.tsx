@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import PersonBio from './PersonBio';
 
 /**
  * Reusable person card for the Board of Directors.
@@ -6,6 +7,10 @@ import Image from 'next/image';
  * Two variants:
  * - "photo": circular portrait (appointed members).
  * - "placeholder": brand icon for seats still to be confirmed (TBC).
+ *
+ * The biography is not shown on the card: it opens in a dialog behind the
+ * "View Bio" button, which only appears for people who have one — the seats
+ * still to be confirmed do not.
  */
 export interface PersonCardProps {
   name: string;
@@ -35,9 +40,7 @@ export default function PersonCard({
       <h3 className='mt-4 text-3xl font-bold text-brand'>{name}</h3>
       <p className=' text-xl font-condensed text-neutral'>{role}</p>
       {description && (
-        <p className='mt-2 max-w-xs text-lg text-pretty leading-relaxed text-neutral-600'>
-          {description}
-        </p>
+        <PersonBio name={name} role={role} description={description} />
       )}
     </div>
   );

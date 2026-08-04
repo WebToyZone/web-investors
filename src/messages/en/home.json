@@ -1,1 +1,6 @@
-{}
+{
+  "board": {
+    "viewBio": "View Bio",
+    "closeBio": "Close"
+  }
+}
