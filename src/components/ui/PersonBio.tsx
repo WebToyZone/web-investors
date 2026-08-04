@@ -67,7 +67,7 @@ export default function PersonBio({
       <button
         type='button'
         onClick={() => dialogRef.current?.showModal()}
-        className='mt-3 inline-flex items-center gap-3 rounded-xl border border-neutral-200 px-4 py-2 text-sm font-bold text-neutral-900 transition-colors hover:border-brand hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand'
+        className='mt-2 inline-flex items-center gap-3 rounded-lg border border-neutral-200 px-4 py-1 text-sm text-neutral-900 transition-colors hover:border-brand hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand'
       >
         {t('board.viewBio')}
         <ArrowIcon />
