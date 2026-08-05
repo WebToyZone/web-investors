@@ -16,7 +16,7 @@ import {
 /** Shared by both languages: a phone number and an inbox do not translate. */
 const sharedFields: { key: 'email' | 'phone'; label: string }[] = [
   { key: 'email', label: 'Email' },
-  { key: 'phone', label: 'Telefono' },
+  { key: 'phone', label: 'Teléfono' },
 ];
 
 /**
@@ -110,7 +110,7 @@ export default function ContactAdminSection({
   function saveRecipientEmail() {
     if (!recipientEmail.trim()) {
       setValidationError(
-        'Completa el email al que se envia el formulario de contacto.',
+        'Completa el email al que se envía el formulario de contacto.',
       );
       return;
     }
@@ -121,7 +121,7 @@ export default function ContactAdminSection({
 
   return (
     <div className='grid gap-5 xl:grid-cols-[1fr_360px]'>
-      <Panel title='Datos de contacto' eyebrow='Contacto publico'>
+      <Panel title='Datos de contacto' eyebrow='Contacto público'>
         <div className='space-y-3'>
           {validationError ? (
             <FormNotice tone='danger'>{validationError}</FormNotice>
@@ -148,7 +148,7 @@ export default function ContactAdminSection({
 
           <div className='grid gap-3 rounded-md border border-neutral-200 p-3 md:grid-cols-[1fr_auto] md:items-end'>
             <TextField
-              label='Direccion - Calle y numero'
+              label='Dirección - Calle y número'
               value={street}
               onChange={(value) => updateAddress({ street: value })}
             />
@@ -163,7 +163,7 @@ export default function ContactAdminSection({
 
           <div className='grid gap-3 rounded-md border border-neutral-200 p-3 md:grid-cols-[1fr_auto] md:items-end'>
             <TextField
-              label='Direccion - Codigo postal, ciudad y provincia'
+              label='Dirección - Código postal, ciudad y provincia'
               value={locality}
               onChange={(value) => updateAddress({ locality: value })}
             />
@@ -178,7 +178,7 @@ export default function ContactAdminSection({
 
           <div className='grid gap-3 rounded-md border border-neutral-200 p-3 md:grid-cols-[1fr_auto] md:items-end'>
             <TextField
-              label='Pais en espanol'
+              label='País en español'
               value={countryEs}
               onChange={(value) => updateAddress({ countryEs: value })}
             />
@@ -193,7 +193,7 @@ export default function ContactAdminSection({
 
           <div className='grid gap-3 rounded-md border border-neutral-200 p-3 md:grid-cols-[1fr_auto] md:items-end'>
             <TextField
-              label='Pais en ingles'
+              label='País en inglés'
               value={countryEn}
               onChange={(value) => updateAddress({ countryEn: value })}
             />
@@ -207,8 +207,8 @@ export default function ContactAdminSection({
           </div>
 
           <p className='text-xs text-neutral-500'>
-            La calle y la localidad son comunes a los dos idiomas; solo el pais
-            cambia. Se publica como &laquo;localidad, pais&raquo;.
+            La calle y la localidad son comunes a los dos idiomas; solo el país
+            cambia. Se publica como &laquo;localidad, país&raquo;.
           </p>
         </div>
       </Panel>
@@ -218,7 +218,7 @@ export default function ContactAdminSection({
           <div className='flex items-end gap-2'>
             <div className='flex-1'>
               <TextField
-                label='Email al que se envia el formulario'
+                label='Email al que se envía el formulario'
                 value={recipientEmail}
                 onChange={updateRecipientEmail}
               />

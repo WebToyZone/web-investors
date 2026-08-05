@@ -72,14 +72,14 @@ function credentialsEmailHtml({
             <td style="padding:10px;border:1px solid #ddd;">${email}</td>
           </tr>
           <tr>
-            <td style="padding:10px;border:1px solid #ddd;"><strong>Contrasena temporal</strong></td>
+            <td style="padding:10px;border:1px solid #ddd;"><strong>Contraseña temporal</strong></td>
             <td style="padding:10px;border:1px solid #ddd;"><code>${temporaryPassword}</code></td>
           </tr>
         </tbody>
       </table>
 
       <p style="margin-top:20px;">
-        Ingresa en
+        Accede en
         <a href="${loginUrl}">${loginUrl}</a>
         con estos datos.
       </p>
@@ -99,11 +99,11 @@ export async function sendAdminUserCreatedEmail({
   const { error } = await emailClient.emails.send({
     from: process.env.CONTACT_FROM_EMAIL!,
     to: email,
-    subject: 'Se creo tu acceso al admin de EOLO Investors',
+    subject: 'Se ha creado tu acceso al admin de EOLO Investors',
     html: credentialsEmailHtml({
       title: 'Bienvenido al admin de EOLO Investors',
       intro:
-        'Se creo una cuenta para vos en el panel de administracion de EOLO Investors. Estos son tus datos de acceso:',
+        'Se ha creado una cuenta para ti en el panel de administración de EOLO Investors. Estos son tus datos de acceso:',
       name,
       email,
       temporaryPassword,
@@ -128,11 +128,11 @@ export async function sendAdminUserPasswordResetEmail({
   const { error } = await emailClient.emails.send({
     from: process.env.CONTACT_FROM_EMAIL!,
     to: email,
-    subject: 'Tu contrasena del admin de EOLO Investors fue restablecida',
+    subject: 'Tu contraseña del admin de EOLO Investors fue restablecida',
     html: credentialsEmailHtml({
-      title: 'Contrasena restablecida',
+      title: 'Contraseña restablecida',
       intro:
-        'Se genero una nueva contrasena temporal para tu cuenta en el admin de EOLO Investors:',
+        'Se ha generado una nueva contraseña temporal para tu cuenta en el admin de EOLO Investors:',
       name,
       email,
       temporaryPassword,

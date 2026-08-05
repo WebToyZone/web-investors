@@ -16,13 +16,13 @@ export default function LoginForm() {
       {state?.error ? <FormNotice tone='danger'>{state.error}</FormNotice> : null}
 
       <TextField
-        label='Correo electronico'
+        label='Correo electrónico'
         name='email'
         type='email'
         autoComplete='username'
       />
       <TextField
-        label='Contrasena'
+        label='Contraseña'
         name='password'
         type='password'
         autoComplete='current-password'

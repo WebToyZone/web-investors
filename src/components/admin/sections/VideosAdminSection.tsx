@@ -92,7 +92,7 @@ export default function VideosAdminSection({
     const pendingFile = pendingFiles[slot];
 
     if (!data[slot].fileName.trim() && !pendingFile) {
-      setValidationError('Sube un video antes de guardar.');
+      setValidationError('Sube un vídeo antes de guardar.');
       return;
     }
 
@@ -133,7 +133,7 @@ export default function VideosAdminSection({
 
       <VideoSlot
         title='Hero'
-        eyebrow='Video de fondo, seccion inicial'
+        eyebrow='Vídeo de fondo, sección inicial'
         video={data.hero}
         pendingFile={pendingFiles.hero}
         onFileSelected={(file) => handleFileSelected('hero', file)}
@@ -144,7 +144,7 @@ export default function VideosAdminSection({
 
       <VideoSlot
         title='Power of a Smile'
-        eyebrow='Video de fondo, banner emocional'
+        eyebrow='Vídeo de fondo, banner emocional'
         video={data.powerOfASmile}
         pendingFile={pendingFiles.powerOfASmile}
         onFileSelected={(file) => handleFileSelected('powerOfASmile', file)}

@@ -26,7 +26,7 @@ export async function createDocumentCategoryAction(
 
   const parsed = CreateDocumentCategorySchema.safeParse(input);
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? 'Datos invalidos.' };
+    return { error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' };
   }
 
   try {
@@ -35,9 +35,9 @@ export async function createDocumentCategoryAction(
     revalidatePath('/admin');
     revalidatePublicSite();
 
-    return { success: 'Categoria creada.', categories };
+    return { success: 'Categoría creada.', categories };
   } catch (error) {
     console.error('Document category create error:', error);
-    return { error: 'No se pudo crear la categoria.' };
+    return { error: 'No se pudo crear la categoría.' };
   }
 }

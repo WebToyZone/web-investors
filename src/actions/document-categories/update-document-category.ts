@@ -26,7 +26,7 @@ export async function updateDocumentCategoryAction(
 
   const parsed = UpdateDocumentCategorySchema.safeParse(input);
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? 'Datos invalidos.' };
+    return { error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' };
   }
 
   try {
@@ -38,9 +38,9 @@ export async function updateDocumentCategoryAction(
     revalidatePath('/admin');
     revalidatePublicSite();
 
-    return { success: 'Categoria actualizada.', categories };
+    return { success: 'Categoría actualizada.', categories };
   } catch (error) {
     console.error('Document category update error:', error);
-    return { error: 'No se pudo actualizar la categoria.' };
+    return { error: 'No se pudo actualizar la categoría.' };
   }
 }

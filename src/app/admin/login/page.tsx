@@ -18,7 +18,7 @@ export default async function AdminLoginPage() {
         </p>
 
         <h1 className='mt-6 text-xl font-black text-neutral-950'>
-          Iniciar sesion
+          Iniciar sesión
         </h1>
 
         <div className='mt-6'>

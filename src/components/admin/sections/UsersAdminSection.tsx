@@ -43,7 +43,7 @@ function UserRow({
 
   async function handleSaveName() {
     if (!name.trim()) {
-      onNotice({ tone: 'danger', message: 'El nombre no puede estar vacio.' });
+      onNotice({ tone: 'danger', message: 'El nombre no puede estar vacío.' });
       return;
     }
 
@@ -62,7 +62,7 @@ function UserRow({
 
   async function handleDelete() {
     if (
-      !window.confirm(`Eliminar a ${user.name} (${user.email})? Esta accion no se puede deshacer.`)
+      !window.confirm(`¿Eliminar a ${user.name} (${user.email})? Esta acción no se puede deshacer.`)
     ) {
       return;
     }
@@ -96,9 +96,9 @@ function UserRow({
 
   const deleteDisabled = isCurrentUser || disableDelete || isDeleting;
   const deleteTitle = isCurrentUser
-    ? 'No podes eliminar tu propia cuenta'
+    ? 'No puedes eliminar tu propia cuenta'
     : disableDelete
-      ? 'No se puede eliminar el ultimo usuario'
+      ? 'No se puede eliminar el último usuario'
       : 'Eliminar';
 
   return (
@@ -118,7 +118,7 @@ function UserRow({
           <FaCheck className='h-4 w-4' />
         </IconButton>
         <IconButton
-          label='Reenviar contrasena'
+          label='Reenviar contraseña'
           onClick={handleResendPassword}
           disabled={isResending}
         >
@@ -134,7 +134,7 @@ function UserRow({
       </div>
       <p className='text-xs text-neutral-500 md:col-span-3'>
         Creado el {formatDate(user.createdAt)}
-        {isCurrentUser ? ' - Este sos vos' : ''}
+        {isCurrentUser ? ' - Este eres tú' : ''}
       </p>
     </div>
   );

@@ -2,10 +2,10 @@ import { z } from 'zod';
 
 const CategoryTranslationsSchema = z.object({
   en: z.object({
-    name: z.string().trim().min(1, 'Falta el nombre en ingles'),
+    name: z.string().trim().min(1, 'Falta el nombre en inglés'),
   }),
   es: z.object({
-    name: z.string().trim().min(1, 'Falta el nombre en espanol'),
+    name: z.string().trim().min(1, 'Falta el nombre en español'),
   }),
 });
 

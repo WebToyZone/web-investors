@@ -25,7 +25,7 @@ export async function updateAdminUserAction(
 
   const parsed = UpdateAdminUserSchema.safeParse(input);
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? 'Datos invalidos.' };
+    return { error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' };
   }
 
   try {

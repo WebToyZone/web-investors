@@ -27,7 +27,7 @@ export async function createAdminUserAction(
 
   const parsed = CreateAdminUserSchema.safeParse(input);
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? 'Datos invalidos.' };
+    return { error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' };
   }
 
   try {
@@ -44,7 +44,7 @@ export async function createAdminUserAction(
       const users = await listAdminUsers();
       return {
         error:
-          'El usuario se creo pero no se pudo enviar el email de notificacion.',
+          'El usuario se creó pero no se pudo enviar el email de notificación.',
         users,
       };
     }

@@ -21,7 +21,7 @@ export async function signInWithCredentials(
     return {};
   } catch (error) {
     if (error instanceof AuthError) {
-      return { error: 'Credenciales invalidas.' };
+      return { error: 'Credenciales inválidas.' };
     }
 
     throw error;

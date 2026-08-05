@@ -35,7 +35,7 @@ export async function uploadAsset(
   prefixParts?: string[],
 ): Promise<UploadAssetResult> {
   if (file.size > MAX_FILE_SIZE_BYTES) {
-    return { error: 'Archivo demasiado grande (max. 100MB).' };
+    return { error: 'Archivo demasiado grande (máx. 100 MB).' };
   }
 
   const contentType = resolveContentType(file);
@@ -69,6 +69,6 @@ export async function uploadAsset(
 
     return { key: result.key };
   } catch {
-    return { error: 'La subida fallo. Intenta de nuevo.' };
+    return { error: 'La subida falló. Inténtalo de nuevo.' };
   }
 }

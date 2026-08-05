@@ -237,7 +237,7 @@ export default function GlanceAdminSection({
     const kpi = kpis.find((current) => current.id === id);
     if (
       !window.confirm(
-        `Eliminar el KPI ${kpi?.translations.en.label ?? ''}? Esta accion no se puede deshacer.`,
+        `¿Eliminar el KPI ${kpi?.translations.en.label ?? ''}? Esta acción no se puede deshacer.`,
       )
     ) {
       return;
@@ -334,7 +334,7 @@ export default function GlanceAdminSection({
     const location = locations.find((current) => current.id === id);
     if (
       !window.confirm(
-        `Eliminar la ubicacion ${location?.translations.en.name ?? ''}? Esta accion no se puede deshacer.`,
+        `¿Eliminar la ubicación ${location?.translations.en.name ?? ''}? Esta acción no se puede deshacer.`,
       )
     ) {
       return;
@@ -388,7 +388,7 @@ export default function GlanceAdminSection({
       !locationDraft.translations.es.description.trim()
     ) {
       setLocationValidationError(
-        'Sube un icono y completa nombre y descripcion en ambos idiomas antes de guardar.',
+        'Sube un icono y completa nombre y descripción en ambos idiomas antes de guardar.',
       );
       return;
     }
@@ -514,10 +514,10 @@ export default function GlanceAdminSection({
         <Panel title='Global Operating Platform' eyebrow='Ubicaciones operativas'>
           <div className='flex items-center justify-between gap-3 border-b border-neutral-200 pb-4'>
             <p className='text-sm text-neutral-600'>
-              Paises/ubicaciones mostrados debajo de las KPIs.
+              Países/ubicaciones mostrados debajo de los KPIs.
             </p>
             <SecondaryButton icon={FaPlus} onClick={startNewLocation}>
-              Nueva ubicacion
+              Nueva ubicación
             </SecondaryButton>
           </div>
 
@@ -619,7 +619,7 @@ export default function GlanceAdminSection({
                 className='space-y-3 rounded-md border border-neutral-200 p-3'
               >
                 <span className='text-xs font-bold uppercase text-neutral-500'>
-                  {locale === 'en' ? 'Ingles' : 'Espanol'}
+                  {locale === 'en' ? 'Inglés' : 'Español'}
                 </span>
                 <TextField
                   label='Cifra'
@@ -648,15 +648,15 @@ export default function GlanceAdminSection({
           </div>
         </Panel>
 
-        <Panel title='Editor ubicacion' eyebrow='Global Operating Platform'>
+        <Panel title='Editor de ubicación' eyebrow='Global Operating Platform'>
           <div className='space-y-4'>
             {locationValidationError ? (
               <FormNotice tone='danger'>{locationValidationError}</FormNotice>
             ) : null}
             <h3 className='text-xl font-black text-neutral-950'>
               {locationFormMode === 'edit'
-                ? 'Editar ubicacion'
-                : 'Nueva ubicacion'}
+                ? 'Editar ubicación'
+                : 'Nueva ubicación'}
             </h3>
 
             <AssetUploadField
@@ -672,7 +672,7 @@ export default function GlanceAdminSection({
 
             <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
               <span className='text-xs font-bold uppercase text-neutral-500'>
-                Ingles
+                Inglés
               </span>
               <TextField
                 label='Nombre'
@@ -680,7 +680,7 @@ export default function GlanceAdminSection({
                 onChange={(name) => updateLocationTranslation('en', { name })}
               />
               <TextField
-                label='Descripcion'
+                label='Descripción'
                 multiline
                 value={locationDraft.translations.en.description}
                 onChange={(description) =>
@@ -691,7 +691,7 @@ export default function GlanceAdminSection({
 
             <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
               <span className='text-xs font-bold uppercase text-neutral-500'>
-                Espanol
+                Español
               </span>
               <TextField
                 label='Nombre'
@@ -699,7 +699,7 @@ export default function GlanceAdminSection({
                 onChange={(name) => updateLocationTranslation('es', { name })}
               />
               <TextField
-                label='Descripcion'
+                label='Descripción'
                 multiline
                 value={locationDraft.translations.es.description}
                 onChange={(description) =>

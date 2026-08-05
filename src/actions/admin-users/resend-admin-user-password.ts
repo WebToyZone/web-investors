@@ -39,6 +39,6 @@ export async function resendAdminUserPasswordAction(
     };
   } catch (error) {
     console.error('Admin user password resend error:', error);
-    return { error: 'No se pudo reenviar la contrasena.' };
+    return { error: 'No se pudo reenviar la contraseña.' };
   }
 }

@@ -86,7 +86,7 @@ export async function reorderDocumentCategory(
 
 export class CategoryHasDocumentsError extends Error {
   constructor() {
-    super('No puedes eliminar una categoria con documentos asignados.');
+    super('No puedes eliminar una categoría con documentos asignados.');
     this.name = 'CategoryHasDocumentsError';
   }
 }

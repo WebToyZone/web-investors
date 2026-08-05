@@ -41,7 +41,7 @@ export default function AdminShell({
               </p>
             </div>
 
-            <nav aria-label='Administracion' className='mt-8'>
+            <nav aria-label='Administración' className='mt-8'>
               <ul className='space-y-1'>
                 {sections.map((section) => {
                   const Icon = section.icon;
@@ -72,7 +72,7 @@ export default function AdminShell({
 
             <div className='mt-auto rounded-md border border-neutral-200 bg-neutral-50 p-4'>
               <p className='text-sm font-bold text-neutral-900'>
-                Sesion iniciada
+                Sesión iniciada
               </p>
               <p className='mt-1 truncate text-sm leading-relaxed text-neutral-600'>
                 {userEmail}
@@ -83,7 +83,7 @@ export default function AdminShell({
                   className='inline-flex items-center gap-2 text-sm font-bold text-neutral-600 transition-colors hover:text-brand'
                 >
                   <FaRightFromBracket className='h-4 w-4' />
-                  Cerrar sesion
+                  Cerrar sesión
                 </button>
               </form>
             </div>

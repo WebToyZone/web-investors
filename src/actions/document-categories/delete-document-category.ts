@@ -30,13 +30,13 @@ export async function deleteDocumentCategoryAction(
     revalidatePath('/admin');
     revalidatePublicSite();
 
-    return { success: 'Categoria eliminada.', categories };
+    return { success: 'Categoría eliminada.', categories };
   } catch (error) {
     if (error instanceof CategoryHasDocumentsError) {
       return { error: error.message };
     }
 
     console.error('Document category delete error:', error);
-    return { error: 'No se pudo eliminar la categoria.' };
+    return { error: 'No se pudo eliminar la categoría.' };
   }
 }

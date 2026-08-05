@@ -124,7 +124,7 @@ export default function GrowthAdminSection({
     const milestone = milestones.find((current) => current.id === id);
     if (
       !window.confirm(
-        `Eliminar el milestone ${milestone?.translations.en.title ?? ''}? Esta accion no se puede deshacer.`,
+        `¿Eliminar el hito ${milestone?.translations.en.title ?? ''}? Esta acción no se puede deshacer.`,
       )
     ) {
       return;
@@ -166,7 +166,7 @@ export default function GrowthAdminSection({
     );
 
     if (invalidRevenue) {
-      setValidationError('Completa ano, moneda y valor en ingresos.');
+      setValidationError('Completa año, moneda y valor en ingresos.');
       return;
     }
 
@@ -182,7 +182,7 @@ export default function GrowthAdminSection({
       !draft.translations.es.description.trim()
     ) {
       setValidationError(
-        'Completa titulo y descripcion en ambos idiomas antes de guardar.',
+        'Completa título y descripción en ambos idiomas antes de guardar.',
       );
       return;
     }
@@ -224,7 +224,7 @@ export default function GrowthAdminSection({
                   {item.value}
                 </p>
                 <TextField
-                  label='Ano'
+                  label='Año'
                   value={item.year}
                   onChange={(year) => updateRevenue(index, { year })}
                 />
@@ -235,7 +235,7 @@ export default function GrowthAdminSection({
                     onChange={(currency) => updateRevenue(index, { currency })}
                   />
                   <TextField
-                    label='Valor numerico'
+                    label='Valor numérico'
                     value={item.value}
                     onChange={(value) => updateRevenue(index, { value })}
                   />
@@ -309,26 +309,26 @@ export default function GrowthAdminSection({
         </Panel>
       </div>
 
-      <Panel title='Editor milestone' eyebrow='Growth Journey'>
+      <Panel title='Editor de hito' eyebrow='Growth Journey'>
         <div className='space-y-4'>
           {validationError ? (
             <FormNotice tone='danger'>{validationError}</FormNotice>
           ) : null}
           <h3 className='text-xl font-black text-neutral-950'>
-            {formMode === 'edit' ? 'Editar milestone' : 'Nuevo milestone'}
+            {formMode === 'edit' ? 'Editar hito' : 'Nuevo hito'}
           </h3>
 
           <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
             <span className='text-xs font-bold uppercase text-neutral-500'>
-              Ingles
+              Inglés
             </span>
             <TextField
-              label='Titulo'
+              label='Título'
               value={draft.translations.en.title}
               onChange={(title) => updateTranslation('en', { title })}
             />
             <TextField
-              label='Descripcion'
+              label='Descripción'
               multiline
               value={draft.translations.en.description}
               onChange={(description) =>
@@ -339,15 +339,15 @@ export default function GrowthAdminSection({
 
           <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
             <span className='text-xs font-bold uppercase text-neutral-500'>
-              Espanol
+              Español
             </span>
             <TextField
-              label='Titulo'
+              label='Título'
               value={draft.translations.es.title}
               onChange={(title) => updateTranslation('es', { title })}
             />
             <TextField
-              label='Descripcion'
+              label='Descripción'
               multiline
               value={draft.translations.es.description}
               onChange={(description) =>

@@ -13,9 +13,9 @@ export const adminSections: AdminSection[] = [
   {
     id: 'documents',
     label: 'Documentos',
-    eyebrow: 'Subida y publicacion',
+    eyebrow: 'Subida y publicación',
     description:
-      'PDF, Excel y CSV, categorias, anos, idiomas y estados de publicacion.',
+      'PDF, Excel y CSV, categorías, años, idiomas y estados de publicación.',
     icon: FaFilePdf,
   },
   {
@@ -36,21 +36,21 @@ export const adminSections: AdminSection[] = [
     id: 'growth',
     label: 'Growth Journey',
     eyebrow: 'Ingresos e hitos',
-    description: 'Grafico anual, milestones y textos de crecimiento.',
+    description: 'Gráfico anual, hitos y textos de crecimiento.',
     icon: FaRocket,
   },
   {
     id: 'contact',
     label: 'Contacto',
     eyebrow: 'Formulario y datos',
-    description: 'Datos de contacto, labels, mensajes y consentimiento.',
+    description: 'Datos de contacto, etiquetas, mensajes y consentimiento.',
     icon: FaEnvelope,
   },
   {
     id: 'videos',
     label: 'Videos',
     eyebrow: 'Media de fondo',
-    description: 'Video del Hero y de Power of a Smile.',
+    description: 'Vídeo del Hero y de Power of a Smile.',
     icon: FaVideo,
   },
   {

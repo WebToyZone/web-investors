@@ -111,7 +111,7 @@ function bucketKey(document: Pick<AdminDocument, 'categoryId' | 'year'>) {
 function categoryLabel(categories: DocumentCategory[], categoryId: number) {
   return (
     categories.find((category) => category.id === categoryId)?.translations
-      .es.name ?? 'Sin categoria'
+      .es.name ?? 'Sin categoría'
   );
 }
 
@@ -430,7 +430,7 @@ export default function DocumentsAdminSection({
       : '';
     if (
       !window.confirm(
-        `Eliminar el documento de ${label}? Esta accion no se puede deshacer.`,
+        `¿Eliminar el documento de ${label}? Esta acción no se puede deshacer.`,
       )
     ) {
       return;
@@ -609,36 +609,36 @@ export default function DocumentsAdminSection({
 
   async function handleSave() {
     if (!draft.categoryId || !draft.year.trim() || !draft.date.trim()) {
-      setValidationError('Completa categoria, ano y fecha.');
+      setValidationError('Completa categoría, año y fecha.');
       return;
     }
 
     // Both languages are mandatory now, so both titles always are too.
     if (!draft.en.title.trim()) {
-      setValidationError('Falta el titulo en ingles.');
+      setValidationError('Falta el título en inglés.');
       return;
     }
 
     if (!draft.es.title.trim()) {
-      setValidationError('Falta el titulo en espanol.');
+      setValidationError('Falta el título en español.');
       return;
     }
 
     const isShared = draft.fileMode === 'shared';
 
     if (isShared && !pendingFiles.shared && !effectiveSharedSource) {
-      setValidationError('Sube el archivo que compartiran los dos idiomas.');
+      setValidationError('Sube el archivo que compartirán los dos idiomas.');
       return;
     }
 
     if (!isShared) {
       if (!draft.en.fileName.trim() && !pendingFiles.en) {
-        setValidationError('Falta el archivo en ingles.');
+        setValidationError('Falta el archivo en inglés.');
         return;
       }
 
       if (!draft.es.fileName.trim() && !pendingFiles.es) {
-        setValidationError('Falta el archivo en espanol.');
+        setValidationError('Falta el archivo en español.');
         return;
       }
     }
@@ -752,7 +752,7 @@ export default function DocumentsAdminSection({
     const es = newCategoryEs.trim();
 
     if (!en || !es) {
-      setCategoryError('Completa el nombre en ingles y espanol.');
+      setCategoryError('Completa el nombre en inglés y español.');
       return;
     }
 
@@ -789,7 +789,7 @@ export default function DocumentsAdminSection({
     const es = editCategoryEs.trim();
 
     if (!en || !es) {
-      setCategoryError('Completa el nombre en ingles y espanol.');
+      setCategoryError('Completa el nombre en inglés y español.');
       return;
     }
 
@@ -815,14 +815,14 @@ export default function DocumentsAdminSection({
   async function removeCategory(category: DocumentCategory) {
     if ((categoryCounts.get(category.id) ?? 0) > 0) {
       setCategoryError(
-        'No puedes eliminar una categoria con documentos asignados.',
+        'No puedes eliminar una categoría con documentos asignados.',
       );
       return;
     }
 
     if (
       !window.confirm(
-        `Eliminar la categoria ${category.translations.es.name}? Esta accion no se puede deshacer.`,
+        `¿Eliminar la categoría ${category.translations.es.name}? Esta acción no se puede deshacer.`,
       )
     ) {
       return;
@@ -871,10 +871,10 @@ export default function DocumentsAdminSection({
       <div className='min-w-0 space-y-5'>
         <section className='grid gap-3 sm:grid-cols-2'>
           <MetricCard label='Documentos totales' value={documents.length} />
-          <MetricCard label='Categorias' value={categories.length} />
+          <MetricCard label='Categorías' value={categories.length} />
         </section>
 
-        <Panel title='Categorias' eyebrow='Financial Information, Meetings & Notices...'>
+        <Panel title='Categorías' eyebrow='Financial Information, Meetings & Notices...'>
           <div className='space-y-3'>
             {categoryError ? (
               <FormNotice tone='danger'>{categoryError}</FormNotice>
@@ -891,7 +891,7 @@ export default function DocumentsAdminSection({
                           onChange={(event) =>
                             setEditCategoryEn(event.target.value)
                           }
-                          placeholder='Nombre (ingles)'
+                          placeholder='Nombre (inglés)'
                           className='min-w-0 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
                           autoFocus
                         />
@@ -900,7 +900,7 @@ export default function DocumentsAdminSection({
                           onChange={(event) =>
                             setEditCategoryEs(event.target.value)
                           }
-                          placeholder='Nombre (espanol)'
+                          placeholder='Nombre (español)'
                           className='min-w-0 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
                         />
                       </div>
@@ -981,19 +981,19 @@ export default function DocumentsAdminSection({
                 <input
                   value={newCategoryEn}
                   onChange={(event) => setNewCategoryEn(event.target.value)}
-                  placeholder='Nueva categoria (ingles)'
+                  placeholder='Nueva categoría (inglés)'
                   className='min-w-0 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
                 />
                 <input
                   value={newCategoryEs}
                   onChange={(event) => setNewCategoryEs(event.target.value)}
-                  placeholder='Nueva categoria (espanol)'
+                  placeholder='Nueva categoría (español)'
                   className='min-w-0 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:outline-2 focus:outline-offset-2 focus:outline-brand'
                 />
               </div>
               <div className='flex justify-end'>
                 <IconButton
-                  label='Anadir categoria'
+                  label='Añadir categoría'
                   onClick={addCategory}
                   disabled={categorySaving}
                 >
@@ -1004,11 +1004,11 @@ export default function DocumentsAdminSection({
           </div>
         </Panel>
 
-        <Panel title='Biblioteca de documentos' eyebrow='Categoria > Ano > Documentos'>
+        <Panel title='Biblioteca de documentos' eyebrow='Categoría > Año > Documentos'>
           <div className='grid gap-3 border-b border-neutral-200 pb-4'>
             <label className='block'>
               <span className='text-xs font-bold uppercase text-neutral-500'>
-                Categoria
+                Categoría
               </span>
               <select
                 value={categoryFilter}
@@ -1026,7 +1026,7 @@ export default function DocumentsAdminSection({
           </div>
 
           <p className='mt-3 text-xs font-bold text-neutral-500'>
-            Las flechas ordenan los documentos dentro de su categoria y ano.
+            Las flechas ordenan los documentos dentro de su categoría y año.
           </p>
 
           <div className='mt-4 space-y-8'>
@@ -1070,7 +1070,7 @@ export default function DocumentsAdminSection({
       </div>
 
       <aside className='space-y-5'>
-        <Panel title='Edicion rapida' eyebrow='Documento seleccionado'>
+        <Panel title='Edición rápida' eyebrow='Documento seleccionado'>
           <div className='space-y-4'>
             {validationError ? (
               <FormNotice tone='danger'>{validationError}</FormNotice>
@@ -1080,7 +1080,7 @@ export default function DocumentsAdminSection({
             </h3>
 
             <SelectField
-              label='Categoria'
+              label='Categoría'
               value={draft.categoryId}
               options={categories.map((category) => ({
                 label: category.translations.es.name,
@@ -1092,7 +1092,7 @@ export default function DocumentsAdminSection({
             />
             <div className='grid grid-cols-2 gap-3'>
               <SelectField
-                label='Ano'
+                label='Año'
                 value={draft.year}
                 options={yearOptions.map((year) => ({
                   label: year,
@@ -1135,10 +1135,10 @@ export default function DocumentsAdminSection({
 
                 {mustPickSharedSource ? (
                   <SelectField
-                    label='Cual conservar'
+                    label='Cuál conservar'
                     value={sharedSource}
                     options={LOCALES.map((locale) => ({
-                      label: `El de ${locale === 'en' ? 'ingles' : 'espanol'} - ${
+                      label: `El de ${locale === 'en' ? 'inglés' : 'español'} - ${
                         candidates[locale]?.label ?? ''
                       }`,
                       value: locale,
@@ -1164,7 +1164,7 @@ export default function DocumentsAdminSection({
                 {LOCALES.map((locale) => (
                   <TextField
                     key={locale}
-                    label={`Titulo ${locale === 'en' ? 'ingles' : 'espanol'}`}
+                    label={`Título ${locale === 'en' ? 'inglés' : 'español'}`}
                     value={draft[locale].title}
                     onChange={(title) => updateDraftFile(locale, { title })}
                   />
@@ -1181,7 +1181,7 @@ export default function DocumentsAdminSection({
                   >
                     <div className='flex items-center justify-between'>
                       <span className='text-xs font-bold uppercase text-neutral-500'>
-                        Archivo {locale === 'en' ? 'ingles' : 'espanol'}
+                        Archivo {locale === 'en' ? 'inglés' : 'español'}
                       </span>
                       {persistedFileName && !pendingFile ? (
                         <IconButton
@@ -1193,7 +1193,7 @@ export default function DocumentsAdminSection({
                       ) : null}
                     </div>
                     <TextField
-                      label='Titulo'
+                      label='Título'
                       value={draft[locale].title}
                       onChange={(title) => updateDraftFile(locale, { title })}
                     />
@@ -1214,7 +1214,7 @@ export default function DocumentsAdminSection({
 
             <p className='text-xs text-neutral-500'>
               Los dos idiomas son obligatorios. Con un archivo compartido se
-              sube una sola vez y cada idioma le pone su propio titulo.
+              sube una sola vez y cada idioma le pone su propio título.
             </p>
 
             <PrimaryButton

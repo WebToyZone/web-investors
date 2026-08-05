@@ -28,6 +28,6 @@ export async function reorderDocumentCategoryAction(
     return { categories };
   } catch (error) {
     console.error('Document category reorder error:', error);
-    return { error: 'No se pudo reordenar la categoria.' };
+    return { error: 'No se pudo reordenar la categoría.' };
   }
 }

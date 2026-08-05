@@ -37,7 +37,7 @@ function generateTemporaryPassword() {
 
 export class EmailAlreadyInUseError extends Error {
   constructor() {
-    super('El email ya esta en uso.');
+    super('El email ya está en uso.');
     this.name = 'EmailAlreadyInUseError';
   }
 }
@@ -82,14 +82,14 @@ export async function updateAdminUserName(
 
 export class CannotDeleteSelfError extends Error {
   constructor() {
-    super('No podes eliminar tu propia cuenta.');
+    super('No puedes eliminar tu propia cuenta.');
     this.name = 'CannotDeleteSelfError';
   }
 }
 
 export class CannotDeleteLastUserError extends Error {
   constructor() {
-    super('No se puede eliminar el ultimo usuario.');
+    super('No se puede eliminar el último usuario.');
     this.name = 'CannotDeleteLastUserError';
   }
 }

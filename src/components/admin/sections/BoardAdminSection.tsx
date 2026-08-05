@@ -232,7 +232,7 @@ export default function BoardAdminSection({
     const member = boardMembers.find((current) => current.id === id);
     if (
       !window.confirm(
-        `Eliminar a ${member?.name ?? 'este miembro'}? Esta accion no se puede deshacer.`,
+        `¿Eliminar a ${member?.name ?? 'este miembro'}? Esta acción no se puede deshacer.`,
       )
     ) {
       return;
@@ -316,7 +316,7 @@ export default function BoardAdminSection({
     const seat = pendingSeats.find((current) => current.id === id);
     if (
       !window.confirm(
-        `Eliminar el asiento ${seat?.name ?? 'pendiente'}? Esta accion no se puede deshacer.`,
+        `¿Eliminar el asiento ${seat?.name ?? 'pendiente'}? Esta acción no se puede deshacer.`,
       )
     ) {
       return;
@@ -550,7 +550,7 @@ export default function BoardAdminSection({
       </div>
 
       <div className='space-y-5'>
-        <Panel title='Editor miembro' eyebrow='Persona'>
+        <Panel title='Editor de miembro' eyebrow='Persona'>
           <div className='space-y-4'>
             {validationError ? (
               <FormNotice tone='danger'>{validationError}</FormNotice>
@@ -571,14 +571,14 @@ export default function BoardAdminSection({
             />
 
             <TextField
-              label='Nombre (comun a ambos idiomas)'
+              label='Nombre (común a ambos idiomas)'
               value={draft.name}
               onChange={updateName}
             />
 
             <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
               <span className='text-xs font-bold uppercase text-neutral-500'>
-                Ingles
+                Inglés
               </span>
               <TextField
                 label='Cargo'
@@ -586,7 +586,7 @@ export default function BoardAdminSection({
                 onChange={(role) => updateTranslation('en', { role })}
               />
               <TextField
-                label='Descripcion'
+                label='Descripción'
                 multiline
                 value={draft.translations.en.description}
                 onChange={(description) =>
@@ -597,7 +597,7 @@ export default function BoardAdminSection({
 
             <div className='space-y-3 rounded-md border border-neutral-200 p-3'>
               <span className='text-xs font-bold uppercase text-neutral-500'>
-                Espanol
+                Español
               </span>
               <TextField
                 label='Cargo'
@@ -605,7 +605,7 @@ export default function BoardAdminSection({
                 onChange={(role) => updateTranslation('es', { role })}
               />
               <TextField
-                label='Descripcion'
+                label='Descripción'
                 multiline
                 value={draft.translations.es.description}
                 onChange={(description) =>
@@ -628,7 +628,7 @@ export default function BoardAdminSection({
           </div>
         </Panel>
 
-        <Panel title='Editor asiento pendiente' eyebrow='TBC'>
+        <Panel title='Editor de asiento pendiente' eyebrow='TBC'>
           <div className='space-y-4'>
             {seatValidationError ? (
               <FormNotice tone='danger'>{seatValidationError}</FormNotice>
@@ -649,18 +649,18 @@ export default function BoardAdminSection({
             />
 
             <TextField
-              label='Nombre (comun a ambos idiomas)'
+              label='Nombre (común a ambos idiomas)'
               value={seatDraft.name}
               onChange={updateSeatName}
             />
 
             <TextField
-              label='Cargo (Ingles)'
+              label='Cargo (Inglés)'
               value={seatDraft.translations.en.role}
               onChange={(role) => updateSeatTranslation('en', role)}
             />
             <TextField
-              label='Cargo (Espanol)'
+              label='Cargo (Español)'
               value={seatDraft.translations.es.role}
               onChange={(role) => updateSeatTranslation('es', role)}
             />
