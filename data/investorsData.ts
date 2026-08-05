@@ -51,37 +51,12 @@ const enContent: InvestorsPageContent = {
     body: 'EOLO has grown and transformed without losing its DNA: Speed, creativity, a debt-free structure, a strong B2B focus, and a lean operating model.',
     chart: {
       caption: '*Consolidated Revenue',
-      data: [
-        { year: '2020', value: 6.67, label: '$6.67' },
-        { year: '2021', value: 6.65, label: '$6.65' },
-        { year: '2022', value: 15.5, label: '$15.50' },
-        { year: '2023', value: 13.17, label: '$13.17' },
-        { year: '2024', value: 18.15, label: '$18.15' },
-        { year: '2025', value: 19.75, label: '$19.75' },
-      ],
+      // Bars and timeline come from `getPublicGrowth`; the page overwrites
+      // whatever is here, so leaving data would only invite someone to edit it
+      // and wonder why nothing changes.
+      data: [],
     },
-    milestones: [
-      {
-        title: '2020 - CuiCui Studios',
-        description:
-          'Expansion into technology, apps, and digital experiences.',
-      },
-      {
-        title: '2021 - ToyZone',
-        description:
-          'Spin-off of our Development and Sourcing agency dedicated to the global toy industry.',
-      },
-      {
-        title: '2022 - Scale Acceleration',
-        description:
-          'EOLO surpasses $15M in revenue and demonstrates its ability to scale.',
-      },
-      {
-        title: '2024 - Strategic M&A',
-        description:
-          'YWow and Wicked expand the platform across games, pets, and outdoor categories.',
-      },
-    ],
+    milestones: [],
   },
 
   growthDecoration: { src: '/decorations/kite.webp', alt: '' },
@@ -142,56 +117,9 @@ const enContent: InvestorsPageContent = {
     title: 'Board of',
     subtitle:
       'Corporate governance designed for the next phase of growth: public markets, M&A, investors and international expansion.',
-    members: [
-      {
-        name: 'Alex Prieto',
-        role: 'President',
-        description:
-          'Co-Founder with 26 years of experience in the toy industry. Three-time Mojo Nation 100 honoree.',
-        image: { src: '/board/alex-prieto.webp', alt: 'Alex Prieto' },
-      },
-      {
-        name: 'Jose M. Diaz',
-        role: 'Vice President',
-        description:
-          'Co-Founder with 20 years of experience in international toy sales management.',
-        image: { src: '/board/jose-diaz.webp', alt: 'Jose M. Diaz' },
-      },
-      {
-        name: 'Isabel Prieto',
-        role: 'Proprietary Director',
-        description:
-          'Co-Founder with 20 years of experience in administration and human resources management.',
-        image: { src: '/board/isabel-prieto.webp', alt: 'Isabel Prieto' },
-      },
-      {
-        name: 'Rafael Prieto',
-        role: 'Executive Director',
-        description:
-          'Co-Founder with 30 years of experience in toy production and international toy design.',
-        image: { src: '/board/rafael-prieto.webp', alt: 'Rafael Prieto' },
-      },
-      {
-        name: 'Jose A. Tuñón',
-        role: 'Executive Director',
-        description:
-          'CFO with more than 25 years of experience in corporate restructuring and refinancing.',
-        image: { src: '/board/jose-tunon.webp', alt: 'Jose A. Tuñón' },
-      },
-    ],
-    pending: [
-      { name: 'TBC', role: 'Secretary', image: { src: '/board/tbc.webp' } },
-      {
-        name: 'TBC',
-        role: 'Financial Representative',
-        image: { src: '/board/tbc.webp' },
-      },
-      {
-        name: 'TBC',
-        role: 'Industry Representative',
-        image: { src: '/board/tbc.webp' },
-      },
-    ],
+    // Members and empty seats come from `getPublicBoard`.
+    members: [],
+    pending: [],
   },
 
   powerOfASmile: {
@@ -206,74 +134,8 @@ const enContent: InvestorsPageContent = {
 
   documents: {
     accent: 'Documents',
-    columns: [
-      {
-        title: 'Financial Information',
-        per_year: [
-          {
-            year: '2026',
-            documents: [
-              {
-                title: 'Eolo Toys Int SA_FS Group Consolidated 2025',
-                date: '31/07/2026',
-                format: 'PDF',
-                size: '1.28 MB',
-                href: '/docs/Eolo_Toys_Int_SA_CCAACC_2025.pdf',
-              },
-              {
-                title: 'Eolo Toys Int SA_FS 2025',
-                date: '31/07/2026',
-                format: 'PDF',
-                size: '0.67 MB',
-                href: '/docs/Eolo_Toys_Int_SA_CCAA_2025.pdf',
-              },
-            ],
-          },
-        ],
-      },
-      {
-        title: 'Meetings & Notices',
-        per_year: [{ year: '2026', documents: [] }],
-      },
-      {
-        title: 'Investors Documents',
-        per_year: [
-          {
-            year: '2026',
-            documents: [
-              {
-                title: 'Eolo Toys Int SA_DIAM_20260731',
-                date: '31/07/2026',
-                format: 'PDF',
-                size: '35.63 MB',
-                href: '/docs/Eolo_Toys_Int_SA_DIAM_20260731.pdf',
-              },
-              {
-                title: 'Eolo Toys Int SA_Articles of Association',
-                date: '31/07/2026',
-                format: 'PDF',
-                size: '0.29 MB',
-                href: '/docs/Eolo_Toys_Int_SA_Estatutos_Sociales.pdf',
-              },
-              {
-                title: 'Eolo Toys Int SA_Group Organizational Structure Report',
-                date: '31/07/2026',
-                format: 'PDF',
-                size: '0.26 MB',
-                href: '/docs/Eolo_Toys_Int_SA_Informe_Estructura_Organizativa.pdf',
-              },
-              {
-                title: 'Eolo Toys Int SA_Internal Code of Conduct',
-                date: '31/07/2026',
-                format: 'PDF',
-                size: '0.38 MB',
-                href: '/docs/Eolo_Toys_Int_SA_Reglamento_Interno_de_Conducta.pdf',
-              },
-            ],
-          },
-        ],
-      },
-    ],
+    // Columns come from `getPublicDocuments`.
+    columns: [],
   },
 
   contact: {
@@ -364,28 +226,7 @@ const esContent: InvestorsPageContent = {
       ...enContent.growthJourney.chart,
       caption: '*Ingresos consolidados',
     },
-    milestones: [
-      {
-        title: '2020 - CuiCui Studios',
-        description:
-          'Expansión hacia tecnología, apps y experiencias digitales.',
-      },
-      {
-        title: '2021 - ToyZone',
-        description:
-          'Spin-off de nuestra agencia de desarrollo y sourcing dedicada al sector global del juguete.',
-      },
-      {
-        title: '2022 - Aceleración de escala',
-        description:
-          'EOLO supera los $15M de ingresos y demuestra su capacidad de crecimiento.',
-      },
-      {
-        title: '2024 - M&A estratégico',
-        description:
-          'YWow y Wicked amplían la plataforma en juegos, mascotas y categorías outdoor.',
-      },
-    ],
+    milestones: [],
   },
 
   businessModel: {
@@ -441,128 +282,15 @@ const esContent: InvestorsPageContent = {
     title: 'Junta',
     subtitle:
       'Gobierno corporativo para la nueva etapa: mercado, M&A, inversores y escala internacional.',
-    members: [
-      {
-        name: 'Alex Prieto',
-        role: 'Presidente',
-        description:
-          'Co-Fundador con 26 años de experiencia en la industria del juguete. Tres veces honrado en el Mojo Nation 100.',
-        image: { src: '/board/alex-prieto.webp', alt: 'Alex Prieto' },
-      },
-      {
-        name: 'Jose M. Diaz',
-        role: 'Vicepresidente',
-        description:
-          'Co-Fundador con 20 años de experiencia en la gestión de ventas internacionales de juguetes.',
-        image: { src: '/board/jose-diaz.webp', alt: 'Jose M. Diaz' },
-      },
-      {
-        name: 'Isabel Prieto',
-        role: 'Directora Dominical',
-        description:
-          'Co-Fundadora con 20 años de experiencia en administración y gestión de recursos humanos.',
-        image: { src: '/board/isabel-prieto.webp', alt: 'Isabel Prieto' },
-      },
-      {
-        name: 'Rafael Prieto',
-        role: 'Director Ejecutivo',
-        description:
-          'Co-Fundador con 30 años de experiencia en gestión de producción y diseño internacional de juguetes.',
-        image: { src: '/board/rafael-prieto.webp', alt: 'Rafael Prieto' },
-      },
-      {
-        name: 'Jose A. Tuñón',
-        role: 'Director Ejecutivo',
-        description:
-          'CFO con más de 25 años de experiencia en reestructuración y refinanciamiento corporativo.',
-        image: { src: '/board/jose-tunon.webp', alt: 'Jose A. Tuñón' },
-      },
-    ],
-    pending: [
-      { name: 'TBC', role: 'Secretario', image: { src: '/board/tbc.webp' } },
-      {
-        name: 'TBC',
-        role: 'Representante Financiero',
-        image: { src: '/board/tbc.webp' },
-      },
-      {
-        name: 'TBC',
-        role: 'Representante de la Industria',
-        image: { src: '/board/tbc.webp' },
-      },
-    ],
+    // Members and empty seats come from `getPublicBoard`.
+    members: [],
+    pending: [],
   },
 
   documents: {
     accent: 'Documentos',
-    columns: [
-      {
-        title: 'Información Financiera',
-        per_year: [
-          {
-            year: '2026',
-            documents: [
-              {
-                title: 'Eolo Toys Int SA_CCAACC 2025',
-                date: '31/07/2026',
-                format: 'PDF',
-                size: '1.28 MB',
-                href: '/docs/Eolo_Toys_Int_SA_CCAACC_2025.pdf',
-              },
-              {
-                title: 'Eolo Toys Int SA_CCAA 2025',
-                date: '31/07/2026',
-                format: 'PDF',
-                size: '0.67 MB',
-                href: '/docs/Eolo_Toys_Int_SA_CCAA_2025.pdf',
-              },
-            ],
-          },
-        ],
-      },
-      {
-        title: 'Juntas y Convocatorias',
-        per_year: [{ year: '2026', documents: [] }],
-      },
-      {
-        title: 'Documentos para Inversores',
-        per_year: [
-          {
-            year: '2026',
-            documents: [
-              {
-                title: 'Eolo Toys Int SA_DIAM_20260731',
-                date: '31/07/2026',
-                format: 'PDF',
-                size: '35.63 MB',
-                href: '/docs/Eolo_Toys_Int_SA_DIAM_20260731.pdf',
-              },
-              {
-                title: 'Eolo Toys Int SA_Estatutos Sociales',
-                date: '31/07/2026',
-                format: 'PDF',
-                size: '0.29 MB',
-                href: '/docs/Eolo_Toys_Int_SA_Estatutos_Sociales.pdf',
-              },
-              {
-                title: 'Eolo Toys Int SA_Informe Estructura Organizativa',
-                date: '31/07/2026',
-                format: 'PDF',
-                size: '0.26 MB',
-                href: '/docs/Eolo_Toys_Int_SA_Informe_Estructura_Organizativa.pdf',
-              },
-              {
-                title: 'Eolo Toys Int SA_Reglamento Interno de Conducta',
-                date: '31/07/2026',
-                format: 'PDF',
-                size: '0.38 MB',
-                href: '/docs/Eolo_Toys_Int_SA_Reglamento_Interno_de_Conducta.pdf',
-              },
-            ],
-          },
-        ],
-      },
-    ],
+    // Columns come from `getPublicDocuments`.
+    columns: [],
   },
 
   contact: {
