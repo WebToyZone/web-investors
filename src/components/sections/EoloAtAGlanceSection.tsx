@@ -82,7 +82,7 @@ export default function EoloAtAGlanceSection({
           {stats.map((stat) => (
             <li
               key={stat.id ?? stat.label}
-              className='flex min-w-75 max-w-87.5 flex-1 items-center justify-center gap-3 rounded-2xl border border-neutral-200 bg-white py-3 md:py-4 shadow-sm'
+              className='flex w-full max-w-87.5 sm:w-[calc(50%_-_0.625rem)] xl:w-[calc(33.333%_-_0.875rem)] items-center justify-center gap-3 rounded-2xl border border-neutral-200 bg-white py-3 md:py-4 shadow-sm'
             >
               <Image
                 src={stat.icon.src}
@@ -111,7 +111,7 @@ export default function EoloAtAGlanceSection({
           <h3 className='text-center text-2xl md:text-3xl font-bold uppercase tracking-wide text-neutral'>
             {platform.heading}
           </h3>
-          <ul className='mt-10 lg:mt-16 grid grid-cols-1 gap-10 lg:grid-cols-3'>
+            <ul className="mt-10 lg:mt-16 grid grid-cols-1 gap-10 xl:grid-cols-3">
             {platform.locations.map((location) => (
               <li key={location.id ?? location.name} className='flex items-start gap-5 px-8 lg:px-0 '>
                 <span className='flex h-28 w-28 md:h-32 md:w-32 shrink-0 items-center justify-center rounded-full border border-neutral-200 bg-white shadow-md'>

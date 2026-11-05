@@ -34,9 +34,9 @@ export default function PowerOfASmileSection({ content }: PowerOfASmileSectionPr
       aria-label={heading}
       className="relative w-full overflow-hidden bg-[#C8002D]"
     >
-       <div className="relative h-[56vh] min-h-80 w-full sm:h-[64vh] lg:aspect-video lg:h-dvh -mt-28">
+        <div className="relative aspect-video w-full xl:aspect-auto xl:h-dvh xl:-mt-28">
         <video
-          className="absolute inset-0 h-full w-full object-cover object-[center_80%] lg:object-center"
+          className="absolute inset-0 h-full w-full object-contain xl:object-cover xl:object-center"
           autoPlay
           loop
           muted

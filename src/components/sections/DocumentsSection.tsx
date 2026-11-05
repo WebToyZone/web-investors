@@ -47,8 +47,8 @@ export interface DocumentsSectionProps {
  * Tailwind only ships classes it can find literally in the source.
  */
 const COLUMN_TRACKS: Record<number, string> = {
-  1: 'lg:grid-cols-[repeat(1,calc((100%_-_5rem)/3))]',
-  2: 'lg:grid-cols-[repeat(2,calc((100%_-_5rem)/3))]',
+  1: 'xl:grid-cols-[repeat(1,calc(100%_-_5rem)/3)]',
+  2: 'xl:grid-cols-[repeat(2,calc(100%_-_5rem)/3)]',
 };
 
 /** Simple PDF/format badge rendered from text (no icon asset required). */
@@ -130,9 +130,10 @@ export default function DocumentsSection({ content }: DocumentsSectionProps) {
         <SectionHeader accent={accent} titleId='documents-title' />
 
         <div
-          className={`mt-12 lg:mt-16 grid grid-cols-1 gap-10 px-8 lg:justify-center lg:px-0 ${
-            COLUMN_TRACKS[columns.length] ?? 'lg:grid-cols-3'
+        className={`mt-12 lg:mt-16 grid grid-cols-1 gap-10 px-8 xl:justify-center xl:px-0 ${
+  COLUMN_TRACKS[columns.length] ?? 'xl:grid-cols-3'
           }`}
+
         >
           {columns.map((column) => (
             <div key={column.title}>

@@ -56,13 +56,14 @@ export default function BusinessModelSection({ content }: BusinessModelSectionPr
           accentSubtitle={accentSubtitle}
         />
 
-        <ul className="mt-10 lg:mt-16 grid grid-cols-1 gap-y-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-y-0">
+
+          <ul className="mt-10 lg:mt-16 grid grid-cols-1 gap-y-12 sm:grid-cols-2 xl:grid-cols-4 xl:gap-y-0">
           {features.map((feature) => (
             <li
               key={feature.title}
-              className="flex flex-col items-center px-6 text-center lg:border-l lg:border-neutral-300 lg:first:border-l-0"
+              className="flex flex-col items-center px-6 text-center xl:border-l xl:border-neutral-300 xl:first:border-l-0"
             >
-              <h3 className="text-3xl lg:text-4xl font-bold text-brand font-condensed">{feature.title}</h3>
+              <h3 className="text-3xl xl:text-4xl font-bold text-brand font-condensed">{feature.title}</h3>
               <p className="mt-4 text-lg text-pretty leading-relaxed text-neutral-700">
                 {feature.description}
               </p>
