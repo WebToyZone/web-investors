@@ -187,7 +187,7 @@ export default function ContactSection({
           </div>
         )}
 
-        <div className='grid gap-12 px-8 lg:grid-cols-2 lg:gap-16 lg:px-0'>
+        <div className='grid grid-cols-1 gap-12 px-8 xl:grid-cols-2 xl:gap-16 xl:px-0'>
           <div className='relative'>
             <h2
               id='contacts-title'

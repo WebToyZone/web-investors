@@ -62,7 +62,7 @@ export default function BoardOfDirectorsSection({
         />
 
         {/* Appointed members */}
-        <ul className="mt-12 lg:mt-16 grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-3 xl:grid-cols-5">
+          <ul className="mt-12 lg:mt-16 grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 xl:grid-cols-5">
           {members.map((member) => (
             <li key={member.id ?? member.name}>
               <PersonCard

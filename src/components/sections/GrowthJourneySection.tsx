@@ -112,7 +112,8 @@ export default function GrowthJourneySection({
       aria-labelledby='growth-journey-title'
       className='relative scroll-mt-24 overflow-hidden bg-white'
     >
-      <div className='grid container-site gap-12 py-16 sm:py-20 lg:grid-cols-3 lg:gap-16 lg:py-24'>
+
+        <div className='grid container-site gap-12 py-16 sm:py-20 xl:grid-cols-3 xl:gap-16 xl:py-24'>
         {/* Column 1 — copy */}
         <div className='flex flex-col items-start justify-center'>
           <h2

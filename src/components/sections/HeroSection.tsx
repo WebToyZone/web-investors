@@ -37,10 +37,10 @@ export default function HeroSection({ video }: HeroSectionProps) {
       aria-label={video.alt}
       className='relative w-full overflow-hidden bg-neutral-50'
     >
-      <h1 className='sr-only'>EOLO Investor Relations</h1>
-      <div className='relative h-[56vh] min-h-80 w-full sm:h-[64vh] lg:aspect-video lg:h-dvh lg:-mt-32'>
-        <video
-          className='absolute inset-0 h-full w-full object-cover object-[center_80%] lg:object-center'
+      <h1 className='sr-only'>EOLO Investor Relations</h1>        
+      <div className="relative flex w-full justify-center bg-white">
+       <video      
+          className="block h-auto w-auto max-w-full max-h-[calc(100dvh-112px)] object-contain"
           autoPlay
           loop
           muted
